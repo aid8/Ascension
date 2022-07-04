@@ -23,7 +23,8 @@
         },
         methods:{
             async signIn(){
-                window.location.href ='http://localhost:8080/AccountCreation';
+                let host = window.location.host
+                window.location.href ='http://' + host + '/AccountCreation';
             },
         }
     }
