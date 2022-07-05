@@ -76,6 +76,19 @@
         </ul>
         <p>Selected Courses: {{TeacherCoursesIDPointer}}</p>
     </div>
+
+    <div v-else-if="userType === 'NT_Distributor'">
+        <br>
+        <span>JobTitle: </span>
+        <input v-model="JobTitle" type="text"><br>
+        
+        <h3>Select Unit</h3>
+        <button @click="getDepartments()">Show Units</button>
+        <ul>
+            <li v-for="department in Departments" :key="department">{{department.UnitName}} <button @click="selectDepartment(department.objectId)">Select</button> </li>
+        </ul>
+        <p>Selected DepartmentID: {{NT_DistributorUnitIDPointer}}</p>
+    </div>
     <br>
     <button @click="saveProfile()"> Save Profile </button>
 </template>
@@ -98,6 +111,7 @@
                 JobTitle: '',
                 TeacherUnitIDPointer: '',
                 TeacherCoursesIDPointer: [],
+                NT_DistributorUnitIDPointer: '',
 
                 Departments: [],
                 Degrees: [],
@@ -129,6 +143,11 @@
                     params["TeacherUnitIDPointer"] = this.TeacherUnitIDPointer;
                     params["TeacherCoursesIDPointer"] = this.TeacherCoursesIDPointer;
                     await Parse.Cloud.run("AddTeacher", params);
+                }
+                else if(this.userType == "NT_Distributor"){
+                    params["JobTitle"] = this.JobTitle;
+                    params["NT_DistributorUnitIDPointer"] = this.NT_DistributorUnitIDPointer;
+                    await Parse.Cloud.run("AddNT_Distributor", params);
                 }
                 alert("Added " + this.userType);
             },
@@ -186,6 +205,9 @@
             selectDepartment(UnitID){
                 if(this.userType == "Teacher"){
                     this.TeacherUnitIDPointer = UnitID;
+                }
+                else if(this.userType == "NT_Distributor"){
+                    this.NT_DistributorUnitIDPointer = UnitID;
                 }
             }
         }
