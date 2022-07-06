@@ -6,3 +6,7 @@ require('./degree.js');
 require('./course.js');
 require('./teacher.js');
 require('./nt_distributor.js');
+require('./ascensionTitle.js');
+require('./badge.js');
+require('./trophy.js');
+require('./cosmetic.js');
