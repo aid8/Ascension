@@ -17,8 +17,8 @@
     <input type="radio" id="teacher" value="Teacher" v-model="userType" />
     <label for="teacher">Teacher</label>
     <input type="radio" id="nt_distributor" value="NT_Distributor" v-model="userType" />
-    <label for="nt_distributor">Non Teaching Distributor</label>
-
+    <label for="nt_distributor">Non-teaching Distributor</label>
+    
     <div v-if="userType === 'Student'">
         <br>
         <span>YearLevel: </span>
@@ -56,6 +56,39 @@
         </ul>
         <p>Selected Courses: {{StudentCoursesIDPointer}}</p>
     </div>
+    
+    <div v-else-if="userType === 'Teacher'">
+        <br>
+        <span>JobTitle: </span>
+        <input v-model="JobTitle" type="text"><br>
+        
+        <h3>Select Unit</h3>
+        <button @click="getDepartments()">Show Units</button>
+        <ul>
+            <li v-for="department in Departments" :key="department">{{department.UnitName}} <button @click="selectDepartment(department.objectId)">Select</button> </li>
+        </ul>
+        <p>Selected DepartmentID: {{TeacherUnitIDPointer}}</p>
+
+        <h3>Select Courses</h3>
+        <button @click="getCourses()">Show Courses</button>
+        <ul>
+            <li v-for="course in Courses" :key="course">{{course.CourseName}} <button @click="selectCourse(course.objectId)">Select</button> <button @click="removeCourse(course.objectId)">Remove</button> </li>
+        </ul>
+        <p>Selected Courses: {{TeacherCoursesIDPointer}}</p>
+    </div>
+
+    <div v-else-if="userType === 'NT_Distributor'">
+        <br>
+        <span>JobTitle: </span>
+        <input v-model="JobTitle" type="text"><br>
+        
+        <h3>Select Unit</h3>
+        <button @click="getDepartments()">Show Units</button>
+        <ul>
+            <li v-for="department in Departments" :key="department">{{department.UnitName}} <button @click="selectDepartment(department.objectId)">Select</button> </li>
+        </ul>
+        <p>Selected DepartmentID: {{NT_DistributorUnitIDPointer}}</p>
+    </div>
     <br>
     <button @click="saveProfile()"> Save Profile </button>
 </template>
@@ -75,8 +108,12 @@
                 StudentUnitIDPointer: '',
                 StudentDegreeIDPointer: '',
                 StudentCoursesIDPointer: [],
+                JobTitle: '',
+                TeacherUnitIDPointer: '',
+                TeacherCoursesIDPointer: [],
+                NT_DistributorUnitIDPointer: '',
 
-                //Departments: [],
+                Departments: [],
                 Degrees: [],
                 Courses: [],
             }
@@ -93,13 +130,24 @@
                     "Email" : this.Email,
                     "ContactNumber" : this.ContactNumber,
                     "RegisterDate" : "datetoday",
-                    "YearLevel" : this.YearLevel,
-                    "StudentUnitIDPointer" : this.StudentUnitIDPointer,
-                    "StudentDegreeIDPointer" : this.StudentDegreeIDPointer,
-                    "StudentCoursesIDPointer" : this.StudentCoursesIDPointer,
                 }
                 if(this.userType == "Student"){
+                    params["YearLevel"] = this.YearLevel;
+                    params["StudentUnitIDPointer"] = this.StudentUnitIDPointer;
+                    params["StudentDegreeIDPointer"] = this.StudentDegreeIDPointer;
+                    params["StudentCoursesIDPointer"] = this.StudentCoursesIDPointer;
                     await Parse.Cloud.run("AddStudent", params);
+                }
+                else if(this.userType == "Teacher"){
+                    params["JobTitle"] = this.JobTitle;
+                    params["TeacherUnitIDPointer"] = this.TeacherUnitIDPointer;
+                    params["TeacherCoursesIDPointer"] = this.TeacherCoursesIDPointer;
+                    await Parse.Cloud.run("AddTeacher", params);
+                }
+                else if(this.userType == "NT_Distributor"){
+                    params["JobTitle"] = this.JobTitle;
+                    params["NT_DistributorUnitIDPointer"] = this.NT_DistributorUnitIDPointer;
+                    await Parse.Cloud.run("AddNT_Distributor", params);
                 }
                 alert("Added " + this.userType);
             },
@@ -112,9 +160,9 @@
                 this.Departments = res;
             },
 
-            async getDegrees(DepartmentID){
+            async getDegrees(UnitID){
                 var params = {
-                    "DegreeDepartmentIDPointer" : DepartmentID,
+                    "DegreeUnitIDPointer" : UnitID,
                 };
                 const res = JSON.parse(await Parse.Cloud.run("GetDegrees", params));
                 this.Degrees = res;
@@ -146,26 +194,43 @@
                 this.Courses = coursesToShow
             },
 
-            /*
-            selectDepartment(DepartmentID){
-                this.StudentUnitIDPointer = DepartmentID;
-            },*/
-
             selectDegree(DegreeID, UnitID){
-                this.StudentDegreeIDPointer = DegreeID;
-                this.StudentUnitIDPointer = UnitID;
-            },
-
-            selectCourse(CourseID){
-                this.StudentCoursesIDPointer.push(CourseID);
-            },
-
-            removeCourse(CourseID){
-                var index = this.StudentCoursesIDPointer.indexOf(CourseID);
-                if (index > -1) {
-                    this.StudentCoursesIDPointer.splice(index, 1);
+                if(this.userType == "Student"){
+                    this.StudentDegreeIDPointer = DegreeID;
+                    this.StudentUnitIDPointer = UnitID;
                 }
             },
+            selectCourse(CourseID){
+                if(this.userType == "Student"){
+                    this.StudentCoursesIDPointer.push(CourseID);
+                }
+                else if(this.userType == "Teacher"){
+                    this.TeacherCoursesIDPointer.push(CourseID);
+                }
+            },
+            removeCourse(CourseID){
+                var index
+                if(this.userType == "Student"){
+                    index = this.StudentCoursesIDPointer.indexOf(CourseID);
+                    if (index > -1) {
+                        this.StudentCoursesIDPointer.splice(index, 1);
+                    }
+                }
+                else if(this.userType == "Teacher"){
+                    index = this.TeacherCoursesIDPointer.indexOf(CourseID);
+                    if (index > -1) {
+                        this.TeacherCoursesIDPointer.splice(index, 1);
+                    }
+                }
+            },
+            selectDepartment(UnitID){
+                if(this.userType == "Teacher"){
+                    this.TeacherUnitIDPointer = UnitID;
+                }
+                else if(this.userType == "NT_Distributor"){
+                    this.NT_DistributorUnitIDPointer = UnitID;
+                }
+            }
         }
     }
 </script>
