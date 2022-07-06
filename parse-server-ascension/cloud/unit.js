@@ -1,4 +1,4 @@
-Parse.Cloud.define("AddUnit", async(request) => {
+Parse.Cloud.define("AddUnit", async(request) => {   //async AddUnit(request){}
     const Unit = Parse.Object.extend("Unit");
     const unit = new Unit();
     unit.save({

@@ -4,6 +4,7 @@ Parse.Cloud.define("AddCourse", async(request) => {
     course.save({
         "CourseName" : request.params.CourseName,
         "CourseCode" : request.params.CourseCode,
+        "CourseDegreesIDPointers" : request.params.CourseDegreesIDPointers
     }).then(()=>{
         console.log("Successfully added Course!");
     });

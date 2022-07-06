@@ -20,7 +20,7 @@
     <p>Select Unit/Department</p>
     <button @click="getUnits('Department')">Show Departments</button>
     <ul>
-        <li v-for="department in Departments" :key="department">{{department.UnitName}} <button @click="selectDepartment(department.objectId)">Select</button> </li>
+        <li v-for="department in Departments" :key="department.id">{{department.UnitName}} <button @click="selectDepartment(department.objectId)">Select</button> </li>
     </ul>
     <p>Selected Unit/DepartmentID: {{SelectedDepartment}}</p>
     <button @click="addDegree()">Add Degree</button><br>
@@ -31,6 +31,21 @@
     <input v-model="CourseName" type="text"><br>
     <span>CourseCode: </span>
     <input v-model="CourseCode" type="text"><br>
+    <!--ASDLKANSDKLANSDLKASNDKLANSLKDNAKSLDNLASDKANLSDKNALKSNDLK-->
+    <!-- <span>Is Part of a Degree: </span>
+    <input type="radio" id="CourseDegreeYes" value="true" v-model="CourseHasDegree" />
+    <label for="CourseDegreeYes">Yes</label>
+    <input type="radio" id="CourseDegreeNo" value="false" v-model="CourseHasDegree" />
+    <label for="CourseDegreeNo">No</label><br> -->
+    <span>CourseDegree: </span> 
+    <button @click="getDegrees()">Load Relevant Degrees</button>
+    <ul v-if="ShowRelevantDegrees">
+        <li>No Degree (Elective)<button @click="setCourseDegree(null)">Select</button></li>  
+        <li>All Degrees <button @click="setCourseToAllDegrees()">Select</button></li>
+        <li v-for="degree in Degrees" :key="degree.objectId">{{degree.DegreeName}} <button @click="setCourseDegree(degree.objectId)">Select Degree</button> </li>
+    </ul>
+    <br>
+    <p>{{CourseDegreesIDPointers}}</p>
     <button @click="addCourse()">Add Course</button>
     <hr>
 
@@ -56,6 +71,11 @@
                 //Course Variables
                 CourseName: '',
                 CourseCode: '',
+                CourseDegreesIDPointers: [],
+
+                //Other Variables
+                Degrees: [],
+                ShowRelevantDegrees: false,
             }
         },
         components:{
@@ -93,6 +113,8 @@
                 }
                 await Parse.Cloud.run("AddDegree", params);
                 alert("Added Degree");
+
+
             },
 
             //Course Functions
@@ -100,9 +122,33 @@
                 var params = {
                     "CourseName" : this.CourseName,
                     "CourseCode" : this.CourseCode, 
+                    "CourseDegreesIDPointers": this.CourseDegreesIDPointers
                 }
                 await Parse.Cloud.run("AddCourse", params);
+                this.ShowRelevantDegrees = false
                 alert("Added Course");
+            },
+
+            async getDegrees(){ 
+                this.ShowRelevantDegrees = true
+                const res = JSON.parse(await Parse.Cloud.run("AdminGetDegrees"));
+                this.Degrees = res;
+            },
+
+            setCourseDegree(degId){
+                if(degId != null){
+                    this.CourseDegreesIDPointers .push(degId)
+                }
+                else{
+                    this.CourseDegreesIDPointers .length = 0
+                }
+                
+            },
+
+            async setCourseToAllDegrees(){
+                this.CourseDegreesIDPointers .length = 0
+                const res = await Parse.Cloud.run("AdminSetCourseToAllDegrees")
+                this.CourseDegreesIDPointers  = res
             },
 
             //Others
