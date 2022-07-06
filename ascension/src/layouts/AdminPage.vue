@@ -31,12 +31,6 @@
     <input v-model="CourseName" type="text"><br>
     <span>CourseCode: </span>
     <input v-model="CourseCode" type="text"><br>
-    <!--ASDLKANSDKLANSDLKASNDKLANSLKDNAKSLDNLASDKANLSDKNALKSNDLK-->
-    <!-- <span>Is Part of a Degree: </span>
-    <input type="radio" id="CourseDegreeYes" value="true" v-model="CourseHasDegree" />
-    <label for="CourseDegreeYes">Yes</label>
-    <input type="radio" id="CourseDegreeNo" value="false" v-model="CourseHasDegree" />
-    <label for="CourseDegreeNo">No</label><br> -->
     <span>CourseDegree: </span> 
     <button @click="getDegrees()">Load Relevant Degrees</button>
     <ul v-if="ShowRelevantDegrees">
@@ -49,6 +43,26 @@
     <button @click="addCourse()">Add Course</button>
     <hr>
 
+    <h3>Add Ascension Titles</h3>
+    <span>Ascension Name: </span>
+    <input v-model="AscensionName" type="text"><br>
+    <span>Ascension Xp Range (ceiling value): </span>
+    <input v-model="AscensionXpRangeCap" type="text"><br>
+    <button @click="addAscensionTitle()">Add Ascension Title</button>
+    
+    <h3>Modify Ascension Titles</h3>
+    <span>Ascension Name: </span>
+    <input v-model="NewAscensionName" type="text"><br>
+    <span>Ascension Xp Range (ceiling value): </span>
+    <input v-model="NewAscensionXpRangeCap" type="text"><br>
+    <button @click="updateAscensionTitle()">Save Title</button><br><br>
+    <button @click="getAscensionTitles()">Load Available Titles</button>
+    <ul v-if="ShowAscensionTitles">
+        <li v-for="title in AscensionTitles" :key="title.objectId">{{title.AscensionName}} 
+        <button @click="getAscensionTitle(title)">Edit</button>
+        <button @click="deleteAscensionTitle(title.objectId)">Delete</button></li>
+    </ul>
+    
     <h3>Others</h3>
     <button @click="homepage()">Go to hompeage</button>
 </template>
@@ -73,9 +87,18 @@
                 CourseCode: '',
                 CourseDegreesIDPointers: [],
 
+                //Ascension Title Variables
+                AscensionName: '',
+                AscensionXpRangeCap: '',
+                NewAscensionName: '',
+                NewAscensionXpRangeCap: '',
+                AscensionTitleIdPointer: '',
+                AscensionTitles: [],
+
                 //Other Variables
                 Degrees: [],
                 ShowRelevantDegrees: false,
+                ShowAscensionTitles: false,
             }
         },
         components:{
@@ -149,6 +172,45 @@
                 this.CourseDegreesIDPointers .length = 0
                 const res = await Parse.Cloud.run("AdminSetCourseToAllDegrees")
                 this.CourseDegreesIDPointers  = res
+            },
+
+            //Ascension Title Functions
+            async addAscensionTitle(){
+                var params = {
+                    "AscensionName": this.AscensionName,
+                    "AscensionXpRangeCap": this.AscensionXpRangeCap
+                }
+                await Parse.Cloud.run("AddAscensionTitle", params).then(alert("Added Ascension Title"))
+                
+            },
+
+            async getAscensionTitles(){
+                this.ShowAscensionTitles = true
+                this.AscensionTitles = JSON.parse(await Parse.Cloud.run("GetAscensionTitles"))
+            },
+
+
+            async deleteAscensionTitle(AscensionTitleId){
+                var params = {
+                    "AscensionId": AscensionTitleId
+                }
+                await Parse.Cloud.run("DeleteAscensionTitle", params).then(alert("Ascension Title Deleted"))
+            },
+
+            async getAscensionTitle(AscensionTitle){
+                this.NewAscensionName = AscensionTitle.AscensionName
+                this.NewAscensionXpRangeCap = AscensionTitle.AscensionXpRangeCap
+                this.AscensionTitleIdPointer = AscensionTitle.objectId
+            },
+
+            async updateAscensionTitle(){
+                this.ShowAscensionTitles = false
+                var params = {
+                    "AscensionId": this.AscensionTitleIdPointer,
+                    "NewAscensionName": this.NewAscensionName,
+                    "NewAscensionXpRangeCap": this.NewAscensionXpRangeCap
+                }
+                await Parse.Cloud.run("UpdateAscensionTitle", params).then(alert("Ascension Title Modified"))
             },
 
             //Others
