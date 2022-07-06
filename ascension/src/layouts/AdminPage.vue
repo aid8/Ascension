@@ -49,6 +49,13 @@
     <button @click="addCourse()">Add Course</button>
     <hr>
 
+    <!--Testing for badges, add other necessarry attributes-->
+    <h3>Add Badges</h3>
+    <span>Badge Name: </span>
+    <input v-model="BadgeName" type="text"><br>
+    <button @click="addBadge()">Add Badge</button><br>
+    <hr>
+
     <h3>Others</h3>
     <button @click="homepage()">Go to hompeage</button>
 </template>
@@ -72,6 +79,9 @@
                 CourseName: '',
                 CourseCode: '',
                 CourseDegreesIDPointers: [],
+
+                //Badge Variables
+                BadgeName: '',
 
                 //Other Variables
                 Degrees: [],
@@ -113,8 +123,6 @@
                 }
                 await Parse.Cloud.run("AddDegree", params);
                 alert("Added Degree");
-
-
             },
 
             //Course Functions
@@ -131,24 +139,40 @@
 
             async getDegrees(){ 
                 this.ShowRelevantDegrees = true
-                const res = JSON.parse(await Parse.Cloud.run("AdminGetDegrees"));
+                const res = JSON.parse(await Parse.Cloud.run("GetDegrees"));
                 this.Degrees = res;
             },
 
             setCourseDegree(degId){
                 if(degId != null){
-                    this.CourseDegreesIDPointers .push(degId)
+                    this.CourseDegreesIDPointers.push(degId)
                 }
                 else{
-                    this.CourseDegreesIDPointers .length = 0
+                    this.CourseDegreesIDPointers.length = 0
                 }
-                
             },
 
             async setCourseToAllDegrees(){
                 this.CourseDegreesIDPointers .length = 0
-                const res = await Parse.Cloud.run("AdminSetCourseToAllDegrees")
-                this.CourseDegreesIDPointers  = res
+                const res = JSON.parse(await Parse.Cloud.run("GetDegrees"));
+                let CourseDegrees = []
+                for(const degree of res){
+                    CourseDegrees.push(degree.objectId);
+                }
+                this.CourseDegreesIDPointers = CourseDegrees;
+            },
+
+            //Badges Functions
+            //Testing! add other necessarry attributes
+            async addBadge(){
+                var params = {
+                    "BadgeName" : this.BadgeName,
+                    "BadgeDescription" : "",
+                    "BadgePoints" : 0,
+                    "BadgeImage" : "",
+                }
+                await Parse.Cloud.run("AddBadge", params);
+                alert("Added Badge");
             },
 
             //Others

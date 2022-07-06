@@ -10,6 +10,55 @@ Parse.Cloud.define("AddUnit", async(request) => {   //async AddUnit(request){}
     });
 });
 
+//Must specify id of unit with name of "UnitID" then the attribute name along with the new value
+Parse.Cloud.define("EditUnit", async(request) =>{
+    const Unit = Parse.Object.extend("Unit");
+    const query = new Parse.Query(Unit);
+    const argument = request.params;
+    query.equalTo("objectId", argument.UnitID);
+    const res = await query.first();
+    
+    var list_of_attr = ["UnitName", "UnitContactNumber", "UnitType",];
+    var list_of_arguments = [argument.UnitName, argument.UnitContactNumber, argument.UnitType,];
+
+    for(let i = 0; i < list_of_attr.length; ++i){
+        if(list_of_arguments[i] != null){
+            res.set(list_of_attr[i], list_of_arguments[i]);
+        }
+    }
+
+    res.save().then(()=>{
+        console.log("Successfully Edited Unit");
+    });
+});
+
+//Must specify id of unit with name of "UnitID"
+//!--- NOT YET DONE ---!
+Parse.Cloud.define("DeleteUnit", async(request) =>{
+    const Unit = Parse.Object.extend("Unit");
+    const query = new Parse.Query(Unit);
+    const argument = request.params;
+    query.equalTo("objectId", argument.UnitID);
+    const res = await query.first();
+
+    //Should throw error if a teacher/nt belongs to this unit/UnitID
+
+    res.destroy().then(()=>{
+        console.log("Successfully Deleted Unit");
+    });
+});
+
+//Must specify id of unit with name of "UnitID"
+//Returns the data of a unit
+Parse.Cloud.define("GetUnitData", async(request) => {
+    const Unit = Parse.Object.extend("Unit");
+    const query = new Parse.Query(Unit);
+    const argument = request.params;
+    query.equalTo("objectId", argument.UnitID);
+    const res = await query.first();
+    return JSON.stringify(res);
+});
+
 //Returns all units when UnitType is not specified
 Parse.Cloud.define("GetUnits", async(request) =>{
     const Unit = Parse.Object.extend("Unit");
