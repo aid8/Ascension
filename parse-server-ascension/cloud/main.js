@@ -4,3 +4,4 @@ require('./student.js');
 require('./unit.js');
 require('./degree.js');
 require('./course.js');
+require('./admin.js')
