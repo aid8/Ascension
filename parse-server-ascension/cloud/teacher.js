@@ -37,3 +37,47 @@ Parse.Cloud.define("GetTeacherData", async(request) => {
     const res = await query.first();
     return JSON.stringify(res);
 });
+
+//Must specify id of teacher with name of "TeacherID"
+Parse.Cloud.define("EditTeacher", async(request) => {
+    const Teacher = Parse.Object.extend("Teacher");
+    const query = new Parse.Query(Teacher);
+    const argument = request.params;
+
+    query.equalTo("objectId", argument.TeacherID);
+    const res = await query.first();
+
+    var list_of_attr = ["FirstName", "MiddleName", "LastName", 
+                        "Email", "ContactNumber", "RegisterDate", "JobTitle", 
+                        "TeacherUnitIDPointer", "TeacherCoursesIDPointer", "PendingApprovalBadgesID",
+    ];
+    
+    var list_of_arguments =[argument.FirstName, argument.MiddleName, argument.LastName, 
+                            argument.Email, argument.ContactNumber, argument.RegisterDate, argument.JobTitle,
+                            argument.TeacherUnitIDPointer, argument.TeacherCoursesIDPointer, argument.PendingApprovalBadgesID,
+    ];
+
+    for(let i = 0; i < list_of_attr.length; ++i){
+        if(list_of_arguments[i] != null){
+            res.set(list_of_attr[i], list_of_arguments[i]);
+        }
+    }
+
+    res.save().then(()=>{
+        console.log("Successfully Edited Teacher");
+    });
+});
+
+Parse.Cloud.define("DeleteTeacher", async(request) => {
+    const Teacher = Parse.Object.extend("Teacher");
+    const query = new Parse.Query(Teacher);
+    const argument = request.params;
+
+    query.equalTo("objectId", argument.TeacherID);
+    const res = await query.first();
+
+    res.destroy().then(() => {
+        console.log("Successfully Deleted Teacher");
+    });
+    
+});
