@@ -170,28 +170,16 @@
 
             //Gets Courses Related/Relevant Only to Selected Degree
             async getCourses(){
-                const res = JSON.parse(await Parse.Cloud.run("GetCourses"));
-                let coursesToShow = []
-                for(let i = 0; i < res.length; i++){
-                    if(res[i].CourseDegreesIDPointers.length == 1){     //if Course is only related to one Degree
-                        if(res[i].CourseDegreesIDPointers == this.StudentDegreeIDPointer){
-                            coursesToShow.push(res[i])
-                        }
-                    } 
-                    else if(res[i].CourseDegreesIDPointers.length > 1){ //if Course if related to more than 1 Degree
-                        for(let j = 0; j < res[i].CourseDegreesIDPointers.length; j++){
-                            let scan = res[i].CourseDegreesIDPointers.indexOf(this.StudentDegreeIDPointer) 
-                            if(scan > -1){
-                                coursesToShow.push(res[i])
-                                break
-                            }
-                        }
-                    }
-                    else{   //if Course is not related to 1 Degree (Elective)
-                        coursesToShow.push(res[i])
-                    }
+                var params = {
+                    "CourseDegreeID" : this.StudentDegreeIDPointer,
+                };
+                if(this.userType == "Student"){
+                    params["CourseDegreeID"] = this.StudentDegreeIDPointer;
+
                 }
-                this.Courses = coursesToShow
+                console.log(params);
+                const res = JSON.parse(await Parse.Cloud.run("GetCourses", params));
+                this.Courses = res;
             },
 
             selectDegree(DegreeID, UnitID){
