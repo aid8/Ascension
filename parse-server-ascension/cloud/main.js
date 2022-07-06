@@ -9,3 +9,4 @@ require('./nt_distributor.js');
 require('./admin.js');
 require('./badge.js');
 require('./trophy.js');
+require('./cosmetic.js');
