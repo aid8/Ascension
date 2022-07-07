@@ -29,15 +29,6 @@ Parse.Cloud.afterSave("Teacher", async(request)=>{
     }
 });
 
-Parse.Cloud.define("GetTeacherData", async(request) => {
-    const Teacher = Parse.Object.extend("Teacher");
-    const query = new Parse.Query(Teacher);
-    const argument = request.params;
-    query.equalTo("objectId", argument.TeacherID);
-    const res = await query.first();
-    return JSON.stringify(res);
-});
-
 //Must specify id of teacher with name of "TeacherID"
 Parse.Cloud.define("EditTeacher", async(request) => {
     const Teacher = Parse.Object.extend("Teacher");
@@ -80,4 +71,20 @@ Parse.Cloud.define("DeleteTeacher", async(request) => {
         console.log("Successfully Deleted Teacher");
     });
     
+});
+
+Parse.Cloud.define("GetTeacherData", async(request) => {
+    const Teacher = Parse.Object.extend("Teacher");
+    const query = new Parse.Query(Teacher);
+    const argument = request.params;
+    query.equalTo("objectId", argument.TeacherID);
+    const res = await query.first();
+    return JSON.stringify(res);
+});
+
+Parse.Cloud.define("GetTeachers", async(_request) => {
+    const Teacher = Parse.Object.extend("Teacher");
+    const query = new Parse.Query(Teacher);
+    const res = await query.find();
+    return JSON.stringify(res);
 });
