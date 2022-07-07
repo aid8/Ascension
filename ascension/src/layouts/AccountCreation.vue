@@ -177,7 +177,6 @@
                     params["CourseDegreeID"] = this.StudentDegreeIDPointer;
 
                 }
-                console.log(params);
                 const res = JSON.parse(await Parse.Cloud.run("GetCourses", params));
                 this.Courses = res;
             },

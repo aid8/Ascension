@@ -1,3 +1,11 @@
+/*
+    Functions that are not yet tested upon creating/updating:
+    - DisplayStudentXPTitle(GetAscensionTitle is not yet updated in this version)
+    Functions that is missing/incomplete:
+    - RequestBadge, DisplayStudentXPTitle, AssignHouse(Needs to pick the lowest housepopulation, its random for now)
+*/
+var Global = require('./global');
+
 Parse.Cloud.define("AddStudent", async(request) => {
     const Student = Parse.Object.extend("Student");
     const student = new Student();
@@ -24,19 +32,29 @@ Parse.Cloud.afterSave("Student", async(request)=>{
     const original = request.original;
     //If object is newly created
     if (!original){
+        console.log("!", student.get("objectId"));
         return student.save({
             "XP" : 0,
             "AscensionPoints" : 0,
             "BadgesIDEarned" : [],
             "TrophiesIDUnlocked" : [],
             "ChosenTrophies" : [],
-            "AvatarsIDUnlocked" : ["0"], //Change 0 to default id
-            "FrameIDUnlocked" : ["0"],
-            "BannerIDUnlocked" : ["0"],
-            "CoverPhotoIDUnlocked" : ["0"],
+            "AvatarsIDUnlocked" : [Global.defaultAvatarID],
+            "FrameIDUnlocked" : [Global.defaultFrameID],
+            "BannerID" : "", //will be set to Banner of house upon assigning house
+            "CoverPhotoIDUnlocked" : [Global.defaultCoverPhotoID],
             "AscensionTitle" : "Default", //add function "GetAscensionTitle"
-            "StudentHouseIDPointer" : "0", //add function "AssignHouse"
-            "EquippedCosmetics" : ["0", "0", "0", "0"] //set to default id
+            "StudentHouseIDPointer" : "", //add function "AssignHouse"
+            "EquippedCosmetics" : [Global.defaultAvatarID, Global.defaultFrameID, Global.defaultCoverPhotoID] //set to default id [Avatar, Frame, CoverPhoto]
+        }).then(async(res)=>{
+            var params;
+            //Run getascensiontitle
+            //params = {"XP" : student.get("XP")};
+            //await Parse.Cloud.run("GetTitle...", params);
+
+            //Run assign house
+            params = {"StudentID" : res.id,};
+            await Parse.Cloud.run("AssignHouse", params);
         });
     }
 });
@@ -53,14 +71,14 @@ Parse.Cloud.define("EditStudent", async(request) =>{
     var list_of_attr = ["FirstName", "MiddleName", "LastName", "Email", "ContactNumber", 
                         "RegisterDate", "YearLevel", "StudentUnitIDPointer", "StudentDegreeIDPointer", "StudentCoursesIDPointer",
                         "XP", "AscensionPoints", "BadgesIDEarned", "TrophiesIDUnlocked", "ChosenTrophies",
-                        "AvatarsIDUnlocked", "FrameIDUnlocked", "BannerIDUnlocked", "CoverPhotoIDUnlocked","AscensionTitle",
-                        "HouseIDPointer", "EquippedCosmetics",
+                        "AvatarsIDUnlocked", "FrameIDUnlocked", "BannerID", "CoverPhotoIDUnlocked","AscensionTitle",
+                        "StudentHouseIDPointer", "EquippedCosmetics",
     ];
     var list_of_arguments = [argument.FirstName, argument.MiddleName, argument.LastName, argument.Email, argument.ContactNumber,
                             argument.RegisterDate, argument.YearLevel, argument.StudentUnitIDPointer, argument.StudentDegreeIDPointer, argument.StudentCoursesIDPointer,
                             argument.XP, argument.AscensionPoints, argument.BadgesIDEarned, argument.TrophiesIDUnlocked, argument.ChosenTrophies,
-                            argument.AvatarsIDUnlocked, argument.FrameIDUnlocked, argument.BannerIDUnlocked, argument.CoverPhotoIDUnlocked, argument.AscensionTitle,
-                            argument.HouseIDPointer, argument.EquippedCosmetics,
+                            argument.AvatarsIDUnlocked, argument.FrameIDUnlocked, argument.BannerID, argument.CoverPhotoIDUnlocked, argument.AscensionTitle,
+                            argument.StudentHouseIDPointer, argument.EquippedCosmetics,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
@@ -83,7 +101,11 @@ Parse.Cloud.define("DeleteStudent", async(request) =>{
     query.equalTo("objectId", argument.StudentID);
     const res = await query.first();
 
-    //Query House then call delete member
+    var params = {
+        "HouseID" : res.get("StudentHouseIDPointer"),
+        "StudentID" : res.id,
+    }
+    await Parse.Cloud.run("DeleteHouseMember", params);
 
     res.destroy().then(()=>{
         console.log("Successfully Deleted Student");
@@ -94,7 +116,6 @@ Parse.Cloud.define("DeleteStudent", async(request) =>{
     BadgesIDEarned will have BadgesEarned containing the data of each badges
     ChosenTrophies will have ChosenTrophiesData
     Same as TrophiesIDUnlocked, AvatarsIDUnlocked, etc.. 
-    Comment ko muna si iba ta dai pa handa sa version ko si ibang entity
 */
 Parse.Cloud.define("GetStudentData", async(request) => {
     const Student = Parse.Object.extend("Student");
@@ -105,45 +126,46 @@ Parse.Cloud.define("GetStudentData", async(request) => {
 
     //Pass BadgesEarned Data
     var BadgesEarned = [];
+    var params;
     for(const badgeID of res.get("BadgesIDEarned")){
-        var params = {
+        params = {
             "BadgeID" : badgeID,
         }
-        //BadgesEarned.push(JSON.parse(await Parse.Cloud.run("GetBadgeData", params)));
+        BadgesEarned.push(JSON.parse(await Parse.Cloud.run("GetBadgeData", params)));
     }
     res.set("BadgesEarned", BadgesEarned);
 
     //Pass TrophiesUnlocked Data
     var TrophiesIDUnlocked = [];
     for(const trophyID of res.get("TrophiesIDUnlocked")){
-        var params = {
+        params = {
             "TrophyID" : trophyID,
         }
-        //BadgesEarned.push(JSON.parse(await Parse.Cloud.run("GetTrophyData", params)));
+        BadgesEarned.push(JSON.parse(await Parse.Cloud.run("GetTrophyData", params)));
     }
     res.set("TrophiesUnlocked", TrophiesIDUnlocked);
 
-    //Pass ChosenTrophies  Data
+    //Pass ChosenTrophies Data
     var ChosenTrophies = [];
     for(const trophyID of res.get("TrophiesIDUnlocked")){
-        var params = {
+        params = {
             "TrophyID" : trophyID,
         }
-        //BadgesEarned.push(JSON.parse(await Parse.Cloud.run("GetTrophyData", params)));
+        BadgesEarned.push(JSON.parse(await Parse.Cloud.run("GetTrophyData", params)));
     }
     res.set("ChosenTrophiesData", ChosenTrophies);
 
     //Pass CosmeticsUnlocked Data
-    var cosmeticArrNames = ["AvatarsIDUnlocked", "FrameIDUnlocked", "BannerIDUnlocked", "CoverPhotoIDUnlocked"];
-    var cosmeticArrNewNames = ["AvatarsUnlocked", "FrameUnlocked", "BannerUnlocked", "CoverPhotoUnlocked"];
+    var cosmeticArrNames = ["AvatarsIDUnlocked", "FrameIDUnlocked", "CoverPhotoIDUnlocked"];
+    var cosmeticArrNewNames = ["AvatarsUnlocked", "FrameUnlocked", "CoverPhotoUnlocked"];
 
     for(let i = 0; i < cosmeticArrNames.length; ++i){
         var CosmeticUnlocked = [];
         for(const cosmeticID of res.get(cosmeticArrNames[i])){
-            var params = {
+            params = {
                 "CosmeticID" : cosmeticID,
             }
-            //CosmeticUnlocked.push(JSON.parse(await Parse.Cloud.run("GetCosmeticData", params)));
+            CosmeticUnlocked.push(JSON.parse(await Parse.Cloud.run("GetCosmeticData", params)));
         }
         res.set(cosmeticArrNewNames[i], CosmeticUnlocked);
     }
@@ -152,25 +174,52 @@ Parse.Cloud.define("GetStudentData", async(request) => {
     return JSON.stringify(res);
 });
 
+Parse.Cloud.define("GetStudents", async(_request) => {
+    const Student = Parse.Object.extend("Student");
+    const query = new Parse.Query(Student);
+    const res = await query.find();
+    return JSON.stringify(res);
+});
 
-//AssignHouse
-//Pending since there are still no House functions in this version
-/*
+//Must specify id of student with name of "StudentID",
 Parse.Cloud.define("AssignHouse", async(request) => {
+    const House = Parse.Object.extend("House");
+    const query = new Parse.Query(House); 
+    const argument = request.params;
+    const res = await query.find();
+    
+    //Get lowest!
+    var randNum = Math.floor(Math.random() * res.length);
+    var pickedHouse = res[randNum];
+
+    var params = {
+        "StudentID" : argument.StudentID,
+        "HouseID" : pickedHouse.id,
+    }
+
+    await Parse.Cloud.run("AddHouseMember", params);
+    console.log("Successfully Assigned House");
+});
+
+//Must specify id of student with name of "StudentID" and new "HouseID"
+Parse.Cloud.define("ChangeStudentHouse", async(request) => {
     const Student = Parse.Object.extend("Student");
     const query = new Parse.Query(Student);
     const argument = request.params;
     query.equalTo("objectId", argument.StudentID);
     const res = await query.first();
+    
+    var params = {
+        "StudentID" : argument.StudentID,
+        "HouseID" : res.get("StudentHouseIDPointer"),
+    }
+    await Parse.Cloud.run("DeleteHouseMember", params);
+    
+    params["HouseID"] = argument.HouseID;
+    await Parse.Cloud.run("AddHouseMember", params);
 
-    //GetAllHouses
-    //DeleteHouseMember in res.get("HouseID");
-    //res.set("HouseID", HouseID);
-    res.save().then(()=>{
-        console.log("Successfully Changed House");
-    });
+    console.log("Successfully Changed House");
 });
-*/
 
 //Must specify id of student with name of "StudentID", along with three top trophiesID named "TrophiesID_1", "TrophiesID_2", "TrophiesID_3"
 Parse.Cloud.define("ChangeTopTrophies", async(request) => {
@@ -203,7 +252,6 @@ Parse.Cloud.define("AddStudentCosmetic", async(request) => {
     var cosmeticName = {
         "Avatar" : "AvatarsIDUnlocked",
         "Frame" : "FrameIDUnlocked",
-        "Banner" : "BannerIDUnlocked",
         "CoverPhoto" : "CoverPhotoIDUnlocked",
     };
     let cosmeticArr = res.get(cosmeticName[argument.CosmeticType]);
@@ -226,7 +274,6 @@ Parse.Cloud.define("DeleteStudentCosmetic", async(request) => {
     var cosmeticName = {
         "Avatar" : "AvatarsIDUnlocked",
         "Frame" : "FrameIDUnlocked",
-        "Banner" : "BannerIDUnlocked",
         "CoverPhoto" : "CoverPhotoIDUnlocked",
     };
     let cosmeticArr = res.get(cosmeticName[argument.CosmeticType]);
@@ -251,8 +298,7 @@ Parse.Cloud.define("ChangeEquippedStudentCosmetic", async(request) => {
     var cosmeticIndex = {
         "Avatar" : 0,
         "Frame" : 1,
-        "Banner" : 2,
-        "CoverPhoto" : 3,
+        "CoverPhoto" : 2,
     };
     var index = cosmeticIndex[argument.CosmeticType];
     let cosmeticEquippedArr = res.get("EquippedCosmetics");
@@ -286,7 +332,7 @@ Parse.Cloud.define("DisplayStudentXPTitle", async(request) => {
 });
 
 //RequestBadge
-//Pending, since Proof entity is still being planned in this version
+//Pending, since Proof/Requesting entity is still being planned in this version
 /*
 //Must specify id of student with name of "StudentID", BadgeID, UserType and TeacherID/NT_DistributorID
 Parse.Cloud.define("RequestBadge", async(request) => {

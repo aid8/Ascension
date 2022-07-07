@@ -10,3 +10,5 @@ require('./ascensionTitle.js');
 require('./badge.js');
 require('./trophy.js');
 require('./cosmetic.js');
+require('./house.js');
+require('./global.js');

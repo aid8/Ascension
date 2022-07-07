@@ -80,9 +80,21 @@
     <input v-model="XpInput" type="number"><button @click="searchAscensionTitleFromXp(XpInput)">Search</button>
     <p>Ascension Title Result: {{AscensionTitleFromXpInput}}</p>
     <hr>
-    
+
+    <h3>Add House</h3>
+    <span>House Name: </span>
+    <input v-model="HouseName" type="text"><br>
+    <button @click="addHouse()">Add House</button><br>
+    <hr>
+
+    <h3>Add Cosmetic (All cosmetics testing)</h3>
+    <span>Cosmetic Name: </span>
+    <input v-model="CosmeticName" type="text"><br>
+    <button @click="addCosmetic()">Add Cosmetic</button><br>
+    <hr>
+
     <h3>Others</h3>
-    <button @click="homepage()">Go to hompeage</button>
+    <button @click="homepage()">Go to hompeage</button><br>
 </template>
 
 <script>
@@ -119,6 +131,12 @@
                 AscensionTitles: [],
                 AscensionTitleFromXpInput: '',
                 XpInput: 0,
+
+                //House Variables,
+                HouseName: '',
+
+                //Cosmetic Variables
+                CosmeticName: '',
 
                 //Other Variables
                 Degrees: [],
@@ -285,6 +303,31 @@
                else{
                     alert("Out of bounds!")
                }
+            },
+
+            //House Functions
+            async addHouse(){
+                var params = {
+                    "HouseName" : this.HouseName,
+                    "HouseBannerIDPointer" : "",
+                }
+                await Parse.Cloud.run("AddHouse", params);
+                alert("Added House");
+            },
+
+            //Cosmetic Functions
+            async addCosmetic(){
+                var params = {
+                    "CosmeticName" : this.CosmeticName,
+                    "CosmeticType" : "Avatar",
+                    "CosmeticImage" : "None",
+                }
+                await Parse.Cloud.run("AddCosmetic", params);
+                params["CosmeticType"] = "Frame";
+                await Parse.Cloud.run("AddCosmetic", params);
+                params["CosmeticType"] = "CoverPhoto";
+                await Parse.Cloud.run("AddCosmetic", params);
+                alert("Added Cosmetic for all!");
             },
 
             //Others

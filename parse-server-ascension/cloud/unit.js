@@ -1,3 +1,7 @@
+/*
+    Functions that are not yet tested upon creating/updating:
+    - DeleteUnit
+*/
 Parse.Cloud.define("AddUnit", async(request) => {   //async AddUnit(request){}
     const Unit = Parse.Object.extend("Unit");
     const unit = new Unit();
@@ -33,7 +37,6 @@ Parse.Cloud.define("EditUnit", async(request) =>{
 });
 
 //Must specify id of unit with name of "UnitID"
-//!--- NOT YET DONE ---!
 Parse.Cloud.define("DeleteUnit", async(request) =>{
     const Unit = Parse.Object.extend("Unit");
     const query = new Parse.Query(Unit);
@@ -42,6 +45,19 @@ Parse.Cloud.define("DeleteUnit", async(request) =>{
     const res = await query.first();
 
     //Should throw error if a teacher/nt belongs to this unit/UnitID
+    var teachers = JSON.parse(await Parse.Cloud.run("GetTeachers"));
+    for (const teacher of teachers){
+        if(teacher.TeacherUnitIDPointer === argument.UnitID){
+            return Promise.reject("Cannot Delete Unit! A Teacher is in this Unit!");
+        }
+    }
+
+    var nt_distributors = JSON.parse(await Parse.Cloud.run("GetNT_Distributors"));
+    for (const nt_distributor of nt_distributors){
+        if(nt_distributor.NT_DistributorUnitIDPointer === argument.UnitID){
+            return Promise.reject("Cannot Delete Unit! An NT_Distributor is in this Unit!");
+        }
+    }
 
     res.destroy().then(()=>{
         console.log("Successfully Deleted Unit");

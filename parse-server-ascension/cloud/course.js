@@ -1,3 +1,7 @@
+/*
+    Functions that are not yet tested upon creating/updating:
+    - DeleteCourse
+*/
 Parse.Cloud.define("AddCourse", async(request) => {
     const Course = Parse.Object.extend("Course");
     const course = new Course();
@@ -33,7 +37,6 @@ Parse.Cloud.define("EditCourse", async(request) =>{
 });
 
 //Must specify id of course with name of "CourseID"
-//!--- NOT YET DONE ---!
 Parse.Cloud.define("DeleteCourse", async(request) =>{
     const Course = Parse.Object.extend("Course");
     const query = new Parse.Query(Course);
@@ -42,6 +45,21 @@ Parse.Cloud.define("DeleteCourse", async(request) =>{
     const res = await query.first();
 
     //Should throw error if a student/teacher has a course on this CourseID
+    var students = JSON.parse(await Parse.Cloud.run("GetStudents"));
+    for (const student of students){
+        var studentCourses = student.StudentCoursesIDPointer;
+        if(studentCourses.indexOf(argument.CourseID) > -1){
+            return Promise.reject("Cannot Delete Course! A Student has this Course!");
+        }
+    }
+
+    var teachers = JSON.parse(await Parse.Cloud.run("GetTeachers"));
+    for (const teacher of teachers){
+        var teacherCourses = teacher.TeacherCoursesIDPointer;
+        if(teacherCourses.indexOf(argument.CourseID) > -1){
+            return Promise.reject("Cannot Delete Course! A Teacher has this Course!");
+        }
+    }
 
     res.destroy().then(()=>{
         console.log("Successfully Deleted Course");
