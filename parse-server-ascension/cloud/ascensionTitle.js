@@ -5,7 +5,8 @@ Parse.Cloud.define("AddAscensionTitle", async(request) => {
 
     ascensionTitle.save({
         "AscensionName": argument.AscensionName,
-        "AscensionXpRangeCap": argument.AscensionXpRangeCap
+        "AscensionXpRangeCap": argument.AscensionXpRangeCap,
+        "AscensionXpRangeStart": argument.AscensionXpRangeStart
     }).then(()=>{
         console.log("Successfully added AscensionTitle!");
     });
@@ -25,7 +26,8 @@ Parse.Cloud.define("UpdateAscensionTitle", async(request) =>{
     const result = await qry.get(argument.AscensionId)
     result.save({
         "AscensionName": argument.NewAscensionName,
-        "AscensionXpRangeCap": argument.NewAscensionXpRangeCap
+        "AscensionXpRangeCap": argument.NewAscensionXpRangeCap,
+        "AscensionXpRangeStart": argument.NewAscensionXpRangeStart,
     }).then(()=>console.log("Ascension Title Updated"))
     
 
@@ -37,3 +39,13 @@ Parse.Cloud.define("GetAscensionTitles", async(request) =>{
     const res = await query.find();
     return JSON.stringify(res);
 });
+
+Parse.Cloud.define("SearchAscensionTitleFromXp", async(request) =>{
+    const AscensionTitle = Parse.Object.extend("AscensionTitle");
+    const query = new Parse.Query(AscensionTitle);
+    const argument = request.params;
+    query.greaterThanOrEqualTo('AscensionXpRangeCap', argument.XpInput);
+    query.lessThanOrEqualTo('AscensionXpRangeStart', argument.XpInput);
+    const res = await query.first()
+    return JSON.stringify(res)
+})

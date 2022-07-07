@@ -53,22 +53,32 @@
     <h3>Add Ascension Titles</h3>
     <span>Ascension Name: </span>
     <input v-model="AscensionName" type="text"><br>
-    <span>Ascension Xp Range (ceiling value): </span>
-    <input v-model="AscensionXpRangeCap" type="text"><br>
+    <span>Ascension Xp Starting Range: </span>
+    <input v-model="AscensionXpRangeStart" type="number"><br>
+    <span>Ascension Xp Cap: </span>
+    <input v-model="AscensionXpRangeCap" type="number"><br>
     <button @click="addAscensionTitle()">Add Ascension Title</button>
     
     <h3>Modify Ascension Titles</h3>
     <span>Ascension Name: </span>
     <input v-model="NewAscensionName" type="text"><br>
-    <span>Ascension Xp Range (ceiling value): </span>
-    <input v-model="NewAscensionXpRangeCap" type="text"><br>
+    <span>Ascension Xp Starting Range: </span>
+    <input v-model="NewAscensionXpRangeStart" type="number"><br>
+    <span>Ascension Xp Cap: </span>
+    <input v-model="NewAscensionXpRangeCap" type="number"><br>
     <button @click="updateAscensionTitle()">Save Title</button><br><br>
     <button @click="getAscensionTitles()">Load Available Titles</button>
     <ul v-if="ShowAscensionTitles">
         <li v-for="title in AscensionTitles" :key="title.objectId">{{title.AscensionName}} 
-        <button @click="getAscensionTitle(title)">Edit</button>
-        <button @click="deleteAscensionTitle(title.objectId)">Delete</button></li>
+            <button @click="getAscensionTitle(title)">Edit</button>
+            <button @click="deleteAscensionTitle(title.objectId)">Delete</button>
+        </li>
     </ul>
+    <!-- TO DO AFTER FIXING XP RANGE START -->
+    <h3>Get Ascension Title</h3>
+    <span>Xp Value: </span>
+    <input v-model="XpInput" type="number"><button @click="searchAscensionTitleFromXp(XpInput)">Search</button>
+    <p>Ascension Title Result: {{AscensionTitleFromXpInput}}</p>
     <hr>
     
     <h3>Others</h3>
@@ -100,11 +110,15 @@
                 
                 //Ascension Title Variables
                 AscensionName: '',
-                AscensionXpRangeCap: '',
+                AscensionXpRangeStart: 0,
+                AscensionXpRangeCap: 0,
                 NewAscensionName: '',
-                NewAscensionXpRangeCap: '',
+                NewAscensionXpRangeStart: 0,
+                NewAscensionXpRangeCap: 0,
                 AscensionTitleIdPointer: '',
                 AscensionTitles: [],
+                AscensionTitleFromXpInput: '',
+                XpInput: 0,
 
                 //Other Variables
                 Degrees: [],
@@ -201,11 +215,18 @@
 
             //Ascension Title Functions
             async addAscensionTitle(){
-                var params = {
-                    "AscensionName": this.AscensionName,
-                    "AscensionXpRangeCap": this.AscensionXpRangeCap
+                if(this.AscensionXpRangeCap > 0 && this.AscensionXpRangeStart > -1 && this.AscensionXpRangeStart < this.AscensionXpRangeCap){
+                    var params = {
+                        "AscensionName": this.AscensionName,
+                        "AscensionXpRangeStart": this.AscensionXpRangeStart,
+                        "AscensionXpRangeCap": this.AscensionXpRangeCap
+                        
+                    }
+                    await Parse.Cloud.run("AddAscensionTitle", params).then(alert("Added Ascension Title"))
                 }
-                await Parse.Cloud.run("AddAscensionTitle", params).then(alert("Added Ascension Title"))
+                else{
+                    alert("Invalid Values!")
+                }
                 
             },
 
@@ -225,17 +246,45 @@
             async getAscensionTitle(AscensionTitle){
                 this.NewAscensionName = AscensionTitle.AscensionName
                 this.NewAscensionXpRangeCap = AscensionTitle.AscensionXpRangeCap
+                this.NewAscensionXpRangeStart = AscensionTitle.AscensionXpRangeStart
                 this.AscensionTitleIdPointer = AscensionTitle.objectId
             },
 
             async updateAscensionTitle(){
                 this.ShowAscensionTitles = false
-                var params = {
-                    "AscensionId": this.AscensionTitleIdPointer,
-                    "NewAscensionName": this.NewAscensionName,
-                    "NewAscensionXpRangeCap": this.NewAscensionXpRangeCap
+                
+                if(this.NewAscensionXpRangeCap > 0 && this.NewAscensionXpRangeStart > -1 && this.NewAscensionXpRangeStart < this.NewAscensionXpRangeCap){
+                    var params = {
+                        "AscensionId": this.AscensionTitleIdPointer,
+                        "NewAscensionName": this.NewAscensionName,
+                        "NewAscensionXpRangeCap": this.NewAscensionXpRangeCap,
+                        "NewAscensionXpRangeStart": this.NewAscensionXpRangeStart
+                    }
+                    await Parse.Cloud.run("UpdateAscensionTitle", params).then(alert("Ascension Title Modified"))
                 }
-                await Parse.Cloud.run("UpdateAscensionTitle", params).then(alert("Ascension Title Modified"))
+                else{
+                    alert("Invalid Values")
+                }
+                
+            },
+
+            async searchAscensionTitleFromXp(XpInput){
+               if(XpInput >= 0){
+                    var params = {
+                        "XpInput": XpInput
+                    }
+                    const res = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", params))
+                    if(res != null){
+                        this.AscensionTitleFromXpInput = res.AscensionName
+                    }
+                    else{
+                        alert("Out of bounds!") //Will print if there's an XP gap within Titles 
+                    }                           //E.g. 1-10, 20-100. Code prints if XpInput is 11-19
+                    
+               }
+               else{
+                    alert("Out of bounds!")
+               }
             },
 
             //Others
