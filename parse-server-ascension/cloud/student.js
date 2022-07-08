@@ -2,7 +2,7 @@
     Functions that are not yet tested upon creating/updating:
     - DisplayStudentXPTitle(GetAscensionTitle is not yet updated in this version)
     Functions that is missing/incomplete:
-    - RequestBadge, DisplayStudentXPTitle, AssignHouse(Needs to pick the lowest housepopulation, its random for now)
+    - RequestBadge, DisplayStudentXPTitle
 */
 var Global = require('./global');
 
