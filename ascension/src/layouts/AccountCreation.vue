@@ -217,7 +217,7 @@
                 else if(this.userType == "NT_Distributor"){
                     this.NT_DistributorUnitIDPointer = UnitID;
                 }
-            }
+            },
         }
     }
 </script>

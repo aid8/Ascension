@@ -187,19 +187,40 @@ Parse.Cloud.define("AssignHouse", async(request) => {
     const query = new Parse.Query(House); 
     const argument = request.params;
     const res = await query.find();
-    
-    //Get lowest!
-    var randNum = Math.floor(Math.random() * res.length);
-    var pickedHouse = res[randNum];
 
+    //Note: All houses should begin with the same population count; base case (e.g [0,0,0,0])
+    const res2 = JSON.parse(JSON.stringify(res))
+    let max = 0
+    let counter = 0
+    for(let i = 0; i < res2.length; i++){
+        if(max < res2[i].HousePopulation){
+            max = res2[i].HousePopulation
+            counter++
+        }
+    }
+    //counter == 0 => houses have same population [1,1,1,1]
+    //counter == 1 => houses have 2 different populations [1,0,0,1]
+    //cuonter > 1 => houses have 3 or more different populations [1,3,0,1]
+    if(counter == 1){
+        for(let i = 0; i < res2.length; i++){
+            if(res2[i].HousePopulation == max){
+                res2.splice(i, 1)
+            }
+        }
+    }
+    const idx = getRndInteger(0, res2.length)  
     var params = {
         "StudentID" : argument.StudentID,
-        "HouseID" : pickedHouse.id,
+        "HouseID" : res2[idx].objectId,
     }
 
     await Parse.Cloud.run("AddHouseMember", params);
     console.log("Successfully Assigned House");
 });
+
+function getRndInteger(min, max) {  //min = inclusive; max = exclusive
+    return Math.floor(Math.random() * (max - min)) + min;
+}
 
 //Must specify id of student with name of "StudentID" and new "HouseID"
 Parse.Cloud.define("ChangeStudentHouse", async(request) => {
