@@ -2,7 +2,7 @@
     Functions that are not yet tested upon creating/updating:
     - DisplayStudentXPTitle(GetAscensionTitle is not yet updated in this version)
     Functions that is missing/incomplete:
-    - RequestBadge, DisplayStudentXPTitle, AssignHouse(Needs to pick the lowest housepopulation, its random for now)
+    - RequestBadge, DisplayStudentXPTitle
 */
 var Global = require('./global');
 
@@ -187,14 +187,25 @@ Parse.Cloud.define("AssignHouse", async(request) => {
     const query = new Parse.Query(House); 
     const argument = request.params;
     const res = await query.find();
-    
-    //Get lowest!
-    var randNum = Math.floor(Math.random() * res.length);
-    var pickedHouse = res[randNum];
-
+    const res2 = JSON.parse(JSON.stringify(res))
+    let housePopulations = res2.map(obj => obj.HousePopulation) //makes an array of HousePopulation from the Houses
+    let max = Math.max.apply(Math, housePopulations)
+    let min = Math.min.apply(Math, housePopulations)
+    let avail_houses = []
+    if(min == max){
+        avail_houses = res2
+    }
+    else{
+        for(let i = 0; i < res2.length; i++){
+            if(res2[i].HousePopulation == min){
+                avail_houses.push(res2[i])
+            }
+        }
+    } 
+    const idx = Global.getRndInteger(0, avail_houses.length)
     var params = {
         "StudentID" : argument.StudentID,
-        "HouseID" : pickedHouse.id,
+        "HouseID" : avail_houses[idx].objectId,
     }
 
     await Parse.Cloud.run("AddHouseMember", params);
