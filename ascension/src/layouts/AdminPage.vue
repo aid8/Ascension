@@ -47,8 +47,32 @@
     <h3>Add Badges</h3>
     <span>Badge Name: </span>
     <input v-model="BadgeName" type="text"><br>
+    <span>Badge Description: </span>
+    <input v-model="BadgeDescription" type="text"><br>
+    <span>Badge Points: </span>
+    <input v-model="BadgePoints" type="number"><br>
+    <span>Badge Image </span>
+    <input v-model="BadgeImage" type="text"><br>
     <button @click="addBadge()">Add Badge</button><br>
     <hr>
+
+    <h3>Edit Badge</h3>
+    <span>Badge Name: </span>
+    <input v-model="NewBadgeName" type="text"><br>
+    <span>Badge Description: </span>
+    <input v-model="NewBadgeDescription" type="text"><br>
+    <span>Badge Points: </span>
+    <input v-model="NewBadgePoints" type="number"><br>
+    <span>Badge Image: </span>
+    <input v-model="NewBadgeImage" type="text"><br>
+    <button @click="editBadge()">Edit Badge</button><br><br>
+    <button @click="getBadges()">Load Available Badges</button>
+    <ul v-if="ShowBadges">
+        <li v-for="badge in Badges" :key="badge.objectId">{{badge.BadgeName}} 
+            <button @click="getBadge(badge)">Edit</button>
+            
+        </li>
+    </ul>
 
     <h3>Add Ascension Titles</h3>
     <span>Ascension Name: </span>
@@ -93,6 +117,11 @@
     <button @click="addCosmetic()">Add Cosmetic</button><br>
     <hr>
 
+    <!-- Test Delete Default Cosmetic -->
+    <h3>Delete a Default Cosmetic  </h3>
+    <button @click="test()">Delete Cosmetic</button><br>
+    <hr>
+
     <h3>Others</h3>
     <button @click="homepage()">Go to hompeage</button><br>
 </template>
@@ -119,6 +148,15 @@
 
                 //Badge Variables
                 BadgeName: '',
+                BadgeDescription: '',
+                BadgePoints: '',
+                BadgeImage: '',
+                NewBadgeName: '',
+                NewBadgeDescription: '',
+                NewBadgePoints: '',
+                NewBadgeImage: '',
+                BadgeIdPointer: '',
+                Badges: [],
                 
                 //Ascension Title Variables
                 AscensionName: '',
@@ -142,12 +180,27 @@
                 Degrees: [],
                 ShowRelevantDegrees: false,
                 ShowAscensionTitles: false,
+                ShowBadges: false,
             }
         },
         components:{
            
         },
+        // Testing delete default cosmetics
         methods:{
+            async test(){
+                var params = {
+                     "CosmeticID" : "1",
+                }
+                try{
+                    await Parse.Cloud.run("DeleteCosmetic", params);
+                }
+                catch(error){
+                    console.log(error.message);
+                }
+                console.log("B");
+            },
+
             //Unit Functions
             async addUnit(){
                 var params = {
@@ -223,12 +276,37 @@
             async addBadge(){
                 var params = {
                     "BadgeName" : this.BadgeName,
-                    "BadgeDescription" : "",
-                    "BadgePoints" : 0,
-                    "BadgeImage" : "",
+                    "BadgeDescription" : this.BadgeDescription,
+                    "BadgePoints" : this.BadgePoints,
+                    "BadgeImage" : this.BadgeImage,
                 }
                 await Parse.Cloud.run("AddBadge", params);
                 alert("Added Badge");
+            },
+
+            async editBadge(){
+                this.ShowBadges = false
+                var params = {
+                    "BadgeName" : this.NewBadgeName,
+                    "BadgeDescription" : this.NewBadgeDescription,
+                    "BadgePoints" : this.NewBadgePoints,
+                    "BadgeImage" : this.NewBadgeImage,
+                    "BadgeID" : this.BadgeIdPointer,
+                }
+                await Parse.Cloud.run("EditBadge", params).then(alert("Badge edited!"))
+            },
+
+            async getBadges(){
+                this.ShowBadges = true
+                this.Badges = JSON.parse(await Parse.Cloud.run("GetBadges"))
+            },
+
+            async getBadge(Badge){
+                this.NewBadgeName = Badge.BadgeName
+                this.NewBadgeDescription = Badge.BadgeDescription
+                this.NewBadgePoints = Badge.BadgePoints
+                this.NewBadgeImage = Badge.BadgeImage
+                this.BadgeIdPointer = Badge.objectId
             },
 
             //Ascension Title Functions
