@@ -38,3 +38,7 @@ exports.getDefaultCosmeticID = function(CosmeticType){
     }
     return "";
 }
+
+exports.getRndInteger = function(min, max) {  //min = inclusive; max = exclusive
+    return Math.floor(Math.random() * (max - min)) + min;
+}

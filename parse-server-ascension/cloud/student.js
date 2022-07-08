@@ -208,7 +208,7 @@ Parse.Cloud.define("AssignHouse", async(request) => {
             }
         }
     }
-    const idx = getRndInteger(0, res2.length)  
+    const idx = Global.getRndInteger(0, res2.length)  
     var params = {
         "StudentID" : argument.StudentID,
         "HouseID" : res2[idx].objectId,
@@ -218,9 +218,7 @@ Parse.Cloud.define("AssignHouse", async(request) => {
     console.log("Successfully Assigned House");
 });
 
-function getRndInteger(min, max) {  //min = inclusive; max = exclusive
-    return Math.floor(Math.random() * (max - min)) + min;
-}
+
 
 //Must specify id of student with name of "StudentID" and new "HouseID"
 Parse.Cloud.define("ChangeStudentHouse", async(request) => {
