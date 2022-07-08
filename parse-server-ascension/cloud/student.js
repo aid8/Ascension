@@ -187,38 +187,30 @@ Parse.Cloud.define("AssignHouse", async(request) => {
     const query = new Parse.Query(House); 
     const argument = request.params;
     const res = await query.find();
-
-    //Note: All houses should begin with the same population count; base case (e.g [0,0,0,0])
     const res2 = JSON.parse(JSON.stringify(res))
-    let max = 0
-    let counter = 0
-    for(let i = 0; i < res2.length; i++){
-        if(max < res2[i].HousePopulation){
-            max = res2[i].HousePopulation
-            counter++
-        }
+    let housePopulations = res2.map(obj => obj.HousePopulation) //makes an array of HousePopulation from the Houses
+    let max = Math.max.apply(Math, housePopulations)
+    let min = Math.min.apply(Math, housePopulations)
+    let avail_houses = []
+    if(min == max){
+        avail_houses = res2
     }
-    //counter == 0 => houses have same population [1,1,1,1]
-    //counter == 1 => houses have 2 different populations [1,0,0,1]
-    //cuonter > 1 => houses have 3 or more different populations [1,3,0,1]
-    if(counter == 1){
+    else{
         for(let i = 0; i < res2.length; i++){
-            if(res2[i].HousePopulation == max){
-                res2.splice(i, 1)
+            if(res2[i].HousePopulation == min){
+                avail_houses.push(res2[i])
             }
         }
-    }
-    const idx = Global.getRndInteger(0, res2.length)  
+    } 
+    const idx = Global.getRndInteger(0, avail_houses.length)
     var params = {
         "StudentID" : argument.StudentID,
-        "HouseID" : res2[idx].objectId,
+        "HouseID" : avail_houses[idx].objectId,
     }
 
     await Parse.Cloud.run("AddHouseMember", params);
     console.log("Successfully Assigned House");
 });
-
-
 
 //Must specify id of student with name of "StudentID" and new "HouseID"
 Parse.Cloud.define("ChangeStudentHouse", async(request) => {
