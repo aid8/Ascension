@@ -40,6 +40,15 @@ Parse.Cloud.define("GetAscensionTitles", async(request) =>{
     return JSON.stringify(res);
 });
 
+Parse.Cloud.define("GetAscensionTitleData", async(request) => {
+    const AscensionTitle = Parse.Object.extend("AscensionTitle");
+    const query = new Parse.Query(AscensionTitle);
+    const argument = request.params;
+    query.equalTo("objectId", argument.AscensionId);
+    const res = await query.first();
+    return JSON.stringify(res);
+});
+
 Parse.Cloud.define("SearchAscensionTitleFromXp", async(request) =>{
     const AscensionTitle = Parse.Object.extend("AscensionTitle");
     const query = new Parse.Query(AscensionTitle);

@@ -24,7 +24,7 @@ Parse.Cloud.afterSave("Teacher", async(request)=>{
     //If object is newly created
     if (!original){
         return teacher.save({
-            "PendingApprovalBadgesID" : [],
+            "PendingApprovalRewarding" : [],
         });
     }
 });
@@ -40,12 +40,12 @@ Parse.Cloud.define("EditTeacher", async(request) => {
 
     var list_of_attr = ["FirstName", "MiddleName", "LastName", 
                         "Email", "ContactNumber", "RegisterDate", "JobTitle", 
-                        "TeacherUnitIDPointer", "TeacherCoursesIDPointer", "PendingApprovalBadgesID",
+                        "TeacherUnitIDPointer", "TeacherCoursesIDPointer", "PendingApprovalRewarding",
     ];
     
     var list_of_arguments =[argument.FirstName, argument.MiddleName, argument.LastName, 
                             argument.Email, argument.ContactNumber, argument.RegisterDate, argument.JobTitle,
-                            argument.TeacherUnitIDPointer, argument.TeacherCoursesIDPointer, argument.PendingApprovalBadgesID,
+                            argument.TeacherUnitIDPointer, argument.TeacherCoursesIDPointer, argument.PendingApprovalRewarding,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
@@ -87,4 +87,41 @@ Parse.Cloud.define("GetTeachers", async(_request) => {
     const query = new Parse.Query(Teacher);
     const res = await query.find();
     return JSON.stringify(res);
+});
+
+//BadgeID, StudentID needed
+Parse.Cloud.define("RewardBadge", async(request) => {
+    const argument = request.params;
+
+    //Query badge muna, importante si XP
+    const Badge = Parse.Object.extend("Badge");
+    const badgeQuery = new Parse.Query(Badge); 
+    badgeQuery.equalTo("objectId", argument.BadgeID); //badgeQuery dapat ta yan si pangaran before kani
+    const res = await badgeQuery.first(); //badgeQuery man dapat digdi
+    var badgeXP = res.get("BadgePoints"); //kaag ta sa variable para dai makaribong
+
+    //Query student sunod, tas kunon si badgesIDEarned
+    const Student = Parse.Object.extend("Student");
+    const studentQuery = new Parse.Query(Student);
+    studentQuery.equalTo("objectId", argument.StudentID); //studentQuery dapat ta yan si pangaran before kani
+    const res1 = await studentQuery.first(); //studentQuery man dapat digdi
+    var badgesIDEarned = res1.get("BadgesIDEarned"); //kaag ta man muna sa variable ini
+    var studentXP = res1.get("XP"); //kunon ta man si xp kang student
+
+    //Gibo ning reward, set si badgeID as rewardID
+    const Reward = Parse.Object.extend("Reward");
+    const reward = new Reward();
+    reward.save({
+        "RewardID" : argument.BadgeID,
+        "DateRewarded" : argument.DateRewarded,
+    });
+
+    //then push ta duman sa badgesIDEarned si ID kang reward
+    badgesIDEarned.push(reward.get("objectId"));
+    //add ta naman si xp
+    studentXP += badgeXP;
+
+    res1.set("BadgesIDEarned", badgesIDEarned); //saka ta iupdate si student
+    res1.set("XP", studentXP) //update naman si xp
+    res1.save(); //save na si student
 });
