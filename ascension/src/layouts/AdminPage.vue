@@ -54,7 +54,6 @@
     <span>Badge Image </span>
     <input v-model="BadgeImage" type="text"><br>
     <button @click="addBadge()">Add Badge</button><br>
-    <hr>
 
     <h3>Edit Badge</h3>
     <span>Badge Name: </span>
@@ -73,6 +72,59 @@
             
         </li>
     </ul>
+    <hr>
+    
+    <h3>Add Trophy</h3>
+    <span>Trophy Name: </span>
+    <input v-model="TrophyName" type="text"><br>
+    <span>Trophy Description: </span>
+    <input v-model="TrophyDescription" type="text"><br>
+    <span>Trophy Points: </span>
+    <input v-model="TrophyPoints" type="number"><br>
+    <span>Trophy Image: </span>
+    <input v-model="TrophyImage" type="text"><br>
+    <span>Trophy Category: </span>
+    <input v-model="TrophyCategory" type="text"><br>
+    <span>Required Badges: </span>
+    <button @click="getBadgesForTrophy()">Load Badges</button>
+    <ul v-if="ShowBadgesForTrophy">
+        <li v-for="badge in AvailableBadgesForTrophy" :key="badge.objectId">{{badge.BadgeName}} 
+            <button @click="assignToTrophy(badge.objectId, 0)">Add To Trophy</button>
+            <button @click="unassignToTrophy(badge.objectId, 0)">Remove From Trophy</button>
+        </li>
+    </ul><br>
+    <p>{{AssignedBadgesForTrophy}}</p>
+    <button @click="addTrophy()">Add Trophy</button><br>
+
+    <h3>Modify Trophy</h3>
+    <span>Trophy Name: </span>
+    <input v-model="NewTrophyName" type="text"><br>
+    <span>Trophy Description: </span>
+    <input v-model="NewTrophyDescription" type="text"><br>
+    <span>Trophy Points: </span>
+    <input v-model="NewTrophyPoints" type="number"><br>
+    <span>Trophy Image: </span>
+    <input v-model="NewTrophyImage" type="text"><br>
+    <span>Trophy Category: </span>
+    <input v-model="NewTrophyCategory" type="text"><br>
+    <span>Required Badges: </span>
+    <button @click="getBadgesForUpdatedTrophy()">Load Badges</button>
+    <ul v-if="NewShowBadgesForTrophy">
+        <li v-for="badge in AvailableBadgesForTrophy" :key="badge.objectId">{{badge.BadgeName}} 
+            <button @click="assignToTrophy(badge.objectId, 1)">Add To Trophy</button>
+            <button @click="unassignToTrophy(badge.objectId, 1)">Remove From Trophy</button>
+        </li>
+    </ul><br>
+    <p>{{AssignedBadgesforNewTrophy}}</p>
+    <button @click="getTrophies()">Load Trophies</button><br>
+    <ul v-if="ShowTrophies">
+        <li v-for="trophy in Trophies" :key="trophy.objectId">{{trophy.TrophyName}}
+        <button @click="getTrophy(trophy)">Edit</button>
+        <button @click="deleteTrophy(trophy.objectId)">Delete</button>
+        </li>
+    </ul>
+    <button @click="editTrophy()">Update Trophy</button>
+    <hr>
 
     <h3>Add Ascension Titles</h3>
     <span>Ascension Name: </span>
@@ -158,6 +210,22 @@
                 BadgeIdPointer: '',
                 Badges: [],
                 
+                //Trophy Variables
+                TrophyCategory: '',
+                TrophyName: '',
+                TrophyDescription: '',
+                TrophyPoints: 0,
+                TrophyImage: '',
+                AvailableBadgesForTrophy: [],
+                AssignedBadgesForTrophy: [],
+                NewTrophyCategory: '',
+                NewTrophyName: '',
+                NewTrophyDescription: '',
+                NewTrophyPoints: 0,
+                NewTrophyImage: '',
+                AssignedBadgesforNewTrophy: [],
+                Trophies: [],
+
                 //Ascension Title Variables
                 AscensionName: '',
                 AscensionXpRangeStart: 0,
@@ -181,6 +249,9 @@
                 ShowRelevantDegrees: false,
                 ShowAscensionTitles: false,
                 ShowBadges: false,
+                ShowBadgesForTrophy: false,
+                NewShowBadgesForTrophy: false,
+                ShowTrophies: false,
             }
         },
         components:{
@@ -274,6 +345,7 @@
             //Badges Functions
             //Testing! add other necessarry attributes
             async addBadge(){
+                this.ShowBadges = false
                 var params = {
                     "BadgeName" : this.BadgeName,
                     "BadgeDescription" : this.BadgeDescription,
@@ -307,6 +379,81 @@
                 this.NewBadgePoints = Badge.BadgePoints
                 this.NewBadgeImage = Badge.BadgeImage
                 this.BadgeIdPointer = Badge.objectId
+            },
+
+            //Trophy Functions
+            async addTrophy(){
+                this.ShowBadgesForTrophy = false
+                this.NewShowBadgesForTrophy = false
+                var params = {
+                    "TrophyName": this.TrophyName,
+                    "TrophyDescription": this.TrophyDescription,
+                    "TrophyPoints": this.TrophyPoints,
+                    "TrophyImage": this.TrophyImage,
+                    "TrophyCategory": this.TrophyCategory,
+                    "BadgesIDNeeded": this.AssignedBadgesForTrophy,
+                }
+                await Parse.Cloud.run("AddTrophy", params).then(alert("Added Trophy"))
+            },
+
+            async editTrophy(){
+                this.ShowTrophies = false
+            },
+            
+            async deleteTrophy(id){
+                var params = {
+                    "TrophyID": id
+                }
+                await Parse.Cloud.run("DeleteTrophy", params)
+            },
+
+            async getTrophy(trophy){
+                this.NewTrophyName = trophy.TrophyName
+                this.NewTrophyDescription = trophy.TrophyDescription
+                this.NewTrophyPoints = trophy.TrophyPoints
+                this.NewTrophyImage = trophy.TrophyImage
+                this.NewTrophyCategory = trophy.TrophyCategory
+                this.AssignedBadgesforNewTrophy = trophy.BadgesIDNeeded
+                
+            },
+
+            async getTrophies(){
+                this.ShowTrophies = true
+                this.Trophies = JSON.parse(await Parse.Cloud.run("GetTrophies"))
+            },
+            
+            //num is used to know which array will be used
+            async assignToTrophy(badgeId, num){
+                if(num == 0 && !this.AssignedBadgesForTrophy.includes(badgeId)){
+                    this.AssignedBadgesForTrophy.push(badgeId)
+                }
+                else if(num == 1 && !this.AssignedBadgesforNewTrophy.includes(badgeId)){
+                    this.AssignedBadgesforNewTrophy.push(badgeId)
+                }
+                
+            },
+
+            //num is used to know which array will be used
+            async unassignToTrophy(badgeId, num){
+                if(num == 0 && this.AssignedBadgesForTrophy.includes(badgeId)){
+                    const index = this.AssignedBadgesForTrophy.indexOf(badgeId)
+                    this.AssignedBadgesForTrophy.splice(index, 1)
+                }
+                else if(num == 1 && this.AssignedBadgesforNewTrophy.includes(badgeId)){
+                    const index = this.AssignedBadgesforNewTrophy.indexOf(badgeId)
+                    this.AssignedBadgesforNewTrophy.splice(index, 1)
+                }
+            },
+
+            
+            async getBadgesForTrophy(){
+                this.ShowBadgesForTrophy = true
+                this.AvailableBadgesForTrophy = JSON.parse(await Parse.Cloud.run("GetBadges"))
+            },
+
+            async getBadgesForUpdatedTrophy(){
+                this.NewShowBadgesForTrophy = true
+                this.AvailableBadgesForTrophy = JSON.parse(await Parse.Cloud.run("GetBadges"))
             },
 
             //Ascension Title Functions

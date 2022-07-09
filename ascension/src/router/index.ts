@@ -20,6 +20,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'AdminPage',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/AdminPage.vue')
   },
+  {
+    path: '/TeacherTest',
+    name: 'TeacherTest',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/TeacherTest.vue')
+  },
 ]
 
 const router = createRouter({

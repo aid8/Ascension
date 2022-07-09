@@ -1,7 +1,5 @@
 /*
     Functions that are not yet tested upon creating/updating:
-    - DeleteTrophy
-    Functions that is missing/incomplete:
     - VerifyEligibility
 */
 Parse.Cloud.define("AddTrophy", async(request) => {
@@ -106,3 +104,49 @@ Parse.Cloud.define("GetTrophies", async(_request) => {
 });
 
 //VerifyEligibility
+//TO TEST =======================================================================================================================
+//StudentID, TrophyID required
+// Currently used in RemoveBadge() in teacher.js
+Parse.Cloud.define("VerifyEligibility", async(request) =>{
+    const argument = request.params
+    
+    //Gets the Student
+    const Student = new Parse.Object.extend("Student")
+    const studentQuery = Parse.Query(Student)
+    studentQuery.equalTo("objectId", argument.StudentID)
+    const student = await studentQuery.first()
+    const studentBadges = student.get("BadgesIDEarned")
+    
+    //Gets the Trophy
+    const Trophy = new Parse.Object.extend("Trophy")
+    const trophyQuery = new Parse.Query(Trophy)
+    trophyQuery.equalTo("objectId", argument.TrophyID)
+    const trophy = await trophyQuery.first()
+    trophyBadges = trophy.get("BadgesIDNeeded")
+
+    //Checks if student has all badges for the trophy
+    let isEligible = true
+    for(let i = 0; i < trophyBadges; i++){
+        if(!studentBadges.includes(trophyBadges[i])){
+            isEligible = false
+            break
+        }
+    }
+
+    //Adds/Removes the trophy in the Student
+    let studentTrophies = student.get("TrophiesIDUnlocked")
+    if(isEligible){
+        if(!studentTrophies.includes(argument.TrophyID)){
+            studentTrophies.push(argument.TrophyID)
+        }
+    }
+    else{
+        if(studentTrophies.includes(argument.TrophyID)){
+            const index = studentTrophies.indexOf(argument.TrophyID)
+            studentTrophies.splice(index, 1)
+        }
+    }
+    student.set("TrophiesIDUnlocked", studentTrophies)
+    student.save()
+})
+//==================================================================================================================================
