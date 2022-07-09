@@ -1,3 +1,10 @@
+/*
+    Functions to Test:
+    - RemoveBadge
+
+*/
+
+
 Parse.Cloud.define("AddTeacher", async(request) => {
     const Teacher = Parse.Object.extend("Teacher");
     const teacher = new Teacher();
@@ -125,3 +132,22 @@ Parse.Cloud.define("RewardBadge", async(request) => {
     res1.set("XP", studentXP) //update naman si xp
     res1.save(); //save na si student
 });
+
+//TO TEST =======================================================================================================================
+//BadgeID, StudentID, TrophyID required
+Parse.Cloud.define("RemoveBadge", async(request) =>{
+    const argument = request.params
+    const Student = Parse.Object.extend("Student")
+    const studentQuery = new Parse.Query(Student)
+    query1.equalTo("objectId", argument.StudentID)
+    let student = await query1.first()
+    let badges = student.get("BadgesIDEarned")
+    const index = badges.indexOf(argument.BadgeID)
+    if(index > -1){
+        badges.splice(index, 1)
+    }
+    student.set("BadgesIDEarned", badges)
+    student.save()
+    await Parse.Cloud.run("VerifyEligibility", argument)
+})
+//==================================================================================================================================

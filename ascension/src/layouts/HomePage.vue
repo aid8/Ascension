@@ -4,9 +4,11 @@
     </head>
 
     <h2>Welcome to Ascension</h2>
-    <button @click="signIn()">Sign In </button>
-    <button @click="logOut()">Log out</button>
-    <button @click="admin()"> Admin</button>
+    <button @click="signIn()">Sign Up </button><br>
+    <button @click="logInTeacher()">Log In (Teacher)</button><br>
+    <button @click="logOut()">Log out</button><br>
+    <button @click="admin()"> Admin</button><br>
+
 </template>
 
 <script>
@@ -29,6 +31,10 @@
             async admin(){
                 let host = window.location.host;
                 window.location.href ='http://' + host + '/AdminPage';
+            },
+            async logInTeacher(){
+                let host = window.location.host;
+                window.location.href ='http://' + host + '/TeacherTest';
             }
         }
     }

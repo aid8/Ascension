@@ -188,10 +188,10 @@
                 }
             },
             selectCourse(CourseID){
-                if(this.userType == "Student"){
+                if(this.userType == "Student" && !this.StudentCoursesIDPointer.includes(CourseID)){
                     this.StudentCoursesIDPointer.push(CourseID);
                 }
-                else if(this.userType == "Teacher"){
+                else if(this.userType == "Teacher" && !this.TeacherCoursesIDPointer.includes(CourseID)){
                     this.TeacherCoursesIDPointer.push(CourseID);
                 }
             },
