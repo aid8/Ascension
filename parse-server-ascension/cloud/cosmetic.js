@@ -1,9 +1,3 @@
-/*
-    Functions that are not yet tested upon creating/updating:
-    - SetDefaultCosmetic
-*/
-var Global = require('./global');
-
 Parse.Cloud.define("AddCosmetic", async(request) => {
     const Cosmetic = Parse.Object.extend("Cosmetic");
     const cosmetic = new Cosmetic();
@@ -47,11 +41,18 @@ Parse.Cloud.define("EditCosmetic", async(request) => {
 //Must specify id of cosmetic with name of "CosmeticID"
 Parse.Cloud.define("DeleteCosmetic", async(request) => {
     const argument = request.params;
+    const Global = JSON.parse(await Parse.Cloud.run("GetGlobal"));
+    var DefaultCosmeticsData = {
+        "Avatar" : Global.DefaultAvatarID,
+        "Frame" : Global.DefaultFrameID,
+        "CoverPhoto" : Global.DefaultCoverPhotoID,
+    };
+
     //Do not delete if this is default cosmetic
-    if(argument.CosmeticID === Global.defaultAvatarID || 
-        argument.CosmeticID === Global.defaultCoverPhotoID || 
-        argument.CosmeticID === Global.defaultFrameID || 
-        argument.CosmeticID === Global.defaultBannerID){
+    if(argument.CosmeticID === Global.DefaultAvatarID || 
+        argument.CosmeticID === Global.DefaultCoverPhotoID || 
+        argument.CosmeticID === Global.DefaultFrameID || 
+        argument.CosmeticID === Global.DefaultBannerID){
         return Promise.reject("Cannot Delete Default Cosmetic!");
     }
 
@@ -86,7 +87,7 @@ Parse.Cloud.define("DeleteCosmetic", async(request) => {
             }
             index = EquippedCosmetics.indexOf(argument.CosmeticID);
             if(index > -1){
-                EquippedCosmetics[index] = Global.getDefaultCosmeticID(CosmeticType);
+                EquippedCosmetics[index] = DefaultCosmeticsData[CosmeticType];
                 params["EquippedCosmetics"] = EquippedCosmetics;
                 edited = true;
             }
@@ -124,15 +125,19 @@ Parse.Cloud.define("GetCosmetics", async(request) => {
 });
 
 Parse.Cloud.define("SetDefaultCosmetic", async(request) => {
-    const CosmeticType = request.params.CosmeticType;
-    if(CosmeticType == "Avatar"){
-        Global.defaultAvatarID = CosmeticID;
+    const argument = request.params;
+    var param = {};
+    
+    if(argument.CosmeticType == "Avatar"){
+        param["DefaultAvatarID"] = argument.CosmeticID;
     }
-    else if(CosmeticType == "Frame"){
-        Global.defaultFrameID = CosmeticID;
+    else if(argument.CosmeticType == "Frame"){
+        param["DefaultFrameID"] = argument.CosmeticID;
     }
-    else if(CosmeticType == "CoverPhoto"){
-        Global.defaultCoverPhotoID = CosmeticID; 
+    else if(argument.CosmeticType == "CoverPhoto"){
+        param["DefaultCoverPhotoID"] = argument.CosmeticID;
     }
+
+    await Parse.Cloud.run("EditGlobal", param);
     console.log("Successfully Changed Default Cosmetic!");
 });

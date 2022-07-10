@@ -29,11 +29,9 @@ Parse.Cloud.define("UpdateAscensionTitle", async(request) =>{
         "AscensionXpRangeCap": argument.NewAscensionXpRangeCap,
         "AscensionXpRangeStart": argument.NewAscensionXpRangeStart,
     }).then(()=>console.log("Ascension Title Updated"))
-    
-
 })
 
-Parse.Cloud.define("GetAscensionTitles", async(request) =>{
+Parse.Cloud.define("GetAscensionTitles", async(_request) =>{
     const AscensionTitle = Parse.Object.extend("AscensionTitle");
     const query = new Parse.Query(AscensionTitle);
     const res = await query.find();

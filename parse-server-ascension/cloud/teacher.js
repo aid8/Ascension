@@ -1,10 +1,3 @@
-/*
-    Functions to Test:
-    - RemoveBadge
-
-*/
-
-
 Parse.Cloud.define("AddTeacher", async(request) => {
     const Teacher = Parse.Object.extend("Teacher");
     const teacher = new Teacher();
@@ -86,6 +79,17 @@ Parse.Cloud.define("GetTeacherData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.TeacherID);
     const res = await query.first();
+
+    //Pass PendingApprovalRewardingData
+    var PendingApprovalRewardingData = [];
+    var params;
+    for(const RequestID of res.get("PendingApprovalRewarding")){
+        params = {
+            "RequestID" : RequestID,
+        }
+        PendingApprovalRewardingData.push(JSON.parse(await Parse.Cloud.run("GetRequestData", params)));
+    }
+    res.set("PendingApprovalRewardingData", PendingApprovalRewardingData);
     return JSON.stringify(res);
 });
 
@@ -95,59 +99,3 @@ Parse.Cloud.define("GetTeachers", async(_request) => {
     const res = await query.find();
     return JSON.stringify(res);
 });
-
-//BadgeID, StudentID needed
-Parse.Cloud.define("RewardBadge", async(request) => {
-    const argument = request.params;
-
-    //Query badge muna, importante si XP
-    const Badge = Parse.Object.extend("Badge");
-    const badgeQuery = new Parse.Query(Badge); 
-    badgeQuery.equalTo("objectId", argument.BadgeID); //badgeQuery dapat ta yan si pangaran before kani
-    const res = await badgeQuery.first(); //badgeQuery man dapat digdi
-    var badgeXP = res.get("BadgePoints"); //kaag ta sa variable para dai makaribong
-
-    //Query student sunod, tas kunon si badgesIDEarned
-    const Student = Parse.Object.extend("Student");
-    const studentQuery = new Parse.Query(Student);
-    studentQuery.equalTo("objectId", argument.StudentID); //studentQuery dapat ta yan si pangaran before kani
-    const res1 = await studentQuery.first(); //studentQuery man dapat digdi
-    var badgesIDEarned = res1.get("BadgesIDEarned"); //kaag ta man muna sa variable ini
-    var studentXP = res1.get("XP"); //kunon ta man si xp kang student
-
-    //Gibo ning reward, set si badgeID as rewardID
-    const Reward = Parse.Object.extend("Reward");
-    const reward = new Reward();
-    reward.save({
-        "RewardID" : argument.BadgeID,
-        "DateRewarded" : argument.DateRewarded,
-    });
-
-    //then push ta duman sa badgesIDEarned si ID kang reward
-    badgesIDEarned.push(reward.get("objectId"));
-    //add ta naman si xp
-    studentXP += badgeXP;
-
-    res1.set("BadgesIDEarned", badgesIDEarned); //saka ta iupdate si student
-    res1.set("XP", studentXP) //update naman si xp
-    res1.save(); //save na si student
-});
-
-//TO TEST =======================================================================================================================
-//BadgeID, StudentID, TrophyID required
-Parse.Cloud.define("RemoveBadge", async(request) =>{
-    const argument = request.params
-    const Student = Parse.Object.extend("Student")
-    const studentQuery = new Parse.Query(Student)
-    query1.equalTo("objectId", argument.StudentID)
-    let student = await query1.first()
-    let badges = student.get("BadgesIDEarned")
-    const index = badges.indexOf(argument.BadgeID)
-    if(index > -1){
-        badges.splice(index, 1)
-    }
-    student.set("BadgesIDEarned", badges)
-    student.save()
-    await Parse.Cloud.run("VerifyEligibility", argument)
-})
-//==================================================================================================================================

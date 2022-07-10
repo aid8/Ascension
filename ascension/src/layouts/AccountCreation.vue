@@ -21,15 +21,20 @@
     
     <div v-if="userType === 'Student'">
         <br>
+        <span>UserName: </span>
+        <input v-model="UserName" type="text"><br>
+        <span>Address: </span>
+        <input v-model="Address" type="text"><br>
+        <span>SchoolID: </span>
+        <input v-model="SchoolID" type="text"><br>
         <span>YearLevel: </span>
         <input v-model="YearLevel" type="number"><br>
-        
         <!--
         <h3>Select Department</h3>
         ===========EXAMPLE OF SELECTING DEGREE DEPENDING ON SELECTED DEPARTMENT============
         <button @click="getDepartments()">Show Departments</button>
         <ul>
-            <li v-for="department in Departments" :key="department">{{department.UnitName}} <button @click="selectDepartment(department.objectId)">Select</button> </li>
+            <li v-for="department in Departments" :key="department">{{department.UnitName}} <button @click="selectUnit(department.objectId)">Select</button> </li>
         </ul>
         <p>Selected DepartmentID: {{StudentUnitIDPointer}}</p>
 
@@ -63,11 +68,11 @@
         <input v-model="JobTitle" type="text"><br>
         
         <h3>Select Unit</h3>
-        <button @click="getDepartments()">Show Units</button>
+        <button @click="getUnits('Department')">Show Units</button>
         <ul>
-            <li v-for="department in Departments" :key="department">{{department.UnitName}} <button @click="selectDepartment(department.objectId)">Select</button> </li>
+            <li v-for="unit in Units" :key="unit">{{unit.UnitName}} <button @click="selectUnit(unit.objectId)">Select</button> </li>
         </ul>
-        <p>Selected DepartmentID: {{TeacherUnitIDPointer}}</p>
+        <p>Selected UnitID: {{TeacherUnitIDPointer}}</p>
 
         <h3>Select Courses</h3>
         <button @click="getCourses()">Show Courses</button>
@@ -83,11 +88,11 @@
         <input v-model="JobTitle" type="text"><br>
         
         <h3>Select Unit</h3>
-        <button @click="getDepartments()">Show Units</button>
+        <button @click="getUnits('Office')">Show Units</button>
         <ul>
-            <li v-for="department in Departments" :key="department">{{department.UnitName}} <button @click="selectDepartment(department.objectId)">Select</button> </li>
+            <li v-for="unit in Units" :key="unit">{{unit.UnitName}} <button @click="selectUnit(unit.objectId)">Select</button> </li>
         </ul>
-        <p>Selected DepartmentID: {{NT_DistributorUnitIDPointer}}</p>
+        <p>Selected UnitID: {{NT_DistributorUnitIDPointer}}</p>
     </div>
     <br>
     <button @click="saveProfile()"> Save Profile </button>
@@ -104,6 +109,9 @@
                 LastName: '',
                 Email: '',
                 ContactNumber: '',
+                UserName: '',
+                Address: '',
+                SchoolID: '',
                 YearLevel: null,
                 StudentUnitIDPointer: '',
                 StudentDegreeIDPointer: '',
@@ -113,7 +121,7 @@
                 TeacherCoursesIDPointer: [],
                 NT_DistributorUnitIDPointer: '',
 
-                Departments: [],
+                Units: [],
                 Degrees: [],
                 Courses: [],
             }
@@ -152,12 +160,12 @@
                 alert("Added " + this.userType);
             },
 
-            async getDepartments(){
+            async getUnits(type){
                 var params = {
-                    "UnitType" : "Department",
+                    "UnitType" : type,
                 };
                 const res = JSON.parse(await Parse.Cloud.run("GetUnits", params));
-                this.Departments = res;
+                this.Units = res;
             },
 
             async getDegrees(UnitID){
@@ -175,7 +183,9 @@
                 };
                 if(this.userType == "Student"){
                     params["CourseDegreeID"] = this.StudentDegreeIDPointer;
-
+                }
+                else{
+                    params = {};
                 }
                 const res = JSON.parse(await Parse.Cloud.run("GetCourses", params));
                 this.Courses = res;
@@ -210,7 +220,7 @@
                     }
                 }
             },
-            selectDepartment(UnitID){
+            selectUnit(UnitID){
                 if(this.userType == "Teacher"){
                     this.TeacherUnitIDPointer = UnitID;
                 }

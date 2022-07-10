@@ -1,7 +1,3 @@
-/*
-    Functions that are not yet tested upon creating/updating:
-    - DeleteDegree
-*/
 Parse.Cloud.define("AddDegree", async(request) => {
     const Degree = Parse.Object.extend("Degree");
     const degree = new Degree();

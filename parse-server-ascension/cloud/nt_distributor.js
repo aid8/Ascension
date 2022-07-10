@@ -23,7 +23,7 @@ Parse.Cloud.afterSave("NT_Distributor", async(request)=>{
     //If object is newly created
     if (!original){
         return nt_distributor.save({
-            "PendingApprovalBadgesID" : [],
+            "PendingApprovalRewarding" : [],
         });
     }
 });
@@ -39,12 +39,12 @@ Parse.Cloud.define("EditNT_Distributor", async(request) => {
 
     var list_of_attr = ["FirstName", "MiddleName", "LastName", 
                         "Email", "ContactNumber", "RegisterDate", "JobTitle", 
-                        "NT_DistributorUnitIDPointer", "PendingApprovalBadgesID",
+                        "NT_DistributorUnitIDPointer", "PendingApprovalRewarding",
     ];
     
     var list_of_arguments =[argument.FirstName, argument.MiddleName, argument.LastName, 
                             argument.Email, argument.ContactNumber, argument.RegisterDate, argument.JobTitle,
-                            argument.NT_DistributorUnitIDPointer, argument.PendingApprovalBadgesID,
+                            argument.NT_DistributorUnitIDPointer, argument.PendingApprovalRewarding,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
