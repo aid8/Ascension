@@ -1,9 +1,3 @@
-/*
-    Functions that are not yet tested upon creating/updating:
-    - DisplayStudentXPTitle(GetAscensionTitle is not yet updated in this version)
-    Functions that is missing/incomplete:
-    - RequestBadge, DisplayStudentXPTitle
-*/
 var Global = require('./global');
 
 Parse.Cloud.define("AddStudent", async(request) => {
@@ -17,7 +11,9 @@ Parse.Cloud.define("AddStudent", async(request) => {
         "LastName" : argument.LastName,
         "Email" : argument.Email,
         "ContactNumber" : argument.ContactNumber,
-        "RegisterDate" : argument.RegisterDate,
+        "UserName" : argument.UserName,
+        "Address" : argument.Address,
+        "SchoolID" : argument.SchoolID,
         "YearLevel" : argument.YearLevel,
         "StudentUnitIDPointer" : argument.StudentUnitIDPointer,
         "StudentDegreeIDPointer" : argument.StudentDegreeIDPointer,
@@ -32,26 +28,25 @@ Parse.Cloud.afterSave("Student", async(request)=>{
     const original = request.original;
     //If object is newly created
     if (!original){
-        console.log("!", student.get("objectId"));
+        //Run SearchAscensionTitleFromXp
+        var params = {"XpInput" : 0};
+        var xptitle = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", params));
+        var defaultCosmetics = JSON.parse(await Parse.Cloud.run("GetGlobal"));
         return student.save({
+            "RegisterDate" : Global.getDateToday(),
             "XP" : 0,
             "AscensionPoints" : 0,
             "BadgesIDEarned" : [],
             "TrophiesIDUnlocked" : [],
             "ChosenTrophies" : [],
-            "AvatarsIDUnlocked" : [Global.defaultAvatarID],
-            "FrameIDUnlocked" : [Global.defaultFrameID],
+            "AvatarsIDUnlocked" : [defaultCosmetics.DefaultAvatarID],
+            "FrameIDUnlocked" : [defaultCosmetics.DefaultFrameID],
             "BannerID" : "", //will be set to Banner of house upon assigning house
-            "CoverPhotoIDUnlocked" : [Global.defaultCoverPhotoID],
-            "AscensionTitle" : "Default", //add function "GetAscensionTitle"
-            "StudentHouseIDPointer" : "", //add function "AssignHouse"
-            "EquippedCosmetics" : [Global.defaultAvatarID, Global.defaultFrameID, Global.defaultCoverPhotoID] //set to default id [Avatar, Frame, CoverPhoto]
+            "CoverPhotoIDUnlocked" : [defaultCosmetics.DefaultCoverPhotoID],
+            "AscensionTitle" : xptitle.AscensionName,
+            "StudentHouseIDPointer" : "",
+            "EquippedCosmetics" : [defaultCosmetics.DefaultAvatarID, defaultCosmetics.DefaultFrameID, defaultCosmetics.DefaultCoverPhotoID] //set to default id [Avatar, Frame, CoverPhoto]
         }).then(async(res)=>{
-            var params;
-            //Run getascensiontitle
-            //params = {"XP" : student.get("XP")};
-            //await Parse.Cloud.run("GetTitle...", params);
-
             //Run assign house
             params = {"StudentID" : res.id,};
             await Parse.Cloud.run("AssignHouse", params);
@@ -69,13 +64,15 @@ Parse.Cloud.define("EditStudent", async(request) =>{
     const res = await query.first();
     
     var list_of_attr = ["FirstName", "MiddleName", "LastName", "Email", "ContactNumber", 
-                        "RegisterDate", "YearLevel", "StudentUnitIDPointer", "StudentDegreeIDPointer", "StudentCoursesIDPointer",
+                        "RegisterDate", "UserName", "Address", "SchoolID",
+                        "YearLevel", "StudentUnitIDPointer", "StudentDegreeIDPointer", "StudentCoursesIDPointer",
                         "XP", "AscensionPoints", "BadgesIDEarned", "TrophiesIDUnlocked", "ChosenTrophies",
                         "AvatarsIDUnlocked", "FrameIDUnlocked", "BannerID", "CoverPhotoIDUnlocked","AscensionTitle",
                         "StudentHouseIDPointer", "EquippedCosmetics",
     ];
     var list_of_arguments = [argument.FirstName, argument.MiddleName, argument.LastName, argument.Email, argument.ContactNumber,
-                            argument.RegisterDate, argument.YearLevel, argument.StudentUnitIDPointer, argument.StudentDegreeIDPointer, argument.StudentCoursesIDPointer,
+                            argument.RegisterDate, argument.UserName, argument.Address, argument.SchoolID,
+                            argument.YearLevel, argument.StudentUnitIDPointer, argument.StudentDegreeIDPointer, argument.StudentCoursesIDPointer,
                             argument.XP, argument.AscensionPoints, argument.BadgesIDEarned, argument.TrophiesIDUnlocked, argument.ChosenTrophies,
                             argument.AvatarsIDUnlocked, argument.FrameIDUnlocked, argument.BannerID, argument.CoverPhotoIDUnlocked, argument.AscensionTitle,
                             argument.StudentHouseIDPointer, argument.EquippedCosmetics,
@@ -127,33 +124,36 @@ Parse.Cloud.define("GetStudentData", async(request) => {
     //Pass BadgesEarned Data
     var BadgesEarned = [];
     var params;
-    for(const badgeID of res.get("BadgesIDEarned")){
-        params = {
-            "BadgeID" : badgeID,
-        }
-        BadgesEarned.push(JSON.parse(await Parse.Cloud.run("GetBadgeData", params)));
+    for(const RewardID of res.get("BadgesIDEarned")){
+        params = {"RewardID" : RewardID};
+        let RewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
+        BadgesEarned.push(RewardData.RewardData);
     }
     res.set("BadgesEarned", BadgesEarned);
 
     //Pass TrophiesUnlocked Data
-    var TrophiesIDUnlocked = [];
-    for(const trophyID of res.get("TrophiesIDUnlocked")){
+    var TrophiesUnlocked = [];
+    for(const RewardID of res.get("TrophiesIDUnlocked")){
+        params = {"RewardID" : RewardID};
+        let RewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
         params = {
-            "TrophyID" : trophyID,
+            "TrophyID" : RewardData.RewardID,
         }
-        BadgesEarned.push(JSON.parse(await Parse.Cloud.run("GetTrophyData", params)));
+        TrophiesUnlocked.push(JSON.parse(await Parse.Cloud.run("GetTrophyData", params)));
     }
-    res.set("TrophiesUnlocked", TrophiesIDUnlocked);
+    res.set("TrophiesUnlocked", TrophiesUnlocked);
 
     //Pass ChosenTrophies Data
-    var ChosenTrophies = [];
-    for(const trophyID of res.get("TrophiesIDUnlocked")){
+    var ChosenTrophiesData = [];
+    for(const RewardID of res.get("ChosenTrophies")){
+        params = {"RewardID" : RewardID};
+        let RewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
         params = {
-            "TrophyID" : trophyID,
+            "TrophyID" : RewardData.RewardID,
         }
-        BadgesEarned.push(JSON.parse(await Parse.Cloud.run("GetTrophyData", params)));
+        ChosenTrophiesData.push(JSON.parse(await Parse.Cloud.run("GetTrophyData", params)));
     }
-    res.set("ChosenTrophiesData", ChosenTrophies);
+    res.set("ChosenTrophiesData", ChosenTrophiesData);
 
     //Pass CosmeticsUnlocked Data
     var cosmeticArrNames = ["AvatarsIDUnlocked", "FrameIDUnlocked", "CoverPhotoIDUnlocked"];
@@ -169,6 +169,16 @@ Parse.Cloud.define("GetStudentData", async(request) => {
         }
         res.set(cosmeticArrNewNames[i], CosmeticUnlocked);
     }
+
+    //Pass EquippedCosmetics
+    var EquippedCosmeticsData = [];
+    for(const cosmeticID of res.get("EquippedCosmetics")){
+        params = {
+            "CosmeticID" : cosmeticID,
+        }
+        EquippedCosmeticsData.push(JSON.parse(await Parse.Cloud.run("GetCosmeticData", params)));
+    }
+    res.set("EquippedCosmeticsData", EquippedCosmeticsData);
 
     //Dont save, since we just want this to be passed to the caller
     return JSON.stringify(res);
@@ -193,12 +203,12 @@ Parse.Cloud.define("AssignHouse", async(request) => {
     let min = Math.min.apply(Math, housePopulations)
     let avail_houses = []
     if(min == max){
-        avail_houses = res2
+        avail_houses = res2;
     }
     else{
-        for(let i = 0; i < res2.length; i++){
-            if(res2[i].HousePopulation == min){
-                avail_houses.push(res2[i])
+        for(const house of res2){
+            if(house.HousePopulation == min){
+                avail_houses.push(house);
             }
         }
     } 
@@ -331,7 +341,9 @@ Parse.Cloud.define("DisplayStudentXPTitle", async(request) => {
     const res = await query.first();
 
     if(argument.DisplayTitle){
-        console.log("Call GetXPAscensionTitle");
+        var params = {"XpInput" : res.get("XP")};
+        var xptitle = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", params));
+        res.set("AscensionTitle", xptitle.AscensionName);
     }
     else{
         res.set("AscensionTitle", "");
@@ -341,16 +353,3 @@ Parse.Cloud.define("DisplayStudentXPTitle", async(request) => {
         console.log("Successfully Displayed/Hidden StudentXPTitle!");
     });
 });
-
-//RequestBadge
-//Pending, since Proof/Requesting entity is still being planned in this version
-/*
-//Must specify id of student with name of "StudentID", BadgeID, UserType and TeacherID/NT_DistributorID
-Parse.Cloud.define("RequestBadge", async(request) => {
-    const Student = Parse.Object.extend("Student");
-    const query = new Parse.Query(Student);
-    const argument = request.params;
-    query.equalTo("objectId", argument.StudentID);
-    const res = await query.first();
-});
-*/

@@ -11,4 +11,8 @@ require('./badge.js');
 require('./trophy.js');
 require('./cosmetic.js');
 require('./house.js');
+require('./request.js');
 require('./global.js');
+
+//Run this code to initialize global
+Parse.Cloud.run("AddGlobal");

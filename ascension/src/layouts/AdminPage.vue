@@ -169,6 +169,32 @@
     <button @click="addCosmetic()">Add Cosmetic</button><br>
     <hr>
 
+    <h3>Set a Default Cosmetic</h3>
+    <button @click="getCosmetics()">Get Cosmetics</button><br>
+    <h4>Avatars</h4>
+    <ul>
+        <li v-for="avatar in Avatars" :key="avatar">{{avatar.CosmeticName}} <button @click="selectCosmetic('Avatar', avatar.objectId)">Select</button></li>
+    </ul>
+    <p>Selected CosmeticID for Avatar: {{SelectedAvatar}}</p>
+    <button @click="setCosmetic('Avatar')">Set Default for Avatar</button>
+    
+    <h4>Frames</h4>
+    <ul>
+        <li v-for="frame in Frames" :key="frame">{{frame.CosmeticName}} <button @click="selectCosmetic('Frame', frame.objectId)">Select</button></li>
+    </ul>
+    <p>Selected CosmeticID for Frame: {{SelectedFrame}}</p>
+    <button @click="setCosmetic('Frame')">Set Default for Frame</button>
+
+    <h4>CoverPhoto</h4>
+    <ul>
+        <li v-for="coverphoto in CoverPhotos" :key="coverphoto">{{coverphoto.CosmeticName}} <button @click="selectCosmetic('CoverPhoto', coverphoto.objectId)">Select</button></li>
+    </ul>
+    <p>Selected CosmeticID for CoverPhoto: {{SelectedCoverPhoto}}</p>
+    <button @click="setCosmetic('CoverPhoto')">Set Default for CoverPhoto</button><br>
+    <h4> TESTING </h4>
+    <button @click="setStudentCosmetics()">Set All Students Cosmetic to Selected Cosmetics (Includes Equipped)</button>
+    <hr>
+
     <!-- Test Delete Default Cosmetic -->
     <h3>Delete a Default Cosmetic  </h3>
     <button @click="test()">Delete Cosmetic</button><br>
@@ -243,6 +269,12 @@
 
                 //Cosmetic Variables
                 CosmeticName: '',
+                Avatars: [],
+                Frames: [],
+                CoverPhotos: [],
+                SelectedAvatar : '',
+                SelectedFrame : '',
+                SelectedCoverPhoto : '',
 
                 //Other Variables
                 Degrees: [],
@@ -257,11 +289,11 @@
         components:{
            
         },
-        // Testing delete default cosmetics
+        // Testing delete default cosmetics (Change to your default cosmeticid/update this)
         methods:{
             async test(){
                 var params = {
-                     "CosmeticID" : "1",
+                     "CosmeticID" : "",
                 }
                 try{
                     await Parse.Cloud.run("DeleteCosmetic", params);
@@ -553,6 +585,67 @@
                 params["CosmeticType"] = "CoverPhoto";
                 await Parse.Cloud.run("AddCosmetic", params);
                 alert("Added Cosmetic for all!");
+            },
+
+            async getCosmetics(){
+                var params = {"CosmeticType" : "Avatar"}
+                const res = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
+                this.Avatars = res;
+
+                params["CosmeticType"] = "Frame";
+                const res1 = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
+                this.Frames = res1;
+
+                params["CosmeticType"] = "CoverPhoto";
+                const res2 = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
+                this.CoverPhotos = res2;
+            },
+
+            selectCosmetic(type, id){
+                if(type === "Avatar"){
+                    this.SelectedAvatar = id;
+                }
+                else if(type === "Frame"){
+                    this.SelectedFrame = id;
+                }
+                else if(type === "CoverPhoto"){
+                    this.SelectedCoverPhoto = id;
+                }
+            },
+
+            async setCosmetic(type){
+                var params = {"CosmeticType" : type};
+                if(type === "Avatar"){
+                    params["CosmeticID"] = this.SelectedAvatar
+                }
+                else if(type === "Frame"){
+                    params["CosmeticID"] = this.SelectedFrame
+                }
+                else if(type === "CoverPhoto"){
+                    params["CosmeticID"] = this.SelectedCoverPhoto
+                }
+                await Parse.Cloud.run("SetDefaultCosmetic", params);
+                alert("Successfully Changed Default Cosmetic");
+            },
+
+            async setStudentCosmetics(){
+                var AvatarsIDUnlocked = [this.SelectedAvatar];
+                var FrameIDUnlocked = [this.SelectedFrame];
+                var CoverPhotoIDUnlocked = [this.SelectedCoverPhoto];
+                var EquippedCosmetics = [this.SelectedAvatar, this.SelectedFrame, this.SelectedCoverPhoto];
+                
+                const students = JSON.parse(await Parse.Cloud.run("GetStudents"));
+                for(const student of students){
+                    var params = {
+                        "StudentID" : student.objectId, 
+                        "AvatarsIDUnlocked" : AvatarsIDUnlocked,
+                        "FrameIDUnlocked" : FrameIDUnlocked,
+                        "CoverPhotoIDUnlocked" : CoverPhotoIDUnlocked,
+                        "EquippedCosmetics" : EquippedCosmetics,
+                    };
+                    await Parse.Cloud.run("EditStudent", params);
+                }
+                alert("Successfully Edited Student Cosmetics");
             },
 
             //Others

@@ -1,7 +1,3 @@
-/*
-    Functions that are not yet tested upon creating/updating:
-    - DeleteCourse
-*/
 Parse.Cloud.define("AddCourse", async(request) => {
     const Course = Parse.Object.extend("Course");
     const course = new Course();

@@ -1,7 +1,11 @@
 /*
     Functions that are not yet tested upon creating/updating:
-    - VerifyEligibility
+    - DeleteTrophy
+    Functions that are incomplete:
+    - VerifyUltimateBadge
 */
+var Global = require('./global');
+
 Parse.Cloud.define("AddTrophy", async(request) => {
     const Trophy = Parse.Object.extend("Trophy");
     const trophy = new Trophy();
@@ -55,30 +59,19 @@ Parse.Cloud.define("DeleteTrophy", async(request) => {
     query.equalTo("objectId", argument.TrophyID);
     const res = await query.first();
 
-    //If a student has a trophy in this, remove it
-    //Check chosentrophies as well
+    //If a student has a trophy in this, reject
     var students = JSON.parse(await Parse.Cloud.run("GetStudents"));
     for (const student of students){
-        var TrophiesIDUnlocked = student.TrophiesIDUnlocked;
-        var ChosenTrophies = student.ChosenTrophies;
-        let edited = false;
-        let params = {"StudentID" : student.objectId};
+        var TrophiesRewardIDUnlocked = student.TrophiesIDUnlocked;
+        var TrophiesIDUnlocked = [];
+        for(const RewardID of TrophiesRewardIDUnlocked){
+            var param = {"RewardID" : RewardID};
+            let rewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", param));
+            TrophiesIDUnlocked.push(rewardData.objectId);
+        }
         let index = TrophiesIDUnlocked.indexOf(argument.TrophyID);
         if(index > -1){
-            TrophiesIDUnlocked.splice(index, 1);
-            params["TrophiesIDUnlocked"] = TrophiesIDUnlocked;
-            edited = true;
-        }
-
-        index = ChosenTrophies.indexOf(argument.TrophyID)
-        if(index > -1){
-            ChosenTrophies[index] = null;
-            params["ChosenTrophies"] = ChosenTrophies;
-            edited = true;
-        }
-
-        if(edited){
-            await Parse.Cloud.run("EditStudent", params);
+            return Promise.reject("Cannot Delete Trophy! One or more students have acquired this Trophy.");
         }
     }
 
@@ -103,50 +96,176 @@ Parse.Cloud.define("GetTrophies", async(_request) => {
     return JSON.stringify(res);
 });
 
-//VerifyEligibility
-//TO TEST =======================================================================================================================
-//StudentID, TrophyID required
-// Currently used in RemoveBadge() in teacher.js
-Parse.Cloud.define("VerifyEligibility", async(request) =>{
-    const argument = request.params
-    
+//StudentID
+Parse.Cloud.define("GetUnacquiredTrophies", async(request) => {
+    //Get Trophies
+    const Trophy = Parse.Object.extend("Trophy");
+    const query = new Parse.Query(Trophy);
+    const argument = request.params;
+    const res = await query.find();
+
     //Gets the Student
-    const Student = new Parse.Object.extend("Student")
-    const studentQuery = Parse.Query(Student)
-    studentQuery.equalTo("objectId", argument.StudentID)
-    const student = await studentQuery.first()
-    const studentBadges = student.get("BadgesIDEarned")
+    const Student = Parse.Object.extend("Student");
+    const query1 = new Parse.Query(Student);
+    query1.equalTo("objectId", argument.StudentID);
+    const res1 = await query1.first();
+    const studentTrophies = res1.get("TrophiesIDUnlocked");
+    var acquiredTrophies = {};
     
-    //Gets the Trophy
-    const Trophy = new Parse.Object.extend("Trophy")
-    const trophyQuery = new Parse.Query(Trophy)
-    trophyQuery.equalTo("objectId", argument.TrophyID)
-    const trophy = await trophyQuery.first()
-    trophyBadges = trophy.get("BadgesIDNeeded")
+    for(const RewardID of studentTrophies){
+        var params = {"RewardID" : RewardID};
+        let RewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
+        acquiredTrophies[RewardData.RewardID] = true;
+    }
+    
+    var unacquiredTrophies = [];
+    for(const trophy of res){
+        if(!(trophy.id in acquiredTrophies)){
+            unacquiredTrophies.push(trophy);
+        }
+    }
+    return JSON.stringify(unacquiredTrophies);
+});
 
-    //Checks if student has all badges for the trophy
-    let isEligible = true
-    for(let i = 0; i < trophyBadges; i++){
-        if(!studentBadges.includes(trophyBadges[i])){
-            isEligible = false
-            break
-        }
-    }
+//TrophyID, StudentID
+Parse.Cloud.define("RewardTrophy", async(request) => {
+    const argument = request.params;
 
-    //Adds/Removes the trophy in the Student
-    let studentTrophies = student.get("TrophiesIDUnlocked")
-    if(isEligible){
-        if(!studentTrophies.includes(argument.TrophyID)){
-            studentTrophies.push(argument.TrophyID)
+    //Query trophy muna, importante si XP
+    const Trophy = Parse.Object.extend("Trophy");
+    const trophyQuery = new Parse.Query(Trophy); 
+    trophyQuery.equalTo("objectId", argument.TrophyID);
+    const res = await trophyQuery.first();
+    var trophyXP = res.get("TrophyPoints");
+
+    //Query student sunod, tas kunon si trophiesIDEarned
+    const Student = Parse.Object.extend("Student");
+    const studentQuery = new Parse.Query(Student);
+    studentQuery.equalTo("objectId", argument.StudentID);
+    const res1 = await studentQuery.first();
+    var trophiesIDUnlocked = res1.get("TrophiesIDUnlocked");
+    var studentXP = res1.get("XP");
+
+    //Gibo ning reward object, set si trophyID as rewardID
+    const Reward = Parse.Object.extend("Reward");
+    const reward = new Reward();
+    reward.save({
+        "RewardID" : argument.TrophyID,
+        "RewardType" : "Trophy",
+        "DateRewarded" : Global.getDateToday(),
+    }).then(async(obj)=>{
+        trophiesIDUnlocked.push(obj.id);
+        studentXP += trophyXP;
+        res1.set("TrophiesIDUnlocked", trophiesIDUnlocked);
+        res1.set("XP", studentXP);
+        res1.save();
+
+        //Call VerifyUltimateBadge
+        var param = {"StudentID" : argument.StudentID};
+        await Parse.Cloud.run("VerifyUltimateBadge", param);
+    });
+});
+
+//RewardID, StudentID, required
+Parse.Cloud.define("RemoveTrophy", async(request) =>{
+    const Student = Parse.Object.extend("Student")
+    const query = new Parse.Query(Student);
+    const argument = request.params;
+    query.equalTo("objectId", argument.StudentID);
+    const res = await query.first();
+
+    //UpdateStudent
+    let rewards = res.get("TrophiesIDUnlocked");
+    const index = rewards.indexOf(argument.RewardID);
+    if(index > -1){
+        rewards.splice(index, 1);
+    }
+    res.set("TrophiesIDUnlocked", rewards);
+
+    //Check if trophy is in ChosenTrophies
+
+    res.save();
+
+    //Remove Reward Object
+    const Reward = Parse.Object.extend("Reward");
+    const query1 = new Parse.Query(Reward);
+    query1.equalTo("objectId", argument.RewardID);
+    const res1 = await query1.first();
+    res1.destroy();
+});
+
+//StudentID only, tests all trophies if eligible
+Parse.Cloud.define("VerifyTrophyEligibility", async(request) =>{
+    const argument = request.params;
+    
+    //Gets the Data of student
+    var param = {"StudentID" : argument.StudentID};
+    var StudentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
+    var Badges = StudentData.BadgesEarned;
+
+    //Get all unacquired trophies
+    const res = JSON.parse(await Parse.Cloud.run("GetUnacquiredTrophies", param));
+
+    for(const trophy of res){
+        let BadgesIDNeeded = trophy.BadgesIDNeeded;
+        let count = 0;
+        for(const badge of Badges){
+            if(BadgesIDNeeded.includes(badge.objectId)){
+                count += 1;
+            }
+        }
+        if(count == BadgesIDNeeded.length){
+            param = {
+                "StudentID" : argument.StudentID,
+                "TrophyID" : trophy.objectId,
+            };
+            await Parse.Cloud.run("RewardTrophy", param);
         }
     }
-    else{
-        if(studentTrophies.includes(argument.TrophyID)){
-            const index = studentTrophies.indexOf(argument.TrophyID)
-            studentTrophies.splice(index, 1)
+});
+
+//VerifyTrophyRemoval
+//StudentID only, tests if a trophy should be removed upon removing badge
+//Chcek trophy badges id earned
+Parse.Cloud.define("VerifyTrophyRemoval", async(request) =>{
+    const argument = request.params;
+    
+    //Gets the Data of student
+    var param = {"StudentID" : argument.StudentID};
+    var StudentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
+    var Badges = StudentData.BadgesEarned;
+    var Trophies = StudentData.TrophiesUnlocked;
+    var TrophiesRewardID = StudentData.TrophiesIDUnlocked;
+
+    //Check and remove trophy
+    for(let i = 0; i < Trophies.length; ++i){
+        let BadgesIDNeeded = Trophies[i].BadgesIDNeeded;
+        let count = 0;
+        for(const badge of Badges){
+            if(BadgesIDNeeded.includes(badge.objectId)){
+                count += 1;
+            }
+        }
+        if(count != BadgesIDNeeded.length){
+            param = {
+                "StudentID" : argument.StudentID,
+                "RewardID" : TrophiesRewardID[i],
+            };
+            await Parse.Cloud.run("RemoveTrophy", param);
         }
     }
-    student.set("TrophiesIDUnlocked", studentTrophies)
-    student.save()
-})
-//==================================================================================================================================
+});
+
+//StudentID
+Parse.Cloud.define("VerifyUltimateBadge", async(request) =>{
+    const argument = request.params;
+    //Gets the Data of student
+    var param = {"StudentID" : argument.StudentID};
+    var StudentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
+    var TrophiesID = StudentData.TrophiesIDUnlocked;
+    const totalTrophies = JSON.parse(await Parse.Cloud.run("GetTrophies"));
+
+    if(totalTrophies.length == TrophiesID.length){
+        console.log("THIS STUDENT SHOULD BE REWARDED WILL ULTIMATE BADGE");
+    }
+});

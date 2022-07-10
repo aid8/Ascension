@@ -3,14 +3,14 @@
     STUDENT ENTITY
         Function: AddStudent()
         Parameters: FirstName, MiddleName, LastName, Email, ContactNumber, 
-                    RegisterDate, YearLevel, StudentUnitIDPointer, 
+                    UserName, Address, SchoolID, YearLevel, StudentUnitIDPointer, 
                     StudentDegreeIDPointer, StudentCoursesIDPointer,
         Purpose: Save the student object into the database
 
         Function: afterSave(Student)
         Parameters: XP, AscensionPoints, BadgesIDEarned, TrophiesIDUnlocked, 
                     ChosenTrophies, AvatarsIDUnlocked, FrameIDUnlocked, 
-                    BannerIDUnlocked, CoverPhotoIDUnlocked, AscensionTitle,
+                    BannerID, CoverPhotoIDUnlocked, AscensionTitle,
                     StudentHouseIDPointer, EquippedCosmetics
         Purpose: Add the other attributes only 'after' the student object is saved
 
@@ -36,7 +36,7 @@
         Purpose: Delete the student as a member of the previous house. Set the student as a member of another house 
 
         Function: ChangeTopTrophies()
-        Parameters: StudentID, TrophyID_1, TrophyID_2, TrophyID_3
+        Parameters: StudentID, TrophyID_1, TrophyID_2, TrophyID_3 (ID must be a RewardID based on the container of TrophiesIDUnlocked)
         Purpose: Set which trophies will be shown in the student profile
 
         Function: AddStudentCosmetic()
@@ -109,6 +109,22 @@
         Parameters: 
         Purpose: Get all the badges saved in the database
 
+        Function: RewardBadge()
+        Parameters: BadgeID, StudentID
+        Purpose: Gives student a badge
+
+        Function: RemoveBadge()
+        Parameters: BadgeID, StudentID
+        Purpose: Removes a badge from a student (NOT DELETE)
+
+        Function: GetUnacquiredBadge()
+        Paramaters: StudentID
+        Purpose: Returns missing student badges
+
+        Function: GetRewardData()
+        Parameters: RewardID
+        Purpose: automatically gives details about the trophy/badg stored in "RewardData"
+
     TROPHY ENTITY
         Function: AddTrophy()
         Parameters: TrophyName, TrophyDescription, TrophyPoints, TrophyImage, TrophyCategory, TrophyBadgesIDNeeded
@@ -131,9 +147,29 @@
         Parameters: 
         Purpose: Get all the trophies saved in the database
 
-        Function: VerifyEligibility()
+        Function: VerifyTrophyEligibility()
         Parameters: StudentID
         Purpose: Check if the student is eligible to be awarded a trophy. Check the student array of BadgesIDEarned to know if all badges under one trophy are already earned
+
+        Function: VerifyTrophyRemoval()
+        Parameters: StudentID
+        Purpose: Check if trophy should be removed upon removing badge
+
+        Function: RewardTrophy()
+        Paramaters: TrophyID, StudentID
+        Purpose: Gives student a trophy
+
+        Function: RemoveTrophy()
+        Parameters: TrophyID, StudentID
+        Purpose: Removes a trophy from the student (NOT DELETE)
+
+        Function: VerifyUltimateBadge()
+        Parameters: StudentID
+        Purpose: Rewards student an ultimate badge if all trophies are earned
+
+        Function: GetUnacquiredTrophies()
+        Parameters: StudentID
+        Purpose: Gives student missing trophies
 
     UNIT ENTITY
         Function: AddUnit()
@@ -225,7 +261,7 @@
         Purpose: Get all the cosmetics saved in the database if CosmeticType is not specified. Else, return cosmetics of CosmeticType.
 
         Function: SetDefaultCosmetic()
-        Parameters: CosmeticType
+        Parameters: CosmeticType, CosmeticID
         Purpose: Set a cosmetic of type CosmeticType as the default cosmetic
 
     ASCENSION TITLE ENTITY
@@ -298,3 +334,28 @@
         Function: GetHouseLeaderboard()
         Parameters: HouseID, Count (max number of students)
         Purpose: Returns list of students sorted by xp and firstname, with limit of "Count"
+
+    REQUEST ENTITY
+        Function: AddRequest()
+        Parameters: ToRequestID, ToRequestType, Proof, StudentIDPointer 
+        Purpose: Save the Request object into the database
+
+        Function: EditRequest()
+        Parameters: RequestID, Attribute/s to be edited, New value 
+        Purpose: Edit the attribute/s of the house
+
+        Function: DeleteRequest()
+        Parameters: RequestID
+        Purpose: Delete the Request from the database
+
+        Function: GetRequestData()
+        Parameters: RequestID
+        Purpose: Retrieve the data stored in Request object
+
+        Function: GetRequests()
+        Parameters: 
+        Purpose: Get all the Requests saved in the database.
+
+        Function: ApproveRequest()
+        Parameters: RequestID, BadgeID
+        Purpose: Deletes the requests and rewards the badge

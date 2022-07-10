@@ -1,8 +1,4 @@
-/*
-    Functions that are not yet tested upon creating/updating:
-    - DeleteUnit
-*/
-Parse.Cloud.define("AddUnit", async(request) => {   //async AddUnit(request){}
+Parse.Cloud.define("AddUnit", async(request) => {
     const Unit = Parse.Object.extend("Unit");
     const unit = new Unit();
     unit.save({
