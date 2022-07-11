@@ -52,6 +52,7 @@ Parse.Cloud.define("EditTrophy", async(request) => {
 });
 
 Parse.Cloud.define("DeleteTrophy", async(request) => {
+    let canDeleteTrophy = true
     const Trophy = Parse.Object.extend("Trophy");
     const query = new Parse.Query(Trophy);
     const argument = request.params;
@@ -67,17 +68,23 @@ Parse.Cloud.define("DeleteTrophy", async(request) => {
         for(const RewardID of TrophiesRewardIDUnlocked){
             var param = {"RewardID" : RewardID};
             let rewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", param));
-            TrophiesIDUnlocked.push(rewardData.objectId);
+            TrophiesIDUnlocked.push(rewardData.RewardID);
         }
         let index = TrophiesIDUnlocked.indexOf(argument.TrophyID);
         if(index > -1){
-            return Promise.reject("Cannot Delete Trophy! One or more students have acquired this Trophy.");
+            //return Promise.reject("Cannot Delete Trophy! One or more students have acquired this Trophy.");
+            canDeleteTrophy = false;
         }
     }
 
-    res.destroy().then(() => {
-        console.log("Successfully Deleted Trophy");
-    });
+    if(canDeleteTrophy){
+        res.destroy().then(() => {
+            console.log("Successfully Deleted Trophy");
+        });
+    }
+    else{
+        console.log("Cannot Delete Trophy! One or more students have acquired this Trophy.")
+    }
 });
 
 Parse.Cloud.define("GetTrophyData", async(request) => {

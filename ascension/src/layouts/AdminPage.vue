@@ -69,7 +69,7 @@
     <ul v-if="ShowBadges">
         <li v-for="badge in Badges" :key="badge.objectId">{{badge.BadgeName}} 
             <button @click="getBadge(badge)">Edit</button>
-            
+            <button @click="deleteBadge(badge)">Delete</button>
         </li>
     </ul>
     <hr>
@@ -411,6 +411,14 @@
                 this.NewBadgePoints = Badge.BadgePoints
                 this.NewBadgeImage = Badge.BadgeImage
                 this.BadgeIdPointer = Badge.objectId
+            },
+            
+            async deleteBadge(badge){
+                var param = {
+                    "BadgeID": badge.objectId
+                }
+                var a = await Parse.Cloud.run("DeleteBadge", param)
+                console.log(a)
             },
 
             //Trophy Functions
