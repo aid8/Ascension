@@ -6,6 +6,7 @@ Parse.Cloud.define("AddStudent", async(request) => {
     const argument = request.params;
 
     student.save({
+        "UserID" : argument.UserID,
         "FirstName" : argument.FirstName,
         "MiddleName" : argument.MiddleName,
         "LastName" : argument.LastName,
@@ -18,8 +19,17 @@ Parse.Cloud.define("AddStudent", async(request) => {
         "StudentUnitIDPointer" : argument.StudentUnitIDPointer,
         "StudentDegreeIDPointer" : argument.StudentDegreeIDPointer,
         "StudentCoursesIDPointer" : argument.StudentCoursesIDPointer,
-    }).then(()=>{
+    }).then(async (res)=>{
         console.log("Successfully added Student!");
+        /*
+        This is not working, unable to edit user data
+
+        const query = new Parse.Query(Parse.User);
+        query.equalTo(argument.UserID, argument.StudentID);
+        const res2 = await query.find({useMasterKey:true});
+        res2.set("AccountID", res.id);
+        res2.save({useMasterKey:true});
+        */
     });
 });
 

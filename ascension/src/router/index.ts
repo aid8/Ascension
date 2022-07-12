@@ -30,6 +30,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'StudentTest',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/StudentTest.vue')
   },
+  {
+    path: '/RedirectPage',
+    name: 'RedirectPage',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/RedirectPage.vue')
+  },
 ]
 
 const router = createRouter({

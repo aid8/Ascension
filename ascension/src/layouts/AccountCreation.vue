@@ -129,6 +129,16 @@
         components:{
            
         },
+        async beforeMount(){
+            var currentUser = Parse.User.current();
+            if (currentUser) {
+                console.log("Logged in");
+                console.log(currentUser);
+            }
+            else{
+                console.log("User is not logged in");
+            }
+        },
         methods:{
             async saveProfile(){
                 var params = {
@@ -140,6 +150,7 @@
                     "RegisterDate" : "datetoday",
                 }
                 if(this.userType == "Student"){
+                    params["UserID"] = Parse.User.current().id;
                     params["YearLevel"] = this.YearLevel;
                     params["StudentUnitIDPointer"] = this.StudentUnitIDPointer;
                     params["StudentDegreeIDPointer"] = this.StudentDegreeIDPointer;

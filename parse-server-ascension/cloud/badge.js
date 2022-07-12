@@ -48,7 +48,6 @@ Parse.Cloud.define("EditBadge", async(request) => {
 });
 
 Parse.Cloud.define("DeleteBadge", async(request) => {
-    var canBeDeleted = true;
     const Badge = Parse.Object.extend("Badge");
     const query = new Parse.Query(Badge);
     const argument = request.params;
@@ -58,21 +57,21 @@ Parse.Cloud.define("DeleteBadge", async(request) => {
     
     //If a student has this, return error
     var students = JSON.parse(await Parse.Cloud.run("GetStudents"));
-    for (let i = 0; i < students.length; i++){
-        var BadgesRewardIDEarned = students[i].BadgesIDEarned;
+    var param = {};
+    for (const student of students){
+        var BadgesRewardIDEarned = student.BadgesIDEarned;
         var BadgesIDEarned = [];
         for(const RewardID of BadgesRewardIDEarned){
-            var param = {"RewardID" : RewardID};
+            param = {"RewardID" : RewardID};
             let rewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", param));
             BadgesIDEarned.push(rewardData.RewardID);
         }
         let index = BadgesIDEarned.indexOf(argument.BadgeID);
         if(index > -1){
-            //return Promise.reject("Cannot Delete Badge! One or more students have acquired this badge.");
-            canBeDeleted = false
+            return Promise.reject("Cannot Delete Badge! One or more students have acquired this badge.");
         }
     }
-    console.log("VALUE---------------------" + canBeDeleted)
+
     //If belongs to trophy, remove this one
     var trophies = JSON.parse(await Parse.Cloud.run("GetTrophies"));
     var trophiesEdited = false;
@@ -83,35 +82,30 @@ Parse.Cloud.define("DeleteBadge", async(request) => {
         if(index > -1){
             //If the badgesIDNeeded size is 1 and its found in this
             //Means its gonna be empty, just delete the trophy
-            let params = {"TrophyID" : trophy.objectId};
+            param = {"TrophyID" : trophy.objectId};
             if(BadgesIDNeeded.length <= 1){
-                await Parse.Cloud.run("DeleteTrophy", params);
+                await Parse.Cloud.run("DeleteTrophy", param);
             }
             else{
                 //splice this then save
                 BadgesIDNeeded.splice(index, 1);
-                params["BadgesIDNeeded"] = BadgesIDNeeded;
-                await Parse.Cloud.run("EditTrophy", params);
+                param["BadgesIDNeeded"] = BadgesIDNeeded;
+                await Parse.Cloud.run("EditTrophy", param);
                 trophiesEdited = true;
             }
         }
-        
-        
     }
-    
-    
 
-    // //If a trophy has been edited, run verify eligiblity
-    // if(trophiesEdited){
-    //     await Parse.Cloud.run("VerifyTrophyEligibility", argument);
-    // }
-    if(canBeDeleted){
-        res.destroy().then(console.log("Badge has been deleted!"))
-    }
-    return canBeDeleted
-    // res.destroy().then(() => {
-    //     console.log("Successfully Deleted Badge");
-    // });
+    res.destroy().then(async()=>{
+        console.log("Badge has been deleted!");
+        if(trophiesEdited){
+            //VerifyEligiblity for all students
+            for (const student of students){
+                param = {"StudentID" : student.objectId};
+                await Parse.Cloud.run("VerifyTrophyEligibility", param);
+            }
+        }
+    });
 });
 
 Parse.Cloud.define("GetBadgeData", async(request) => {

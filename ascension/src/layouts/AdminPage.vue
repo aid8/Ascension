@@ -55,7 +55,7 @@
     <input v-model="BadgeImage" type="text"><br>
     <button @click="addBadge()">Add Badge</button><br>
 
-    <h3>Edit Badge</h3>
+    <h3>Edit / Delete Badge</h3>
     <span>Badge Name: </span>
     <input v-model="NewBadgeName" type="text"><br>
     <span>Badge Description: </span>
@@ -96,7 +96,7 @@
     <p>{{AssignedBadgesForTrophy}}</p>
     <button @click="addTrophy()">Add Trophy</button><br>
 
-    <h3>Modify Trophy</h3>
+    <h3>Edit / Delete Trophy</h3>
     <span>Trophy Name: </span>
     <input v-model="NewTrophyName" type="text"><br>
     <span>Trophy Description: </span>
@@ -249,6 +249,7 @@
                 NewTrophyDescription: '',
                 NewTrophyPoints: 0,
                 NewTrophyImage: '',
+                NewTrophyID : '',
                 AssignedBadgesforNewTrophy: [],
                 Trophies: [],
 
@@ -417,8 +418,13 @@
                 var param = {
                     "BadgeID": badge.objectId
                 }
-                var a = await Parse.Cloud.run("DeleteBadge", param)
-                console.log(a)
+                try{
+                    await Parse.Cloud.run("DeleteBadge", param);
+                    alert("DELETED BADGE!");
+                }
+                catch(e){
+                    alert(e.message);
+                }
             },
 
             //Trophy Functions
@@ -438,16 +444,33 @@
 
             async editTrophy(){
                 this.ShowTrophies = false
+                var params = {
+                    "TrophyID" : this.NewTrophyID,
+                    "TrophyName": this.NewTrophyName,
+                    "TrophyDescription": this.NewTrophyDescription,
+                    "TrophyPoints": this.NewTrophyPoints,
+                    "TrophyImage": this.NewTrophyImage,
+                    "TrophyCategory": this.NewTrophyCategory,
+                    "BadgesIDNeeded": this.AssignedBadgesforNewTrophy,
+                }
+                await Parse.Cloud.run("EditTrophy", params);
+                alert("Edited Trophy");
             },
             
             async deleteTrophy(id){
                 var params = {
                     "TrophyID": id
                 }
-                await Parse.Cloud.run("DeleteTrophy", params)
+                try{
+                    await Parse.Cloud.run("DeleteTrophy", params);
+                }
+                catch(e){
+                    alert(e.message);
+                }
             },
 
             async getTrophy(trophy){
+                this.NewTrophyID = trophy.objectId;
                 this.NewTrophyName = trophy.TrophyName
                 this.NewTrophyDescription = trophy.TrophyDescription
                 this.NewTrophyPoints = trophy.TrophyPoints

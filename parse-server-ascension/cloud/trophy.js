@@ -40,19 +40,34 @@ Parse.Cloud.define("EditTrophy", async(request) => {
                             argument.TrophyImage, argument.TrophyCategory, argument.BadgesIDNeeded
     ];
 
+    var curBadges = res.get("BadgesIDNeeded");
+    var updatedBadges = argument.BadgesIDNeeded;
+    var need_verification = (curBadges !== updatedBadges);
+
     for(let i = 0; i < list_of_attr.length; ++i){
         if(list_of_arguments[i] != null){
             res.set(list_of_attr[i], list_of_arguments[i]);
         }
     }
 
-    res.save().then(()=>{
+    res.save().then(async()=>{
+        if(need_verification){
+            var students = JSON.parse(await Parse.Cloud.run("GetStudents"));
+            for(const student of students){
+                var param = {"StudentID" : student.objectId}
+                if(updatedBadges.length > curBadges.length){
+                    await Parse.Cloud.run("VerifyTrophyRemoval", param);
+                }
+                else{
+                    await Parse.Cloud.run("VerifyTrophyEligibility", param);
+                }
+            }
+        }
         console.log("Successfully Edited Trophy");
     });
 });
 
 Parse.Cloud.define("DeleteTrophy", async(request) => {
-    let canDeleteTrophy = true
     const Trophy = Parse.Object.extend("Trophy");
     const query = new Parse.Query(Trophy);
     const argument = request.params;
@@ -72,19 +87,13 @@ Parse.Cloud.define("DeleteTrophy", async(request) => {
         }
         let index = TrophiesIDUnlocked.indexOf(argument.TrophyID);
         if(index > -1){
-            //return Promise.reject("Cannot Delete Trophy! One or more students have acquired this Trophy.");
-            canDeleteTrophy = false;
+            return Promise.reject("Cannot Delete Trophy! One or more students have acquired this Trophy.");
         }
     }
 
-    if(canDeleteTrophy){
-        res.destroy().then(() => {
-            console.log("Successfully Deleted Trophy");
-        });
-    }
-    else{
-        console.log("Cannot Delete Trophy! One or more students have acquired this Trophy.")
-    }
+    res.destroy().then(() => {
+        console.log("Successfully Deleted Trophy");
+    });
 });
 
 Parse.Cloud.define("GetTrophyData", async(request) => {
