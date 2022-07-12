@@ -7,7 +7,7 @@ Parse.Cloud.define("GoogleSignIn", async (request) => {
     const oauth2Client = new OAuth2(
       "762534465467-srl15os6nbsoaqr89aekvicok61tildv.apps.googleusercontent.com",
       "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",
-      ["http://localhost:8080/RedirectPage"],
+      ["http://localhost:8088/RedirectPage"],
     );
     // Obtain the google login link to which we'll send our users to give us access
     const loginLink = oauth2Client.generateAuthUrl({
@@ -29,7 +29,7 @@ Parse.Cloud.define("GoogleToken", async (request) => {
     const oauth2Client = new OAuth2(
         "762534465467-srl15os6nbsoaqr89aekvicok61tildv.apps.googleusercontent.com",
         "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",
-        ["http://localhost:8080/RedirectPage"],
+        ["http://localhost:8088/RedirectPage"],
     );
   
     if (request.error) {
@@ -57,4 +57,17 @@ Parse.Cloud.define("GoogleToken", async (request) => {
         return error;
       }
     }
+});
+
+//Does not work
+Parse.Cloud.define("DeleteFile", async(request) =>{
+  const argument = request.params;
+  await Parse.Cloud.httpRequest({
+    url: argument.url,
+    method: 'DELETE',
+    headers: {
+        'X-Parse-Master-Key' : 'master',
+        'X-Parse-Application-Id': 'myAppId'
+    }
+  });
 });
