@@ -52,7 +52,7 @@
     <span>Badge Points: </span>
     <input v-model="BadgePoints" type="number"><br>
     <span>Badge Image </span>
-    <input v-model="BadgeImage" type="text"><br>
+    <input @change="onBadgeImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
     <button @click="addBadge()">Add Badge</button><br>
 
     <h3>Edit / Delete Badge</h3>
@@ -376,17 +376,28 @@
             },
 
             //Badges Functions
-            //Testing! add other necessarry attributes
             async addBadge(){
-                this.ShowBadges = false
+                this.ShowBadges = false;
                 var params = {
                     "BadgeName" : this.BadgeName,
                     "BadgeDescription" : this.BadgeDescription,
                     "BadgePoints" : this.BadgePoints,
-                    "BadgeImage" : this.BadgeImage,
+                    "BadgeImage" : "",
                 }
-                await Parse.Cloud.run("AddBadge", params);
-                alert("Added Badge");
+                //Save file in parse, then get the result (Having errors if transfered in parse code)
+                var file = this.BadgeImage;
+                var name = this.BadgeImage.name;
+                var parseFile = new Parse.File(name, file);
+                parseFile.save().then(async(res) => {
+                    // The file has been saved to Parse.
+                    params["BadgeImage"] = res.url();
+                    await Parse.Cloud.run("AddBadge", params);
+                    alert("Added Badge");
+                });
+            },
+
+            onBadgeImageSelected(e){
+                this.BadgeImage = e.target.files[0];
             },
 
             async editBadge(){

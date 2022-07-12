@@ -22,13 +22,14 @@ Parse.Cloud.define("AddStudent", async(request) => {
     }).then(async (res)=>{
         console.log("Successfully added Student!");
         /*
-        This is not working, unable to edit user data
+            Does not work
+            const query = new Parse.Query(Parse.User);
+            query.equalTo("objectId", argument.UserID);
+            const res2 = await query.first({useMasterKey:true});
+            res2.set("AccountID", res.id);
+            res2.save({useMasterKey:true});
 
-        const query = new Parse.Query(Parse.User);
-        query.equalTo(argument.UserID, argument.StudentID);
-        const res2 = await query.find({useMasterKey:true});
-        res2.set("AccountID", res.id);
-        res2.save({useMasterKey:true});
+            - ParseError: Cannot modify user jBDrWWWDMs (code 206)
         */
     });
 });
