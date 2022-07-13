@@ -7,13 +7,14 @@ Parse.Cloud.define("AddBadge", async(request) => {
 
     var convertedImage = {base64: argument.BadgeImage.toString('base64')}; //needs to be base64 before uploading to parse file, in retrieving, there will be a url/link
     var parseFile = new Parse.File(argument.BadgeImage.name, convertedImage);
+
     parseFile.save({ useMasterKey: true }).then(function(res) {
         var link = res.url();
         badge.save({
             "BadgeName" : argument.BadgeName,
             "BadgeDescription" : argument.BadgeDescription,
             "BadgePoints" : argument.BadgePoints,
-            "BadgeImage" : link, //parseFile -> does not work(read comment above)
+            "BadgeImage" : link,
         }, { useMasterKey: true }).then(()=>{
             console.log("Successfully added Badge!");
         });
