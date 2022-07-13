@@ -59,7 +59,6 @@ Parse.Cloud.define("GoogleToken", async (request) => {
     }
 });
 
-//Does not work
 Parse.Cloud.define("DeleteFile", async(request) =>{
   const argument = request.params;
   await Parse.Cloud.httpRequest({
