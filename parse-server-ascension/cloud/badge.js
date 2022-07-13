@@ -5,27 +5,18 @@ Parse.Cloud.define("AddBadge", async(request) => {
     const badge = new Badge();
     const argument = request.params;
 
-    /*
-    - Tried uploading the file in parsecode before adding badge, but did not work
-    - argument.BadgeImage should be the file (e.target.files[0])
     var convertedImage = {base64: argument.BadgeImage.toString('base64')}; //needs to be base64 before uploading to parse file, in retrieving, there will be a url/link
     var parseFile = new Parse.File(argument.BadgeImage.name, convertedImage);
-    var link;
-
-    - how to get url
-    parseFile.save().then(function(res) {
-        link = res.url();
-    });
-    - ParseError: File upload by public is disabled (code 130)
-    */
-
-    badge.save({
-        "BadgeName" : argument.BadgeName,
-        "BadgeDescription" : argument.BadgeDescription,
-        "BadgePoints" : argument.BadgePoints,
-        "BadgeImage" : argument.BadgeImage, //parseFile -> does not work(read comment above)
-    }).then(()=>{
-        console.log("Successfully added Badge!");
+    parseFile.save({ useMasterKey: true }).then(function(res) {
+        var link = res.url();
+        badge.save({
+            "BadgeName" : argument.BadgeName,
+            "BadgeDescription" : argument.BadgeDescription,
+            "BadgePoints" : argument.BadgePoints,
+            "BadgeImage" : link, //parseFile -> does not work(read comment above)
+        }, { useMasterKey: true }).then(()=>{
+            console.log("Successfully added Badge!");
+        });
     });
 });
 
@@ -105,13 +96,11 @@ Parse.Cloud.define("DeleteBadge", async(request) => {
             }
         }
     }
-    /*
-    This does not work
+    
     //Delete image
-    var imageToDelete = res.get("BadgeImage");
+    var imageToDelete = res.get("BadgeImage").replace('/myAppId','');
     param = {"url" : imageToDelete};
-    await Parse.Cloud.run("DeleteFile", param); -> function is in function.js
-    */
+    await Parse.Cloud.run("DeleteFile", param);
 
     res.destroy().then(async()=>{
         console.log("Badge has been deleted!");

@@ -20,6 +20,10 @@ Parse.Cloud.define("AddStudent", async(request) => {
         "StudentDegreeIDPointer" : argument.StudentDegreeIDPointer,
         "StudentCoursesIDPointer" : argument.StudentCoursesIDPointer,
     }).then(async (res)=>{
+        var user = request.user;
+        user.set("AccountID", res.id);
+        user.set("AccountType", "Student");
+        Parse.Object.saveAll([user], { useMasterKey: true });
         console.log("Successfully added Student!");
         /*
             Does not work

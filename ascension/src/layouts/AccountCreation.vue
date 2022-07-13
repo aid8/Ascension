@@ -150,7 +150,8 @@
                     "RegisterDate" : "datetoday",
                 }
                 if(this.userType == "Student"){
-                    params["UserID"] = Parse.User.current().id;
+                    var curId = Parse.User.current().id;
+                    params["UserID"] = curId;
                     params["YearLevel"] = this.YearLevel;
                     params["StudentUnitIDPointer"] = this.StudentUnitIDPointer;
                     params["StudentDegreeIDPointer"] = this.StudentDegreeIDPointer;

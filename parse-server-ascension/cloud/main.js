@@ -16,3 +16,6 @@ require('./global.js');
 
 //Run this code to initialize global
 Parse.Cloud.run("AddGlobal");
+//Initialization
+//Parse.initialize("myAppId", "jspass", "master");
+//Parse.serverURL = 'http://localhost:1337/api';
