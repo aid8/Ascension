@@ -5,11 +5,11 @@ Parse.Cloud.define("AddBadge", async(request) => {
     const badge = new Badge();
     const argument = request.params;
 
-    var convertedImage = {base64: argument.BadgeImage.toString('base64')}; //needs to be base64 before uploading to parse file, in retrieving, there will be a url/link
-    var parseFile = new Parse.File(argument.BadgeImage.name, convertedImage);
+    var convertedImage = {base64: argument.BadgeImage};
+    var parseFile = new Parse.File(argument.BadgeImageName, convertedImage);
 
-    parseFile.save({ useMasterKey: true }).then(function(res) {
-        var link = res.url();
+    parseFile.save({ useMasterKey: true }).then(function(result) {
+        var link = result.url();
         badge.save({
             "BadgeName" : argument.BadgeName,
             "BadgeDescription" : argument.BadgeDescription,
@@ -17,6 +17,7 @@ Parse.Cloud.define("AddBadge", async(request) => {
             "BadgeImage" : link,
         }, { useMasterKey: true }).then(()=>{
             console.log("Successfully added Badge!");
+            URL.revokeObjectURL(argument.BadgeImage);
         });
     });
 });
@@ -30,22 +31,20 @@ Parse.Cloud.define("EditBadge", async(request) => {
     query.equalTo("objectId", argument.BadgeID);
     const res = await query.first();
 
-    var list_of_attr = ["BadgeName", "BadgeDescription", "BadgePoints", 
-                        "BadgeImage",
-    ];
-    
-    var list_of_arguments =[argument.BadgeName, argument.BadgeDescription, argument.BadgePoints, 
-                            argument.BadgeImage, 
-    ];
+    var convertedImage = {base64: argument.BadgeImage};
+    var parseFile = new Parse.File(argument.BadgeImageName, convertedImage);
 
-    for(let i = 0; i < list_of_attr.length; ++i){
-        if(list_of_arguments[i] != null){
-            res.set(list_of_attr[i], list_of_arguments[i]);
-        }
-    }
-
-    res.save().then(()=>{
-        console.log("Successfully Edited Badge");
+    parseFile.save({ useMasterKey: true }).then(function(result) {
+        var link = result.url();
+        res.save({
+            "BadgeName" : argument.BadgeName,
+            "BadgeDescription" : argument.BadgeDescription,
+            "BadgePoints" : argument.BadgePoints,
+            "BadgeImage" : link,
+        }, { useMasterKey: true }).then(()=>{
+            console.log("Successfully edited Badge!");
+            URL.revokeObjectURL(argument.BadgeImage);
+        });
     });
 });
 
