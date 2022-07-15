@@ -13,7 +13,11 @@ Parse.Cloud.define("AddTeacher", async(request) => {
         "JobTitle" : argument.JobTitle,
         "TeacherUnitIDPointer" : argument.TeacherUnitIDPointer,
         "TeacherCoursesIDPointer" : argument.TeacherCoursesIDPointer,
-    }).then(()=>{
+    }).then(async (res)=>{
+        var user = request.user;
+        user.set("AccountID", res.id);
+        user.set("AccountType", "Teacher");
+        Parse.Object.saveAll([user], { useMasterKey: true });
         console.log("Successfully added Teacher!");
     });
 });

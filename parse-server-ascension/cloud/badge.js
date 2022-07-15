@@ -17,7 +17,6 @@ Parse.Cloud.define("AddBadge", async(request) => {
             "BadgeImage" : link,
         }, { useMasterKey: true }).then(()=>{
             console.log("Successfully added Badge!");
-            URL.revokeObjectURL(argument.BadgeImage);
         });
     });
 });
@@ -31,21 +30,40 @@ Parse.Cloud.define("EditBadge", async(request) => {
     query.equalTo("objectId", argument.BadgeID);
     const res = await query.first();
 
-    var convertedImage = {base64: argument.BadgeImage};
-    var parseFile = new Parse.File(argument.BadgeImageName, convertedImage);
+    var list_of_attr = ["BadgeName", "BadgeDescription", "BadgePoints", 
+    ];
+    
+    var list_of_arguments =[argument.BadgeName, argument.BadgeDescription, argument.BadgePoints,
+    ];
 
-    parseFile.save({ useMasterKey: true }).then(function(result) {
-        var link = result.url();
-        res.save({
-            "BadgeName" : argument.BadgeName,
-            "BadgeDescription" : argument.BadgeDescription,
-            "BadgePoints" : argument.BadgePoints,
-            "BadgeImage" : link,
-        }, { useMasterKey: true }).then(()=>{
-            console.log("Successfully edited Badge!");
-            URL.revokeObjectURL(argument.BadgeImage);
+    for(let i = 0; i < list_of_attr.length; ++i){
+        if(list_of_arguments[i] != null){
+            res.set(list_of_attr[i], list_of_arguments[i]);
+        }
+    }
+
+    if(argument.BadgeImage != null && argument.BadgeImageName != null){
+        //Delete old image
+        var imageToDelete = res.get("BadgeImage").replace('/myAppId','');
+        var param = {"url" : imageToDelete};
+        await Parse.Cloud.run("DeleteFile", param);
+
+        var convertedImage = {base64: argument.BadgeImage};
+        var parseFile = new Parse.File(argument.BadgeImageName, convertedImage);
+
+        parseFile.save({ useMasterKey: true }).then(function(result) {
+            var link = result.url();
+            res.set("BadgeImage", link);
+            res.save().then(()=>{
+                console.log("Successfully Edited Badge");
+            });
         });
-    });
+    }
+    else{
+        res.save().then(()=>{
+            console.log("Successfully Edited Badge");
+        });
+    }
 });
 
 Parse.Cloud.define("DeleteBadge", async(request) => {
@@ -79,7 +97,6 @@ Parse.Cloud.define("DeleteBadge", async(request) => {
     for (const trophy of trophies){
         var BadgesIDNeeded = trophy.BadgesIDNeeded;
         let index = BadgesIDNeeded.indexOf(argument.BadgeID);
-        console.log(index)
         if(index > -1){
             //If the badgesIDNeeded size is 1 and its found in this
             //Means its gonna be empty, just delete the trophy

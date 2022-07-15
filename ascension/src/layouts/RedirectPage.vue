@@ -9,14 +9,14 @@
             const user = new Parse.User();
             user.set("username", authData.name);
             user.set("email", authData.email);
-            user.set("password", "123456"); //Change this lolz
-            await user.linkWith("google", { authData }).then(async (obj)=>{
-                console.log(obj);
-                alert("Check console!");
-                await Parse.User.logIn(authData.name, "123456") //lol
-            });
-            let host = window.location.host;
-            window.location.href ='http://' + host + '/AccountCreation';
+            var names = authData.name.split(' ');
+            user.set("firstname", names[0]);
+            user.set("lastname", names[names.length - 1]);
+            await user.linkWith("google", { authData }).then(async (_obj)=>{
+                await Parse.User.logInWith('google', { authData });
+                let host = window.location.host;
+                window.location.href ='http://' + host + '/AccountCreation';
+            });   
         }
     }
 </script>

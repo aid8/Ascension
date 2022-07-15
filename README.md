@@ -89,7 +89,7 @@
 
     BADGE ENTITY
         Function: AddBadge()
-        Parameters: BadgeName, BadgeDescription, BadgePoints, BadgeImage
+        Parameters: BadgeName, BadgeDescription, BadgePoints, BadgeImage, BadgeImageName
         Purpose: Save the badge object into the database
 
         Function: EditBadge()
@@ -127,8 +127,12 @@
 
     TROPHY ENTITY
         Function: AddTrophy()
-        Parameters: TrophyName, TrophyDescription, TrophyPoints, TrophyImage, TrophyCategory, TrophyBadgesIDNeeded
+        Parameters: TrophyName, TrophyDescription, TrophyPoints, TrophyImage, TrophyCategory, BadgesIDNeeded, TrophyImageName
         Purpose: Save the Trophy object into the database
+
+        Function: afterSave(Trophy)
+        Parameters:
+        Purpose: Calls VerifyTrophyEligibility or VerifyTrophyRemoval upon editing BadgesIDNeeded
 
         Function: EditTrophy()
         Parameters: TrophyID, Name of the attribute/s to be edited, 

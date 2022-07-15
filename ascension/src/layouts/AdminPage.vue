@@ -160,6 +160,12 @@
     <h3>Add House</h3>
     <span>House Name: </span>
     <input v-model="HouseName" type="text"><br>
+    <span>House Banner ID: {{SelectedHouseBannerID}}</span><br>
+    <button @click="loadHouseBanners()">Load House Banners</button><br>
+    <ul>
+        <li v-for="banner in HouseBanners" :key="banner">{{banner.CosmeticName}} <button @click="selectHouseBanner(banner.objectId)">Select</button></li>
+    </ul>
+
     <button @click="addHouse()">Add House</button><br>
     <hr>
 
@@ -191,6 +197,14 @@
     </ul>
     <p>Selected CosmeticID for CoverPhoto: {{SelectedCoverPhoto}}</p>
     <button @click="setCosmetic('CoverPhoto')">Set Default for CoverPhoto</button><br>
+
+    <h4>Banners (for house)</h4>
+    <ul>
+        <li v-for="banner in Banners" :key="banner">{{banner.CosmeticName}} <button @click="selectCosmetic('Banner', banner.objectId)">Select</button></li>
+    </ul>
+    <p>Selected CosmeticID for Banner: {{SelectedBanner}}</p>
+    <button @click="setCosmetic('Banner')">Set Default for Banner</button><br>
+
     <h4> TESTING </h4>
     <button @click="setStudentCosmetics()">Set All Students Cosmetic to Selected Cosmetics (Includes Equipped)</button>
     <hr>
@@ -234,6 +248,7 @@
                 NewBadgeDescription: '',
                 NewBadgePoints: '',
                 NewBadgeImage: '',
+                NewBadgeImageName: '',
                 BadgeIdPointer: '',
                 Badges: [],
                 
@@ -243,6 +258,7 @@
                 TrophyDescription: '',
                 TrophyPoints: 0,
                 TrophyImage: '',
+                TrophyImageName: '',
                 AvailableBadgesForTrophy: [],
                 AssignedBadgesForTrophy: [],
                 NewTrophyCategory: '',
@@ -250,6 +266,7 @@
                 NewTrophyDescription: '',
                 NewTrophyPoints: 0,
                 NewTrophyImage: '',
+                NewTrophyImageName: '',
                 NewTrophyID : '',
                 AssignedBadgesforNewTrophy: [],
                 Trophies: [],
@@ -268,15 +285,19 @@
 
                 //House Variables,
                 HouseName: '',
+                SelectedHouseBannerID: '',
+                HouseBanners: '',
 
                 //Cosmetic Variables
                 CosmeticName: '',
                 Avatars: [],
                 Frames: [],
                 CoverPhotos: [],
+                Banners : [],
                 SelectedAvatar : '',
                 SelectedFrame : '',
                 SelectedCoverPhoto : '',
+                SelectedBanner : '',
 
                 //Other Variables
                 Degrees: [],
@@ -386,7 +407,7 @@
                     "BadgeImage" : this.BadgeImage,
                     "BadgeImageName" : this.BadgeImageName,
                 }
-                await Parse.Cloud.run("AddBadge", params);
+                await Parse.Cloud.run("AddBadge", params).then(alert("Added Badge!"));
             },
 
             getBase64(file) {
@@ -423,7 +444,10 @@
                     "BadgeImage" : this.NewBadgeImage,
                     "BadgeID" : this.BadgeIdPointer,
                 }
-                await Parse.Cloud.run("EditBadge", params).then(alert("Badge edited!"))
+                if(this.NewBadgeImageName != ""){
+                    params["BadgeImageName"] = this.NewBadgeImageName;
+                }
+                await Parse.Cloud.run("EditBadge", params).then(alert("Badge edited!"));
             },
 
             async getBadges(){
@@ -463,21 +487,22 @@
                     "TrophyImage": this.TrophyImage,
                     "TrophyCategory": this.TrophyCategory,
                     "BadgesIDNeeded": this.AssignedBadgesForTrophy,
+                    "TrophyImageName" : this.TrophyImageName,
                 }
-                await Parse.Cloud.run("AddTrophy", params).then(alert("Added Trophy"))
+                await Parse.Cloud.run("AddTrophy", params).then(alert("Added Trophy"));
             },
 
             async onTrophyImageSelected(e){
                 var file = e.target.files[0];
-                this.TrophyImage = file.name;
+                this.TrophyImageName = file.name;
                 this.getBase64(file).then(
                     data => this.TrophyImage = data
                 );
             },
 
-            async onNewrophyImageSelected(e){
+            async onNewTrophyImageSelected(e){
                 var file = e.target.files[0];
-                this.NewTrophyImage = file.name;
+                this.NewTrophyImageName = file.name;
                 this.getBase64(file).then(
                     data => this.NewTrophyImage = data
                 );
@@ -494,6 +519,9 @@
                     "TrophyCategory": this.NewTrophyCategory,
                     "BadgesIDNeeded": this.AssignedBadgesforNewTrophy,
                 }
+                if(this.NewTrophyImageName != ""){
+                    params["TrophyImageName"] = this.NewTrophyImageName;
+                }
                 await Parse.Cloud.run("EditTrophy", params).then(alert("Edited Trophy"));
             },
             
@@ -502,7 +530,7 @@
                     "TrophyID": id
                 }
                 try{
-                    await Parse.Cloud.run("DeleteTrophy", params);
+                    await Parse.Cloud.run("DeleteTrophy", params).then(alert("Deleted Trophy"));
                 }
                 catch(e){
                     alert(e.message);
@@ -517,7 +545,6 @@
                 this.NewTrophyImage = trophy.TrophyImage
                 this.NewTrophyCategory = trophy.TrophyCategory
                 this.AssignedBadgesforNewTrophy = trophy.BadgesIDNeeded
-                
             },
 
             async getTrophies(){
@@ -547,7 +574,6 @@
                     this.AssignedBadgesforNewTrophy.splice(index, 1)
                 }
             },
-
             
             async getBadgesForTrophy(){
                 this.ShowBadgesForTrophy = true
@@ -637,10 +663,20 @@
             async addHouse(){
                 var params = {
                     "HouseName" : this.HouseName,
-                    "HouseBannerIDPointer" : "",
+                    "HouseBannerIDPointer" : this.SelectedHouseBannerID,
                 }
                 await Parse.Cloud.run("AddHouse", params);
                 alert("Added House");
+            },
+
+            async loadHouseBanners(){
+                var params = {"CosmeticType" : "Banner"}
+                const res = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
+                this.HouseBanners = res;
+            },
+
+            async selectHouseBanner(id){
+                this.SelectedHouseBannerID = id;
             },
 
             //Cosmetic Functions
@@ -654,6 +690,8 @@
                 params["CosmeticType"] = "Frame";
                 await Parse.Cloud.run("AddCosmetic", params);
                 params["CosmeticType"] = "CoverPhoto";
+                await Parse.Cloud.run("AddCosmetic", params);
+                params["CosmeticType"] = "Banner";
                 await Parse.Cloud.run("AddCosmetic", params);
                 alert("Added Cosmetic for all!");
             },
@@ -670,6 +708,10 @@
                 params["CosmeticType"] = "CoverPhoto";
                 const res2 = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
                 this.CoverPhotos = res2;
+
+                params["CosmeticType"] = "Banner";
+                const res3 = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
+                this.Banners = res3;
             },
 
             selectCosmetic(type, id){
@@ -681,6 +723,9 @@
                 }
                 else if(type === "CoverPhoto"){
                     this.SelectedCoverPhoto = id;
+                }
+                else if(type === "Banner"){
+                    this.SelectedBanner = id;
                 }
             },
 
@@ -694,6 +739,9 @@
                 }
                 else if(type === "CoverPhoto"){
                     params["CosmeticID"] = this.SelectedCoverPhoto
+                }
+                else if(type === "Banner"){
+                    params["CosmeticID"] = this.SelectedBanner
                 }
                 await Parse.Cloud.run("SetDefaultCosmetic", params);
                 alert("Successfully Changed Default Cosmetic");

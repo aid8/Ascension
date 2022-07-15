@@ -6,7 +6,6 @@ Parse.Cloud.define("AddStudent", async(request) => {
     const argument = request.params;
 
     student.save({
-        "UserID" : argument.UserID,
         "FirstName" : argument.FirstName,
         "MiddleName" : argument.MiddleName,
         "LastName" : argument.LastName,

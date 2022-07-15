@@ -104,10 +104,10 @@
         data(){
             return{
                 userType: '',
-                FirstName: '',
+                FirstName: Parse.User.current().get("firstname"),
                 MiddleName: '',
-                LastName: '',
-                Email: '',
+                LastName: Parse.User.current().get("lastname"),
+                Email: Parse.User.current().get("email"),
                 ContactNumber: '',
                 UserName: '',
                 Address: '',
@@ -150,8 +150,6 @@
                     "RegisterDate" : "datetoday",
                 }
                 if(this.userType == "Student"){
-                    var curId = Parse.User.current().id;
-                    params["UserID"] = curId;
                     params["YearLevel"] = this.YearLevel;
                     params["StudentUnitIDPointer"] = this.StudentUnitIDPointer;
                     params["StudentDegreeIDPointer"] = this.StudentDegreeIDPointer;
@@ -243,7 +241,3 @@
         }
     }
 </script>
-
-
-
-
