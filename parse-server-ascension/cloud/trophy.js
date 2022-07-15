@@ -11,19 +11,27 @@ Parse.Cloud.define("AddTrophy", async(request) => {
     const trophy = new Trophy();
     const argument = request.params;
 
-    trophy.save({
-        "TrophyName" : argument.TrophyName,
-        "TrophyDescription" : argument.TrophyDescription,
-        "TrophyPoints" : argument.TrophyPoints,
-        "TrophyImage" : argument.TrophyImage,
-        "TrophyCategory" : argument.TrophyCategory,
-        "BadgesIDNeeded" : argument.BadgesIDNeeded,
-    }).then(()=>{
-        console.log("Successfully added Trophy!");
+    var convertedImage = {base64: argument.TrophyImage};
+    var parseFile = new Parse.File(argument.TrophyName, convertedImage);
+
+    parseFile.save({ useMasterKey: true }).then(function(result) {
+        var link = result.url();
+        trophy.save({
+            "TrophyName" : argument.TrophyName,
+            "TrophyDescription" : argument.TrophyDescription,
+            "TrophyPoints" : argument.TrophyPoints,
+            "TrophyImage" : link,
+            "TrophyCategory" : argument.TrophyCategory,
+            "BadgesIDNeeded" : argument.BadgesIDNeeded,
+        }, { useMasterKey: true }).then(()=>{
+            console.log("Successfully edited Trophy!");
+            URL.revokeObjectURL(argument.TrophyImage);
+        });
     });
 });
 
 //Must specify id of Trophy with name of "TrophyID"
+//Issue: Image turns into a txt file
 Parse.Cloud.define("EditTrophy", async(request) => {
     const Trophy = Parse.Object.extend("Trophy");
     const query = new Parse.Query(Trophy);
@@ -32,39 +40,86 @@ Parse.Cloud.define("EditTrophy", async(request) => {
     query.equalTo("objectId", argument.TrophyID);
     const res = await query.first();
 
-    var list_of_attr = ["TrophyName", "TrophyDescription", "TrophyPoints", 
-                        "TrophyImage", "TrophyCategory", "BadgesIDNeeded",
-    ];
-    
-    var list_of_arguments =[argument.TrophyName, argument.TrophyDescription, argument.TrophyPoints, 
-                            argument.TrophyImage, argument.TrophyCategory, argument.BadgesIDNeeded
-    ];
+    var convertedImage = {base64: argument.TrophyImage};
+    var parseFile = new Parse.File(argument.TrophyName, convertedImage);
 
-    var curBadges = res.get("BadgesIDNeeded");
-    var updatedBadges = argument.BadgesIDNeeded;
-    var need_verification = (curBadges !== updatedBadges);
+    parseFile.save({ useMasterKey: true }).then(function(result) {
+        var link = result.url();
 
-    for(let i = 0; i < list_of_attr.length; ++i){
-        if(list_of_arguments[i] != null){
-            res.set(list_of_attr[i], list_of_arguments[i]);
-        }
-    }
+        var list_of_attr = ["TrophyName", "TrophyDescription", "TrophyPoints", 
+                            "TrophyImage", "TrophyCategory", "BadgesIDNeeded",
+        ];
+        
+        var list_of_arguments =[argument.TrophyName, argument.TrophyDescription, argument.TrophyPoints, 
+                                link, argument.TrophyCategory, argument.BadgesIDNeeded
+        ];
 
-    res.save().then(async()=>{
-        if(need_verification){
-            var students = JSON.parse(await Parse.Cloud.run("GetStudents"));
-            for(const student of students){
-                var param = {"StudentID" : student.objectId}
-                if(updatedBadges.length > curBadges.length){
-                    await Parse.Cloud.run("VerifyTrophyRemoval", param);
-                }
-                else{
-                    await Parse.Cloud.run("VerifyTrophyEligibility", param);
-                }
+        for(let i = 0; i < list_of_attr.length; ++i){
+            if(list_of_arguments[i] != null){
+                res.set(list_of_attr[i], list_of_arguments[i]);
             }
         }
-        console.log("Successfully Edited Trophy");
+        res.save({
+            "TrophyName" : argument.TrophyName,
+            "TrophyDescription" : argument.TrophyDescription,
+            "TrophyPoints" : argument.TrophyPoints,
+            "TrophyImage" : link,
+            "TrophyCategory" : argument.TrophyCategory,
+            "BadgesIDNeeded" : argument.BadgesIDNeeded,
+        }, { useMasterKey: true }).then(()=>{
+            URL.revokeObjectURL(argument.TrophyImage);
+            console.log("Successfully Edited Trophy");
+        }).then(async() =>{
+            var curBadges = res.get("BadgesIDNeeded");
+            var updatedBadges = argument.BadgesIDNeeded;
+            var need_verification = (curBadges !== updatedBadges);
+            if(need_verification){
+                var students = JSON.parse(await Parse.Cloud.run("GetStudents"));
+                for(const student of students){
+                    var param = {"StudentID" : student.objectId}
+                    if(updatedBadges.length > curBadges.length){
+                        await Parse.Cloud.run("VerifyTrophyRemoval", param);
+                    }
+                    else{
+                        await Parse.Cloud.run("VerifyTrophyEligibility", param);
+                    }
+                }
+            }
+            console.log("Successfully Edited Trophy");
+        });
     });
+
+    // var curBadges = res.get("BadgesIDNeeded");
+    // var updatedBadges = argument.BadgesIDNeeded;
+    // var need_verification = (curBadges !== updatedBadges);
+    // var list_of_attr = ["TrophyName", "TrophyDescription", "TrophyPoints", 
+    //                     "TrophyImage", "TrophyCategory", "BadgesIDNeeded",
+    // ];
+    
+    // var list_of_arguments =[argument.TrophyName, argument.TrophyDescription, argument.TrophyPoints, 
+    //                         argument.TrophyImage, argument.TrophyCategory, argument.BadgesIDNeeded
+    // ];
+    // for(let i = 0; i < list_of_attr.length; ++i){
+    //     if(list_of_arguments[i] != null){
+    //         res.set(list_of_attr[i], list_of_arguments[i]);
+    //     }
+    // }
+
+    // res.save().then(async()=>{
+    //     if(need_verification){
+    //         var students = JSON.parse(await Parse.Cloud.run("GetStudents"));
+    //         for(const student of students){
+    //             var param = {"StudentID" : student.objectId}
+    //             if(updatedBadges.length > curBadges.length){
+    //                 await Parse.Cloud.run("VerifyTrophyRemoval", param);
+    //             }
+    //             else{
+    //                 await Parse.Cloud.run("VerifyTrophyEligibility", param);
+    //             }
+    //         }
+    //     }
+    //     console.log("Successfully Edited Trophy");
+    // });
 });
 
 Parse.Cloud.define("DeleteTrophy", async(request) => {

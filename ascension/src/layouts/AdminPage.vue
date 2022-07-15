@@ -63,7 +63,7 @@
     <span>Badge Points: </span>
     <input v-model="NewBadgePoints" type="number"><br>
     <span>Badge Image: </span>
-    <input v-model="NewBadgeImage" type="text"><br>
+    <input @change="onNewBadgeImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
     <button @click="editBadge()">Edit Badge</button><br><br>
     <button @click="getBadges()">Load Available Badges</button>
     <ul v-if="ShowBadges">
@@ -82,7 +82,7 @@
     <span>Trophy Points: </span>
     <input v-model="TrophyPoints" type="number"><br>
     <span>Trophy Image: </span>
-    <input v-model="TrophyImage" type="text"><br>
+    <input @change="onTrophyImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
     <span>Trophy Category: </span>
     <input v-model="TrophyCategory" type="text"><br>
     <span>Required Badges: </span>
@@ -104,7 +104,7 @@
     <span>Trophy Points: </span>
     <input v-model="NewTrophyPoints" type="number"><br>
     <span>Trophy Image: </span>
-    <input v-model="NewTrophyImage" type="text"><br>
+    <input @change="onNewTrophyImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
     <span>Trophy Category: </span>
     <input v-model="NewTrophyCategory" type="text"><br>
     <span>Required Badges: </span>
@@ -229,6 +229,7 @@
                 BadgeDescription: '',
                 BadgePoints: '',
                 BadgeImage: '',
+                BadgeImageName: '',
                 NewBadgeName: '',
                 NewBadgeDescription: '',
                 NewBadgePoints: '',
@@ -383,12 +384,34 @@
                     "BadgeDescription" : this.BadgeDescription,
                     "BadgePoints" : this.BadgePoints,
                     "BadgeImage" : this.BadgeImage,
+                    "BadgeImageName" : this.BadgeImageName,
                 }
                 await Parse.Cloud.run("AddBadge", params);
             },
 
-            onBadgeImageSelected(e){
-                this.BadgeImage = e.target.files[0];
+            getBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            },
+
+            async onBadgeImageSelected(e){
+                var file = e.target.files[0];
+                this.BadgeImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.BadgeImage = data
+                );
+            },
+
+            async onNewBadgeImageSelected(e){
+                var file = e.target.files[0];
+                this.NewBadgeImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.NewBadgeImage = data
+                );
             },
 
             async editBadge(){
@@ -444,6 +467,22 @@
                 await Parse.Cloud.run("AddTrophy", params).then(alert("Added Trophy"))
             },
 
+            async onTrophyImageSelected(e){
+                var file = e.target.files[0];
+                this.TrophyImage = file.name;
+                this.getBase64(file).then(
+                    data => this.TrophyImage = data
+                );
+            },
+
+            async onNewrophyImageSelected(e){
+                var file = e.target.files[0];
+                this.NewTrophyImage = file.name;
+                this.getBase64(file).then(
+                    data => this.NewTrophyImage = data
+                );
+            },
+
             async editTrophy(){
                 this.ShowTrophies = false
                 var params = {
@@ -455,8 +494,7 @@
                     "TrophyCategory": this.NewTrophyCategory,
                     "BadgesIDNeeded": this.AssignedBadgesforNewTrophy,
                 }
-                await Parse.Cloud.run("EditTrophy", params);
-                alert("Edited Trophy");
+                await Parse.Cloud.run("EditTrophy", params).then(alert("Edited Trophy"));
             },
             
             async deleteTrophy(id){
