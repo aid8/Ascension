@@ -12,7 +12,11 @@ Parse.Cloud.define("AddNT_Distributor", async(request) => {
         "RegisterDate" : argument.RegisterDate,
         "JobTitle" : argument.JobTitle,
         "NT_DistributorUnitIDPointer" : argument.NT_DistributorUnitIDPointer,
-    }).then(()=>{
+    }).then(async (res)=>{
+        var user = request.user;
+        user.set("AccountID", res.id);
+        user.set("AccountType", "NT_Distributor");
+        Parse.Object.saveAll([user], { useMasterKey: true });
         console.log("Successfully added NT_Distributor!");
     });
 });

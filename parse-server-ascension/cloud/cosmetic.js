@@ -137,6 +137,9 @@ Parse.Cloud.define("SetDefaultCosmetic", async(request) => {
     else if(argument.CosmeticType == "CoverPhoto"){
         param["DefaultCoverPhotoID"] = argument.CosmeticID;
     }
+    else if(argument.CosmeticType == "Banner"){
+        param["DefaultBannerID"] = argument.CosmeticID;
+    }
 
     await Parse.Cloud.run("EditGlobal", param);
     console.log("Successfully Changed Default Cosmetic!");
