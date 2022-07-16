@@ -8,7 +8,9 @@
         Purpose: Save the student object into the database
 
         Function: afterSave(Student)
-        Parameters: XP, AscensionPoints, BadgesIDEarned, TrophiesIDUnlocked, 
+        Parameters: XP, AscensionPoints, 
+                    BadgesIDEarned(Check RewardBadge() function: Array of RewardIDs where Reward consists of BadgeID, RewardType:Badge, DateRewarded), 
+                    TrophiesIDUnlocked(Check RewardTrophy() function: Array of RewardIDs where Reward consists of TrophyID, RewardType:Trophy, DateRewarded), 
                     ChosenTrophies, AvatarsIDUnlocked, FrameIDUnlocked, 
                     BannerID, CoverPhotoIDUnlocked, AscensionTitle,
                     StudentHouseIDPointer, EquippedCosmetics
@@ -111,7 +113,7 @@
 
         Function: RewardBadge()
         Parameters: BadgeID, StudentID
-        Purpose: Gives student a badge
+        Purpose: Gives student a badge. Push the RewardID(contains BadgeID, RewardType:Badge, DateRewarded:Date) into BadgesIDEarned which is a student attribute
 
         Function: RemoveBadge()
         Parameters: BadgeID, StudentID
@@ -120,10 +122,6 @@
         Function: GetUnacquiredBadge()
         Paramaters: StudentID
         Purpose: Returns missing student badges
-
-        Function: GetRewardData()
-        Parameters: RewardID
-        Purpose: automatically gives details about the trophy/badg stored in "RewardData"
 
     TROPHY ENTITY
         Function: AddTrophy()
@@ -161,7 +159,7 @@
 
         Function: RewardTrophy()
         Paramaters: TrophyID, StudentID
-        Purpose: Gives student a trophy
+        Purpose: Gives student a trophy. Push the RewardID(contains TrophyID, RewardType:Trophy, DateRewarded:Date) into TrophiesIDUnlocked which is a student attribute
 
         Function: RemoveTrophy()
         Parameters: TrophyID, StudentID
@@ -363,3 +361,8 @@
         Function: ApproveRequest()
         Parameters: RequestID, BadgeID
         Purpose: Deletes the requests and rewards the badge
+        
+    OTHER FUNCTIONS
+        Function: GetRewardData()
+        Parameters: RewardID
+        Purpose: automatically gives details about the trophy/badge stored in "RewardData"
