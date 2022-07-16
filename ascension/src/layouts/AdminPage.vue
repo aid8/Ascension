@@ -169,10 +169,30 @@
     <button @click="addHouse()">Add House</button><br>
     <hr>
 
-    <h3>Add Cosmetic (All cosmetics testing)</h3>
+    <h3>Add Cosmetic</h3>
     <span>Cosmetic Name: </span>
     <input v-model="CosmeticName" type="text"><br>
+    <span>Cosmetic Type: </span>
+    <input v-model="CosmeticType" type="text"><br>
+    <span>Cosmetic Image </span>
+    <input @change="onCosmeticImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
     <button @click="addCosmetic()">Add Cosmetic</button><br>
+
+    <h3>Edit / Delete Cosmetic</h3>
+    <span>Cosmetic Name: </span>
+    <input v-model="NewCosmeticName" type="text"><br>
+    <span>Cosmetic Type: </span>
+    <input v-model="NewCosmeticType" type="text"><br>
+    <span>Cosmetic Image </span>
+    <input @change="onNewCosmeticImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
+    <button @click="editCosmetic()">Edit Cosmetic</button><br>
+    <button @click="getAllCosmetics()">Load All Cosmetics</button>
+    <ul>
+        <li v-for="cosmetic in AllCosmetics" :key="cosmetic">{{cosmetic.CosmeticName}} 
+            <button @click="getCosmetic(cosmetic)">Edit</button>
+            <button @click="deleteCosmetic(cosmetic)">Delete</button>
+        </li>
+    </ul>
     <hr>
 
     <h3>Set a Default Cosmetic</h3>
@@ -290,10 +310,20 @@
 
                 //Cosmetic Variables
                 CosmeticName: '',
+                CosmeticType: '',
+                CosmeticImage: '',
+                CosmeticImageName: '',
+                NewCosmeticID: '',
+                NewCosmeticName: '',
+                NewCosmeticType: '',
+                NewCosmeticImage: '',
+                NewCosmeticImageName: '',
+                CosmeticIdPointer: '',
                 Avatars: [],
                 Frames: [],
                 CoverPhotos: [],
                 Banners : [],
+                AllCosmetics : [],
                 SelectedAvatar : '',
                 SelectedFrame : '',
                 SelectedCoverPhoto : '',
@@ -683,17 +713,41 @@
             async addCosmetic(){
                 var params = {
                     "CosmeticName" : this.CosmeticName,
-                    "CosmeticType" : "Avatar",
-                    "CosmeticImage" : "None",
+                    "CosmeticType" : this.CosmeticType,
+                    "CosmeticImage" : this.CosmeticImage,
+                    "CosmeticImageName" : this.CosmeticImageName,
                 }
                 await Parse.Cloud.run("AddCosmetic", params);
-                params["CosmeticType"] = "Frame";
-                await Parse.Cloud.run("AddCosmetic", params);
-                params["CosmeticType"] = "CoverPhoto";
-                await Parse.Cloud.run("AddCosmetic", params);
-                params["CosmeticType"] = "Banner";
-                await Parse.Cloud.run("AddCosmetic", params);
-                alert("Added Cosmetic for all!");
+                alert("Added " + this.CosmeticType);
+            },
+
+            async editCosmetic(){
+                var params = {
+                    "CosmeticID" : this.NewCosmeticID,
+                    "CosmeticName": this.NewCosmeticName,
+                    "CosmeticType": this.NewCosmeticType,
+                    "CosmeticImage": this.NewCosmeticImage,
+                }
+                if(this.NewCosmeticImage != ""){
+                    params["CosmeticImageName"] = this.NewCosmeticImageName;
+                }
+                await Parse.Cloud.run("EditCosmetic", params).then(alert("Edited Cosmetic"));
+            },
+
+            async onCosmeticImageSelected(e){
+                var file = e.target.files[0];
+                this.CosmeticImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.CosmeticImage = data
+                );
+            },
+
+            async onNewCosmeticImageSelected(e){
+                var file = e.target.files[0];
+                this.NewCosmeticImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.NewCosmeticImage = data
+                );
             },
 
             async getCosmetics(){
@@ -712,6 +766,29 @@
                 params["CosmeticType"] = "Banner";
                 const res3 = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
                 this.Banners = res3;
+            },
+
+            async getAllCosmetics(){
+                this.AllCosmetics = JSON.parse(await Parse.Cloud.run("GetCosmetics"));
+            },
+
+            async getCosmetic(cosmetic){
+                this.NewCosmeticID = cosmetic.objectId;
+                this.NewCosmeticName = cosmetic.CosmeticName;
+                this.NewCosmeticType = cosmetic.CosmeticType;
+            },
+
+            async deleteCosmetic(cosmetic){
+                var params = {
+                    "CosmeticID": cosmetic.objectId,
+                }
+                try{
+                    await Parse.Cloud.run("DeleteCosmetic", params).then(alert("Deleted Cosmetic"));
+                    this.getAllCosmetics();
+                }
+                catch(e){
+                    alert(e.message);
+                }
             },
 
             selectCosmetic(type, id){

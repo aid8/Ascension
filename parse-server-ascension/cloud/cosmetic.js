@@ -3,12 +3,18 @@ Parse.Cloud.define("AddCosmetic", async(request) => {
     const cosmetic = new Cosmetic();
     const argument = request.params;
 
-    cosmetic.save({
-        "CosmeticType" : argument.CosmeticType,
-        "CosmeticName" : argument.CosmeticName,
-        "CosmeticImage" : argument.CosmeticImage,
-    }).then(()=>{
-        console.log("Successfully added Cosmetic!");
+    var convertedImage = {base64: argument.CosmeticImage};
+    var parseFile = new Parse.File(argument.CosmeticImageName, convertedImage);
+
+    parseFile.save({ useMasterKey: true}).then(function(result){
+        var link = result.url();
+        cosmetic.save({
+            "CosmeticName" : argument.CosmeticName,
+            "CosmeticType" : argument.CosmeticType,
+            "CosmeticImage" : link,
+        }, { useMasterKey: true}).then(()=>{
+            console.log("Successfully added " + argument.CosmeticType);
+        });
     });
 });
 
@@ -21,10 +27,10 @@ Parse.Cloud.define("EditCosmetic", async(request) => {
     query.equalTo("objectId", argument.CosmeticID);
     const res = await query.first();
 
-    var list_of_attr = ["CosmeticType", "CosmeticName", "CosmeticImage",
+    var list_of_attr = ["CosmeticType", "CosmeticName",
     ];
     
-    var list_of_arguments =[argument.CosmeticType, argument.CosmeticName, argument.CosmeticImage,
+    var list_of_arguments =[argument.CosmeticType, argument.CosmeticName,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
@@ -32,10 +38,28 @@ Parse.Cloud.define("EditCosmetic", async(request) => {
             res.set(list_of_attr[i], list_of_arguments[i]);
         }
     }
+    if(argument.CosmeticImage != null && argument.CosmeticImageName != null){
+        //Delete old image
+        var imageToDelete = res.get("CosmeticImage").replace('/myAppId','');
+        var param = {"url" : imageToDelete};
+        await Parse.Cloud.run("DeleteFile", param);
 
-    res.save().then(()=>{
-        console.log("Successfully Edited Cosmetic");
-    });
+        var convertedImage = {base64: argument.CosmeticImage};
+        var parseFile = new Parse.File(argument.CosmeticImageName, convertedImage);
+
+        parseFile.save({ useMasterKey: true }).then(function(result) {
+            var link = result.url();
+            res.set("CosmeticImage", link);
+            res.save().then(()=>{
+                console.log("Successfully Edited Cosmetic");
+            });
+        });
+    }
+    else{
+        res.save().then(()=>{
+            console.log("Successfully Edited Cosmetic");
+        });
+    }
 });
 
 //Must specify id of cosmetic with name of "CosmeticID"
@@ -96,6 +120,11 @@ Parse.Cloud.define("DeleteCosmetic", async(request) => {
             }
         }
     }
+
+    //Delete image
+    var imageToDelete = res.get("CosmeticImage").replace('/myAppId','');
+    var param = {"url" : imageToDelete};
+    await Parse.Cloud.run("DeleteFile", param);
 
     res.destroy().then(() => {
         console.log("Successfully Deleted Cosmetic");
