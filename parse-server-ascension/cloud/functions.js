@@ -70,3 +70,28 @@ Parse.Cloud.define("DeleteFile", async(request) =>{
     }
   });
 });
+
+//GetRewardData(Since reward id ang nasa badgesIDEarned kang student, gibo pa kita kani, garo man lang reward to badge/trophy converter)
+//RewardID
+//automatically gives details about the trophy/badge stored in "RewardData"
+Parse.Cloud.define("GetRewardData", async(request) => {
+  const Reward = Parse.Object.extend("Reward");
+  const query = new Parse.Query(Reward);
+  const argument = request.params;
+  query.equalTo("objectId", argument.RewardID);
+  const res = await query.first();
+
+  var RewardType = res.get("RewardType");
+  var params;
+  var RewardData;
+  if(RewardType == "Badge"){
+      params = {"BadgeID" : res.get("RewardID")};
+      RewardData = JSON.parse(await Parse.Cloud.run("GetBadgeData", params));
+  }
+  else if(RewardType == "Trophy"){
+      params = {"TrophyID" : res.get("RewardID")};
+      RewardData = JSON.parse(await Parse.Cloud.run("GetTrophyData", params));
+  }
+  res.set("RewardData", RewardData);
+  return JSON.stringify(res);
+});
