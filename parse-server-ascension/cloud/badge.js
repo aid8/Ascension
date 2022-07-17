@@ -347,13 +347,19 @@ Parse.Cloud.define("RemoveHouseBadge", async(request) =>{
     query.equalTo("objectId", argument.HouseID);
     const res = await query.first();
 
+    //GetRewardData
+    const badgeData = JSON.parse(await Parse.Cloud.run("GetRewardData", argument));
+    var badgeXP = badgeData.RewardData.BadgePoints;
+
     //UpdateHouse
     let rewards = res.get("HouseBadgesIDEarned");
+    let houseXP = res.get("HouseXP");
     const index = rewards.indexOf(argument.RewardID);
     if(index > -1){
         rewards.splice(index, 1);
     }
     res.set("HouseBadgesIDEarned", rewards);
+    res.set("HouseXP", houseXP - badgeXP);
     res.save().then(async()=>{
         //Then Run VerifyRemoval for houses
         await Parse.Cloud.run("VerifyHouseTrophyRemoval", argument);
