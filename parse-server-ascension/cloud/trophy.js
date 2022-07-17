@@ -19,7 +19,7 @@ Parse.Cloud.define("AddTrophy", async(request) => {
             "TrophyDescription" : argument.TrophyDescription,
             "TrophyPoints" : argument.TrophyPoints,
             "TrophyImage" : link,
-            "TrophyCategory" : argument.TrophyCategory,
+            "TrophyType" : argument.TrophyType,
             "BadgesIDNeeded" : argument.BadgesIDNeeded,
         }, { useMasterKey: true }).then(()=>{
             console.log("Successfully Added Trophy!");
@@ -53,7 +53,6 @@ Parse.Cloud.afterSave("Trophy", async(request) => {
     }
 });
 
-
 //Must specify id of Trophy with name of "TrophyID"
 Parse.Cloud.define("EditTrophy", async(request) => {
     const Trophy = Parse.Object.extend("Trophy");
@@ -64,11 +63,11 @@ Parse.Cloud.define("EditTrophy", async(request) => {
     const res = await query.first();
 
     var list_of_attr = ["TrophyName", "TrophyDescription", "TrophyPoints", 
-                    "TrophyCategory", "BadgesIDNeeded",
+                    "TrophyType", "BadgesIDNeeded",
     ];
     
     var list_of_arguments =[argument.TrophyName, argument.TrophyDescription, argument.TrophyPoints, 
-                           argument.TrophyCategory, argument.BadgesIDNeeded
+                           argument.TrophyType, argument.BadgesIDNeeded
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
@@ -146,9 +145,14 @@ Parse.Cloud.define("GetTrophyData", async(request) => {
     return JSON.stringify(res);
 });
 
-Parse.Cloud.define("GetTrophies", async(_request) => {
+//If TrophyType is defined, query depending on trophytype
+Parse.Cloud.define("GetTrophies", async(request) => {
     const Trophy = Parse.Object.extend("Trophy");
     const query = new Parse.Query(Trophy);
+    const argument = request.params;
+    if(argument.TrophyType !== undefined){
+        query.equalTo("TrophyType", argument.TrophyType);
+    }
     const res = await query.find();
     return JSON.stringify(res);
 });
@@ -159,6 +163,7 @@ Parse.Cloud.define("GetUnacquiredTrophies", async(request) => {
     const Trophy = Parse.Object.extend("Trophy");
     const query = new Parse.Query(Trophy);
     const argument = request.params;
+    query.equalTo("TrophyType", "Student");
     const res = await query.find();
 
     //Gets the Student
@@ -182,6 +187,38 @@ Parse.Cloud.define("GetUnacquiredTrophies", async(request) => {
         }
     }
     return JSON.stringify(unacquiredTrophies);
+});
+
+//HouseID
+Parse.Cloud.define("GetUnacquiredHouseTrophies", async(request) => {
+    //Get Trophy
+    const Trophy = Parse.Object.extend("Trophy");
+    const query = new Parse.Query(Trophy);
+    const argument = request.params;
+    query.equalTo("TrophyType", "House");
+    const res = await query.find();
+
+    //Gets the House
+    const House = Parse.Object.extend("House");
+    const query1 = new Parse.Query(House);
+    query1.equalTo("objectId", argument.HouseID);
+    const res1 = await query1.first();
+    const houseTrophies = res1.get("HouseTrophiesIDUnlocked");
+    var acquiredHouseTrophies = {};
+    
+    for(const RewardID of houseTrophies){
+        var params = {"RewardID" : RewardID};
+        let RewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
+        acquiredHouseTrophies[RewardData.RewardID] = true;
+    }
+    
+    var unacquiredHouseTrophies = [];
+    for(const trophy of res){
+        if(!(trophy.id in acquiredHouseTrophies)){
+            unacquiredHouseTrophies.push(trophy);
+        }
+    }
+    return JSON.stringify(unacquiredHouseTrophies);
 });
 
 //TrophyID, StudentID
@@ -223,6 +260,42 @@ Parse.Cloud.define("RewardTrophy", async(request) => {
     });
 });
 
+//TrophyID, HouseID
+Parse.Cloud.define("RewardHouseTrophy", async(request) => {
+    const argument = request.params;
+
+    //Query trophy muna, importante si XP
+    const Trophy = Parse.Object.extend("Trophy");
+    const trophyQuery = new Parse.Query(Trophy); 
+    trophyQuery.equalTo("objectId", argument.TrophyID);
+    const res = await trophyQuery.first();
+    var trophyXP = res.get("TrophyPoints");
+
+    //Then Query house, then get the trophiesUnlocked
+    const House = Parse.Object.extend("House");
+    const houseQuery = new Parse.Query(House);
+    houseQuery.equalTo("objectId", argument.HouseID);
+    const res1 = await houseQuery.first();
+    var houseTrophiesIDUnlocked = res1.get("HouseTrophiesIDUnlocked");
+    var houseXP = res1.get("HouseXP");
+
+    //Gibo ning reward object, set si trophyID as rewardID
+    const Reward = Parse.Object.extend("Reward");
+    const reward = new Reward();
+    reward.save({
+        "RewardID" : argument.TrophyID,
+        "RewardType" : "Trophy",
+        "DateRewarded" : Global.getDateToday(),
+    }).then(async(obj)=>{
+        houseTrophiesIDUnlocked.push(obj.id);
+        houseXP += trophyXP;
+        res1.set("HouseTrophiesIDUnlocked", houseTrophiesIDUnlocked);
+        res1.set("XP", houseXP);
+        res1.save();
+    });
+});
+
+
 //RewardID, StudentID, required
 Parse.Cloud.define("RemoveTrophy", async(request) =>{
     const Student = Parse.Object.extend("Student")
@@ -241,6 +314,31 @@ Parse.Cloud.define("RemoveTrophy", async(request) =>{
 
     //Check if trophy is in ChosenTrophies
 
+    res.save();
+
+    //Remove Reward Object
+    const Reward = Parse.Object.extend("Reward");
+    const query1 = new Parse.Query(Reward);
+    query1.equalTo("objectId", argument.RewardID);
+    const res1 = await query1.first();
+    res1.destroy();
+});
+
+//RewardID, HouseID, required
+Parse.Cloud.define("RemoveHouseTrophy", async(request) =>{
+    const House = Parse.Object.extend("House")
+    const query = new Parse.Query(House);
+    const argument = request.params;
+    query.equalTo("objectId", argument.HouseID);
+    const res = await query.first();
+
+    //Update House
+    let rewards = res.get("HouseTrophiesIDUnlocked");
+    const index = rewards.indexOf(argument.RewardID);
+    if(index > -1){
+        rewards.splice(index, 1);
+    }
+    res.set("HouseTrophiesIDUnlocked", rewards);
     res.save();
 
     //Remove Reward Object
@@ -281,6 +379,36 @@ Parse.Cloud.define("VerifyTrophyEligibility", async(request) =>{
     }
 });
 
+//HouseID only, tests all trophies if eligible
+Parse.Cloud.define("VerifyHouseTrophyEligibility", async(request) =>{
+    const argument = request.params;
+    
+    //Gets the Data of house
+    var param = {"HouseID" : argument.HouseID};
+    var HouseData = JSON.parse(await Parse.Cloud.run("GetHouseData", param));
+    var HouseBadges = HouseData.HouseBadgesEarned;
+
+    //Get all unacquired trophies
+    const res = JSON.parse(await Parse.Cloud.run("GetUnacquiredHouseTrophies", param));
+
+    for(const trophy of res){
+        let BadgesIDNeeded = trophy.BadgesIDNeeded;
+        let count = 0;
+        for(const badge of HouseBadges){
+            if(BadgesIDNeeded.includes(badge.objectId)){
+                count += 1;
+            }
+        }
+        if(count == BadgesIDNeeded.length){
+            param = {
+                "HouseID" : argument.HouseID,
+                "TrophyID" : trophy.objectId,
+            };
+            await Parse.Cloud.run("RewardHouseTrophy", param);
+        }
+    }
+});
+
 //VerifyTrophyRemoval
 //StudentID only, tests if a trophy should be removed upon removing badge
 //Chcek trophy badges id earned
@@ -309,6 +437,37 @@ Parse.Cloud.define("VerifyTrophyRemoval", async(request) =>{
                 "RewardID" : TrophiesRewardID[i],
             };
             await Parse.Cloud.run("RemoveTrophy", param);
+        }
+    }
+});
+
+//VerifyHouseTrophyRemoval
+//HousetID only, tests if a trophy should be removed upon removing house badge
+Parse.Cloud.define("VerifyHouseTrophyRemoval", async(request) =>{
+    const argument = request.params;
+    
+    //Gets the Data of House
+    var param = {"HouseID" : argument.HouseID};
+    var HouseData = JSON.parse(await Parse.Cloud.run("GetHouseData", param));
+    var Badges = HouseData.HouseBadgesEarned;
+    var Trophies = HouseData.HouseTrophiesUnlocked;
+    var TrophiesRewardID = HouseData.HouseTrophiesIDUnlocked;
+
+    //Check and remove trophy
+    for(let i = 0; i < Trophies.length; ++i){
+        let BadgesIDNeeded = Trophies[i].BadgesIDNeeded;
+        let count = 0;
+        for(const badge of Badges){
+            if(BadgesIDNeeded.includes(badge.objectId)){
+                count += 1;
+            }
+        }
+        if(count != BadgesIDNeeded.length){
+            param = {
+                "HouseID" : argument.HouseID,
+                "RewardID" : TrophiesRewardID[i],
+            };
+            await Parse.Cloud.run("RemoveHouseTrophy", param);
         }
     }
 });

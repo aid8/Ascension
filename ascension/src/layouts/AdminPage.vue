@@ -51,6 +51,8 @@
     <input v-model="BadgeDescription" type="text"><br>
     <span>Badge Points: </span>
     <input v-model="BadgePoints" type="number"><br>
+    <span>Badge Type: </span>
+    <input v-model="BadgeType" type="text"><br>
     <span>Badge Image </span>
     <input @change="onBadgeImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
     <button @click="addBadge()">Add Badge</button><br>
@@ -62,6 +64,8 @@
     <input v-model="NewBadgeDescription" type="text"><br>
     <span>Badge Points: </span>
     <input v-model="NewBadgePoints" type="number"><br>
+    <span>Badge Type: </span>
+    <input v-model="NewBadgeType" type="text"><br>
     <span>Badge Image: </span>
     <input @change="onNewBadgeImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
     <button @click="editBadge()">Edit Badge</button><br><br>
@@ -83,8 +87,8 @@
     <input v-model="TrophyPoints" type="number"><br>
     <span>Trophy Image: </span>
     <input @change="onTrophyImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
-    <span>Trophy Category: </span>
-    <input v-model="TrophyCategory" type="text"><br>
+    <span>Trophy Type: </span>
+    <input v-model="TrophyType" type="text"><br>
     <span>Required Badges: </span>
     <button @click="getBadgesForTrophy()">Load Badges</button>
     <ul v-if="ShowBadgesForTrophy">
@@ -105,8 +109,8 @@
     <input v-model="NewTrophyPoints" type="number"><br>
     <span>Trophy Image: </span>
     <input @change="onNewTrophyImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
-    <span>Trophy Category: </span>
-    <input v-model="NewTrophyCategory" type="text"><br>
+    <span>Trophy Type: </span>
+    <input v-model="NewTrophyType" type="text"><br>
     <span>Required Badges: </span>
     <button @click="getBadgesForUpdatedTrophy()">Load Badges</button>
     <ul v-if="NewShowBadgesForTrophy">
@@ -264,16 +268,18 @@
                 BadgePoints: '',
                 BadgeImage: '',
                 BadgeImageName: '',
+                BadgeType: '',
                 NewBadgeName: '',
                 NewBadgeDescription: '',
                 NewBadgePoints: '',
                 NewBadgeImage: '',
                 NewBadgeImageName: '',
+                NewBadgeType: '',
                 BadgeIdPointer: '',
                 Badges: [],
                 
                 //Trophy Variables
-                TrophyCategory: '',
+                TrophyType: '',
                 TrophyName: '',
                 TrophyDescription: '',
                 TrophyPoints: 0,
@@ -281,7 +287,7 @@
                 TrophyImageName: '',
                 AvailableBadgesForTrophy: [],
                 AssignedBadgesForTrophy: [],
-                NewTrophyCategory: '',
+                NewTrophyType: '',
                 NewTrophyName: '',
                 NewTrophyDescription: '',
                 NewTrophyPoints: 0,
@@ -434,6 +440,7 @@
                     "BadgeName" : this.BadgeName,
                     "BadgeDescription" : this.BadgeDescription,
                     "BadgePoints" : this.BadgePoints,
+                    "BadgeType" : this.BadgeType,
                     "BadgeImage" : this.BadgeImage,
                     "BadgeImageName" : this.BadgeImageName,
                 }
@@ -471,6 +478,7 @@
                     "BadgeName" : this.NewBadgeName,
                     "BadgeDescription" : this.NewBadgeDescription,
                     "BadgePoints" : this.NewBadgePoints,
+                    "BadgeType" : this.NewBadgeType,
                     "BadgeImage" : this.NewBadgeImage,
                     "BadgeID" : this.BadgeIdPointer,
                 }
@@ -489,6 +497,7 @@
                 this.NewBadgeName = Badge.BadgeName
                 this.NewBadgeDescription = Badge.BadgeDescription
                 this.NewBadgePoints = Badge.BadgePoints
+                this.NewBadgeType = Badge.BadgeType
                 this.NewBadgeImage = Badge.BadgeImage
                 this.BadgeIdPointer = Badge.objectId
             },
@@ -515,7 +524,7 @@
                     "TrophyDescription": this.TrophyDescription,
                     "TrophyPoints": this.TrophyPoints,
                     "TrophyImage": this.TrophyImage,
-                    "TrophyCategory": this.TrophyCategory,
+                    "TrophyType": this.TrophyType,
                     "BadgesIDNeeded": this.AssignedBadgesForTrophy,
                     "TrophyImageName" : this.TrophyImageName,
                 }
@@ -546,7 +555,7 @@
                     "TrophyDescription": this.NewTrophyDescription,
                     "TrophyPoints": this.NewTrophyPoints,
                     "TrophyImage": this.NewTrophyImage,
-                    "TrophyCategory": this.NewTrophyCategory,
+                    "TrophyType": this.NewTrophyType,
                     "BadgesIDNeeded": this.AssignedBadgesforNewTrophy,
                 }
                 if(this.NewTrophyImageName != ""){
@@ -573,7 +582,7 @@
                 this.NewTrophyDescription = trophy.TrophyDescription
                 this.NewTrophyPoints = trophy.TrophyPoints
                 this.NewTrophyImage = trophy.TrophyImage
-                this.NewTrophyCategory = trophy.TrophyCategory
+                this.NewTrophyType = trophy.TrophyType
                 this.AssignedBadgesforNewTrophy = trophy.BadgesIDNeeded
             },
 
@@ -606,13 +615,21 @@
             },
             
             async getBadgesForTrophy(){
-                this.ShowBadgesForTrophy = true
-                this.AvailableBadgesForTrophy = JSON.parse(await Parse.Cloud.run("GetBadges"))
+                this.ShowBadgesForTrophy = true;
+                var params = {};
+                if(this.TrophyType != ""){
+                    params["BadgeType"] = this.TrophyType;
+                }
+                this.AvailableBadgesForTrophy = JSON.parse(await Parse.Cloud.run("GetBadges", params))
             },
 
             async getBadgesForUpdatedTrophy(){
-                this.NewShowBadgesForTrophy = true
-                this.AvailableBadgesForTrophy = JSON.parse(await Parse.Cloud.run("GetBadges"))
+                this.NewShowBadgesForTrophy = true;
+                var params = {};
+                if(this.TrophyType != ""){
+                    params["BadgeType"] = this.TrophyType;
+                }
+                this.AvailableBadgesForTrophy = JSON.parse(await Parse.Cloud.run("GetBadges", params))
             },
 
             //Ascension Title Functions

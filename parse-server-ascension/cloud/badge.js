@@ -15,6 +15,7 @@ Parse.Cloud.define("AddBadge", async(request) => {
             "BadgeDescription" : argument.BadgeDescription,
             "BadgePoints" : argument.BadgePoints,
             "BadgeImage" : link,
+            "BadgeType" : argument.BadgeType,
         }, { useMasterKey: true }).then(()=>{
             console.log("Successfully added Badge!");
         });
@@ -31,9 +32,11 @@ Parse.Cloud.define("EditBadge", async(request) => {
     const res = await query.first();
 
     var list_of_attr = ["BadgeName", "BadgeDescription", "BadgePoints", 
+                        "BadgeType"
     ];
     
     var list_of_arguments =[argument.BadgeName, argument.BadgeDescription, argument.BadgePoints,
+                            argument.BadgeType,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
@@ -140,9 +143,14 @@ Parse.Cloud.define("GetBadgeData", async(request) => {
     return JSON.stringify(res);
 });
 
-Parse.Cloud.define("GetBadges", async(_request) => {
+//If BadgeType is defined, query depending on badgetype
+Parse.Cloud.define("GetBadges", async(request) => {
     const Badge = Parse.Object.extend("Badge");
     const query = new Parse.Query(Badge);
+    const argument = request.params;
+    if(argument.BadgeType !== undefined){
+        query.equalTo("BadgeType", argument.BadgeType);
+    }
     const res = await query.find();
     return JSON.stringify(res);
 });
@@ -153,6 +161,7 @@ Parse.Cloud.define("GetUnacquiredBadges", async(request) => {
     const Badge = Parse.Object.extend("Badge");
     const query = new Parse.Query(Badge);
     const argument = request.params;
+    query.equalTo("BadgeType", "Student");
     const res = await query.find();
 
     //Gets the Student
@@ -178,18 +187,54 @@ Parse.Cloud.define("GetUnacquiredBadges", async(request) => {
     return JSON.stringify(unacquiredBadges);
 });
 
+//HouseID
+Parse.Cloud.define("GetUnacquiredHouseBadges", async(request) => {
+    //Get Badges
+    const Badge = Parse.Object.extend("Badge");
+    const query = new Parse.Query(Badge);
+    const argument = request.params;
+    query.equalTo("BadgeType", "House");
+    const res = await query.find();
+
+    //Gets the House
+    const House = Parse.Object.extend("House");
+    const query1 = new Parse.Query(House);
+    query1.equalTo("objectId", argument.HouseID);
+    const res1 = await query1.first();
+    const houseBadges = res1.get("HouseBadgesIDEarned");
+    var acquiredBadges = {};
+    
+    for(const RewardID of houseBadges){
+        var params = {"RewardID" : RewardID};
+        let RewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
+        acquiredBadges[RewardData.RewardID] = true;
+    }
+    
+    var unacquiredBadges = [];
+    for(const badge of res){
+        if(!(badge.id in acquiredBadges)){
+            unacquiredBadges.push(badge);
+        }
+    }
+    return JSON.stringify(unacquiredBadges);
+});
+
 //BadgeID, StudentID needed
+//For rewarding students
 Parse.Cloud.define("RewardBadge", async(request) => {
     const argument = request.params;
 
-    //Query badge muna, importante si XP
+    //Query badge first, check if badge is good for student and get xp
     const Badge = Parse.Object.extend("Badge");
     const badgeQuery = new Parse.Query(Badge); 
     badgeQuery.equalTo("objectId", argument.BadgeID);
     const res = await badgeQuery.first();
+    if(res.get("BadgeType") != "Student"){
+        return Promise.reject("Cannot Reward this Badge! This badge is not available for students.");
+    }
     var badgeXP = res.get("BadgePoints");
 
-    //Query student sunod, tas kunon si badgesIDEarned
+    //Then Query student, then get the badgesIDEarned
     const Student = Parse.Object.extend("Student");
     const studentQuery = new Parse.Query(Student);
     studentQuery.equalTo("objectId", argument.StudentID);
@@ -197,7 +242,7 @@ Parse.Cloud.define("RewardBadge", async(request) => {
     var badgesIDEarned = res1.get("BadgesIDEarned");
     var studentXP = res1.get("XP");
 
-    //Gibo ning reward object, set si badgeID as rewardID
+    //Create a reward object, set rewardID as badgeID
     const Reward = Parse.Object.extend("Reward");
     const reward = new Reward();
     reward.save({
@@ -217,24 +262,101 @@ Parse.Cloud.define("RewardBadge", async(request) => {
     });
 });
 
+//BadgeID, HouseID
+//For rewarding houses
+Parse.Cloud.define("RewardHouseBadge", async(request) => {
+    const argument = request.params;
+
+    //Query badge first, check if badge is good for house and get xp
+    const Badge = Parse.Object.extend("Badge");
+    const badgeQuery = new Parse.Query(Badge); 
+    badgeQuery.equalTo("objectId", argument.BadgeID);
+    const res = await badgeQuery.first();
+    if(res.get("BadgeType") != "House"){
+        return Promise.reject("Cannot Reward this Badge! This badge is not available for houses.");
+    }
+    var badgeXP = res.get("BadgePoints");
+    
+    //Then Query house, then get the houseBadgesIDEarned
+    const House = Parse.Object.extend("House");
+    const houseQuery = new Parse.Query(House);
+    houseQuery.equalTo("objectId", argument.HouseID);
+    const res1 = await houseQuery.first();
+    var badgesIDEarned = res1.get("HouseBadgesIDEarned");
+    var houseXP = res1.get("HouseXP");
+
+    //Create a reward object, set rewardID as badgeID
+    const Reward = Parse.Object.extend("Reward");
+    const reward = new Reward();
+    reward.save({
+        "RewardID" : argument.BadgeID,
+        "RewardType" : "Badge",
+        "DateRewarded" : Global.getDateToday(),
+    }).then(async(obj)=>{
+        badgesIDEarned.push(obj.id);
+        houseXP += badgeXP;
+        res1.set("HouseBadgesIDEarned", badgesIDEarned);
+        res1.set("HouseXP", houseXP);
+        res1.save();
+
+        //Then run trophy eligibility for house
+        var param = {"HouseID" : argument.HouseID};
+        await Parse.Cloud.run("VerifyHouseTrophyEligibility", param);
+    });
+});
+
 //RewardID, StudentID, required
 Parse.Cloud.define("RemoveBadge", async(request) =>{
-    const Student = Parse.Object.extend("Student")
+    const Student = Parse.Object.extend("Student");
     const query = new Parse.Query(Student);
     const argument = request.params;
     query.equalTo("objectId", argument.StudentID);
     const res = await query.first();
 
+    //GetBadgeData
+    const badgeData = JSON.parse(await Parse.Cloud.run("GetRewardData", argument));
+    var badgeXP = badgeData.RewardData.BadgePoints;
+
     //UpdateStudent
     let rewards = res.get("BadgesIDEarned");
+    let studentXP = res.get("XP");
     const index = rewards.indexOf(argument.RewardID);
     if(index > -1){
         rewards.splice(index, 1);
     }
     res.set("BadgesIDEarned", rewards);
+    res.set("XP", studentXP - badgeXP);
     res.save().then(async()=>{
         //Then Run VerifyRemoval
         await Parse.Cloud.run("VerifyTrophyRemoval", argument);
+    });
+
+    //Remove Reward Object
+    const Reward = Parse.Object.extend("Reward");
+    const query1 = new Parse.Query(Reward);
+    query1.equalTo("objectId", argument.RewardID);
+    const res1 = await query1.first();
+    res1.destroy();
+});
+
+//RewardID, HouseID, required
+Parse.Cloud.define("RemoveHouseBadge", async(request) =>{
+    const House = Parse.Object.extend("House")
+    const query = new Parse.Query(House);
+    const argument = request.params;
+    query.equalTo("objectId", argument.HouseID);
+    const res = await query.first();
+
+    //UpdateHouse
+    let rewards = res.get("HouseBadgesIDEarned");
+    const index = rewards.indexOf(argument.RewardID);
+    if(index > -1){
+        rewards.splice(index, 1);
+    }
+    res.set("HouseBadgesIDEarned", rewards);
+    res.save().then(async()=>{
+        //Then Run VerifyRemoval for houses
+        await Parse.Cloud.run("VerifyHouseTrophyRemoval", argument);
     });
 
     //Remove Reward Object

@@ -21,6 +21,8 @@ Parse.Cloud.afterSave("House", async(request)=>{
     //If object is newly created
     if (!original){
         return house.save({
+            "HouseBadgesIDEarned" : [],
+            "HouseTrophiesIDUnlocked" : [],
             "HousePopulation" : 0,
             "HouseXP" : 0,
         });
@@ -75,6 +77,26 @@ Parse.Cloud.define("GetHouseData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.HouseID);
     const res = await query.first();
+
+    //Pass HouseBadgesEarned Data
+    var HouseBadgesEarned = [];
+    var params;
+    for(const RewardID of res.get("HouseBadgesIDEarned")){
+        params = {"RewardID" : RewardID};
+        let RewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
+        HouseBadgesEarned.push(RewardData.RewardData);
+    }
+    res.set("HouseBadgesEarned", HouseBadgesEarned);
+
+    //Pass HouseTrophiesUnlocked Data
+    var HouseTrophiesUnlocked = [];
+    for(const RewardID of res.get("HouseTrophiesIDUnlocked")){
+        params = {"RewardID" : RewardID};
+        let RewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
+        HouseTrophiesUnlocked.push(RewardData.RewardData);
+    }
+    res.set("HouseTrophiesUnlocked", HouseTrophiesUnlocked);
+
     return JSON.stringify(res);
 });
 
