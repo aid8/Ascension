@@ -140,10 +140,7 @@ Parse.Cloud.define("GetStudentData", async(request) => {
     for(const RewardID of res.get("TrophiesIDUnlocked")){
         params = {"RewardID" : RewardID};
         let RewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
-        params = {
-            "TrophyID" : RewardData.RewardID,
-        }
-        TrophiesUnlocked.push(JSON.parse(await Parse.Cloud.run("GetTrophyData", params)));
+        TrophiesUnlocked.push(RewardData.RewardData);
     }
     res.set("TrophiesUnlocked", TrophiesUnlocked);
 
@@ -152,10 +149,7 @@ Parse.Cloud.define("GetStudentData", async(request) => {
     for(const RewardID of res.get("ChosenTrophies")){
         params = {"RewardID" : RewardID};
         let RewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
-        params = {
-            "TrophyID" : RewardData.RewardID,
-        }
-        ChosenTrophiesData.push(JSON.parse(await Parse.Cloud.run("GetTrophyData", params)));
+        ChosenTrophiesData.push(RewardData.RewardData);
     }
     res.set("ChosenTrophiesData", ChosenTrophiesData);
 

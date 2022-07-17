@@ -91,7 +91,7 @@
 
     BADGE ENTITY
         Function: AddBadge()
-        Parameters: BadgeName, BadgeDescription, BadgePoints, BadgeImage, BadgeImageName
+        Parameters: BadgeName, BadgeDescription, BadgePoints, BadgeType : ("Student", "House"), BadgeImage : base64, BadgeImageName
         Purpose: Save the badge object into the database
 
         Function: EditBadge()
@@ -108,24 +108,36 @@
         Purpose: Retrieve the data stored in badge object
 
         Function: GetBadges()
-        Parameters: 
-        Purpose: Get all the badges saved in the database
+        Parameters: BadgeType
+        Purpose: Get all the badges saved in the database, If BadgeType is specified, select badges that equals to that BadgeType
 
         Function: RewardBadge()
         Parameters: BadgeID, StudentID
-        Purpose: Gives student a badge. Push the RewardID(contains BadgeID, RewardType:Badge, DateRewarded:Date) into BadgesIDEarned which is a student attribute
+        Purpose: Gives student a badge. Push the RewardID(contains BadgeID, RewardType:Badge, DateRewarded:Date) into BadgesIDEarned which is a student attribute and adds the XP / Points to the student
+
+        Function: RewardHouseBadge()
+        Parameters: HouseID, StudentID
+        Purpose: Gives House a badge. Push the RewardID(contains BadgeID, RewardType:Badge, DateRewarded:Date) into HouseBadgesIDEarned which is a house attribute and adds the XP / Points to the house
 
         Function: RemoveBadge()
-        Parameters: BadgeID, StudentID
-        Purpose: Removes a badge from a student (NOT DELETE)
+        Parameters: RewardID, StudentID
+        Purpose: Removes a badge from a student. Splices the RewardID from BadgesIDEarned and Destroys the Reward Object and subtracts the XP / Points from the student
+
+        Function: RemoveHouseBadge()
+        Parameters: RewardID, HouseID
+        Purpose: Removes a badge from a student. Splices the RewardID from HouseBadgesIDEarned and Destroys the Reward Object and subtracts the XP / Points from the house
 
         Function: GetUnacquiredBadge()
         Paramaters: StudentID
-        Purpose: Returns missing student badges
+        Purpose: Returns student missing badges with the BadgeType of Student
+
+        Function: GetUnacquiredHouseBadge()
+        Paramaters: HouseID
+        Purpose: Returns house missing badges with the BadgeType of House
 
     TROPHY ENTITY
         Function: AddTrophy()
-        Parameters: TrophyName, TrophyDescription, TrophyPoints, TrophyImage, TrophyCategory, BadgesIDNeeded, TrophyImageName
+        Parameters: TrophyName, TrophyDescription, TrophyPoints, TrophyImage, TrophyType : ("Student", "House"), BadgesIDNeeded : [Array of BadgesID], TrophyImageName : base64
         Purpose: Save the Trophy object into the database
 
         Function: afterSave(Trophy)
@@ -146,8 +158,8 @@
         Purpose: Retrieve the data stored in Trophy object
 
         Function: GetTrophies()
-        Parameters: 
-        Purpose: Get all the trophies saved in the database
+        Parameters: TrophyType
+        Purpose: Get all the trophies saved in the database, If TrophyType is specified, select trophies that equals to that TrophyType 
 
         Function: VerifyTrophyEligibility()
         Parameters: StudentID
@@ -157,13 +169,29 @@
         Parameters: StudentID
         Purpose: Check if trophy should be removed upon removing badge
 
+        Function: VerifyHouseTrophyEligibility()
+        Parameters: HouseID
+        Purpose: Check if the house is eligible to be awarded a trophy. Check the house array of HouseBadgesIDEarned to know if all HouseBadges under one HouseTrophy are already earned
+
+        Function: VerifyHouseTrophyRemoval()
+        Parameters: HouseID
+        Purpose: Check if HouseTrophy should be removed upon removing HouseBadge
+
         Function: RewardTrophy()
         Paramaters: TrophyID, StudentID
-        Purpose: Gives student a trophy. Push the RewardID(contains TrophyID, RewardType:Trophy, DateRewarded:Date) into TrophiesIDUnlocked which is a student attribute
+        Purpose: Gives student a trophy. Push the RewardID(contains TrophyID, RewardType:Trophy, DateRewarded:Date) into TrophiesIDUnlocked which is a student attribute and adds the XP / Points to the student
+
+        Function: RewardHouseTrophy()
+        Paramaters: TrophyID, HouseID
+        Purpose: Gives house a trophy. Push the RewardID(contains TrophyID, RewardType:Trophy, DateRewarded:Date) into HouseTrophiesIDUnlocked which is a house attribute and adds the XP / Points to the house
 
         Function: RemoveTrophy()
-        Parameters: TrophyID, StudentID
-        Purpose: Removes a trophy from the student (NOT DELETE)
+        Parameters: RewardID, StudentID
+        Purpose: Removes a badge from a student. Splices the RewardID from BadgesIDEarned and Destroys the Reward Object and subtracts the XP / points to the student
+
+        Function: RemoveHouseTrophy()
+        Parameters: RewardID, HouseID
+        Purpose: Removes a badge from a student. Splices the RewardID from BadgesIDEarned and Destroys the Reward Object and subtracts the XP / points to the student
 
         Function: VerifyUltimateBadge()
         Parameters: StudentID
@@ -172,6 +200,10 @@
         Function: GetUnacquiredTrophies()
         Parameters: StudentID
         Purpose: Gives student missing trophies
+
+        Function: GetUnacquiredHouseTrophies()
+        Parameters: HouseID
+        Purpose: Gives house missing trophies with TrophyType of House
 
     UNIT ENTITY
         Function: AddUnit()
@@ -242,7 +274,7 @@
 
     COSMETIC ENTITY
         Function: AddCosmetic()
-        Parameters:  CosmeticType, CosmeticName, CosmeticImage
+        Parameters:  CosmeticType, CosmeticName, CosmeticImage : base64, CosmeticImageName
         Purpose: Save the cosmetic object into the database. Specify first the type of cosmetic (avatar, frame, background).
 
         Function: EditCosmetic()
@@ -294,11 +326,11 @@
 
     HOUSE ENTITY
         Function: AddHouse()
-        Parameters:  HouseName, HouseBannerIDPointer, AscensionXpRangeStart 
+        Parameters:  HouseName, HouseBannerIDPointer
         Purpose: Save the house object into the database
 
         Function: afterSave(House)
-        Parameters:  HousePopulation, HouseXP 
+        Parameters:  HousePopulation, HouseXP, HouseTrophiesIDUnlocked, HouseBadgesIDEarned
         Purpose: Add the remaining attributes only after the house object is saved
 
         Function: EditHouse()

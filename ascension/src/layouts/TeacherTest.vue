@@ -38,6 +38,20 @@
     <button @click="giveBadge()"> Give Selected Badge</button>
 
     <hr>
+    <h3>Give a Badge to a House</h3>
+    <button @click="getHousesGive()">Show Houses</button>
+    <ul>
+        <li v-for="house in HousesGive" :key="house">{{house.HouseName}} <button @click="selectHouseGive(house.objectId)">Select</button></li>
+    </ul>
+    <p>Selected House: {{SelectedHouseGive}}</p>
+    <button @click="getUnacquiredHouseBadges()">Show Selected House Unacquired Badges</button>
+    <ul>
+        <li v-for="badge in UnacquiredHouseBadgesGive" :key="badge">{{badge.BadgeName}} <button @click="selectHouseBadgeToGive(badge.objectId)">Select</button> </li>
+    </ul>
+    <p>Selected HouseBadge to Give: {{SelectedHouseBadgeGive}}</p>
+    <button @click="giveHouseBadge()"> Give Selected House Badge</button>
+
+    <hr>
     <h3>Remove a Badge of Student</h3>
     <button @click="getStudents()">Show Students</button>
     <ul>
@@ -54,6 +68,22 @@
     <p>Info of selected badge: Name is={{SelectedBadgeInfo}}</p>
     <button @click="removeBadge()">Remove Badge</button>
 
+    <hr>
+    <h3>Remove a Badge of a House</h3>
+    <button @click="getHouses()">Show Houses</button>
+    <ul>
+        <li v-for="house in Houses" :key="house">{{house.HouseName}} <button @click="selectHouse(house.objectId)">Select</button></li>
+    </ul>
+    <p>Selected House: {{SelectedHouseRemove}}</p>
+    <button @click="getHouseBadges()">Get Selected House Badges</button>
+    <!-- ACTUALLY THIS IN AN ARRAY OF REWARD ID, and reward object has the badgeid -->
+    <ul>
+        <li v-for="badge in HouseBadges" :key="badge">{{badge}} <button @click="selectHouseBadgeToRemove(badge)">Select</button> </li>
+    </ul>
+    <p>Selected ID Reward to Remove: {{SelectedHouseBadge}}</p>
+    <p>Info of selected House Badge: Name is={{SelectedHouseBadgeInfo}}</p>
+    <button @click="removeHouseBadge()">Remove House Badge</button>
+
 </template>
 
 <script>
@@ -66,19 +96,29 @@
                 UnacquiredStudentBadges : [],
                 Students : [],
                 StudentBadges : [],
+                Houses: [],
+                HouseBadges: [],
                 
                 SelectedTeacher : '',
                 SelectedStudent : '',
                 SelectedRequest : '',
                 SelectedBadge : '',
                 SelectedBadgeInfo : '',
+                SelectedHouseBadge : '',
+                SelectedHouseBadgeInfo : '',
 
                 StudentsGive : [],
                 UnacquiredStudentBadgesGive : [],
                 SelectedStudentGive : '',
                 SelectedBadgeGive : '',
+
+                HousesGive : [],
+                UnacquiredHouseBadgesGive : [],
+                SelectedHouseGive : '',
+                SelectedHouseBadgeGive : '',
                 
                 SelectedStudentRemove : '',
+                SelectedHouseRemove : '',
             }
         },
         components:{
@@ -155,6 +195,30 @@
                 this.getUnacquiredBadgesGive();
                 this.SelectedBadgeGive = "";
             },
+
+            //Give House Badge
+            async getUnacquiredHouseBadges(){
+                var params = {"HouseID" : this.SelectedHouseGive};
+                const res = JSON.parse(await Parse.Cloud.run("GetUnacquiredHouseBadges", params));
+                this.UnacquiredHouseBadgesGive = res;
+            },
+            selectHouseGive(id){
+                this.SelectedHouseGive = id;
+            },
+            async getHousesGive(){
+                const res = JSON.parse(await Parse.Cloud.run("GetHouses"));
+                this.HousesGive = res;
+            },
+            selectHouseBadgeToGive(id){
+                this.SelectedHouseBadgeGive = id;
+            },
+            async giveHouseBadge(){
+                var params = {"BadgeID" : this.SelectedHouseBadgeGive, "HouseID" : this.SelectedHouseGive};
+                await Parse.Cloud.run("RewardHouseBadge", params);
+                alert("Successfully Given House Badge!");
+                this.getUnacquiredHouseBadges();
+                this.SelectedHouseBadgeGive = "";
+            },
             
             //RemoveBadge
             async getStudents(){
@@ -182,6 +246,34 @@
                 this.getStudentBadges();
                 this.SelectedBadge = "";
                 this.SelectedBadgeInfo = "";
+            },
+
+            //RemoveHouseBadge
+            async getHouses(){
+                const res = JSON.parse(await Parse.Cloud.run("GetHouses"));
+                this.Houses = res;
+            },
+            selectHouse(id){
+                this.SelectedHouseRemove = id;
+            },
+            async getHouseBadges(){
+                var params = {"HouseID" : this.SelectedHouseRemove};
+                const res = JSON.parse(await Parse.Cloud.run("GetHouseData", params));
+                this.HouseBadges = res.HouseBadgesIDEarned;
+            },
+            async selectHouseBadgeToRemove(id){
+                this.SelectedHouseBadge = id;
+                var params = {"RewardID" : id};
+                const res = JSON.parse(await Parse.Cloud.run("GetRewardData", params));
+                this.SelectedHouseBadgeInfo = res.RewardData.BadgeName;
+            },
+            async removeHouseBadge(){
+                var params = {"RewardID" : this.SelectedHouseBadge, "HouseID" : this.SelectedHouseRemove};
+                await Parse.Cloud.run("RemoveHouseBadge", params);
+                alert("Successfully Removed House Badge!");
+                this.getHouseBadges();
+                this.SelectedHouseBadge = "";
+                this.SelectedHouseBadgeInfo = "";
             },
 
         },
