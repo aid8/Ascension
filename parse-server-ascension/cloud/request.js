@@ -30,11 +30,12 @@ Parse.Cloud.define("AddRequest", async(request) => {
 
 //Must specify id of request with name of "ToRequestID" then the attribute name along with the new value
 Parse.Cloud.define("EditRequest", async(request) =>{
-    const Request = Parse.Object.extend("Request");
-    const query = new Parse.Query(Request);
-    const argument = request.params;
-    query.equalTo("objectId", argument.RequestID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "RequestID": argument.RequestID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetRequestData", dataParams)
     
     var list_of_attr = ["Proof", "StudentIDPointer", "DateRequested"];
     var list_of_arguments = [argument.Proof, argument.StudentIDPointer, argument.DateRequested];
@@ -52,11 +53,12 @@ Parse.Cloud.define("EditRequest", async(request) =>{
 
 //Must specify id of request with name of "RequestID"
 Parse.Cloud.define("DeleteRequest", async(request) =>{
-    const Request = Parse.Object.extend("Request");
-    const query = new Parse.Query(Request);
-    const argument = request.params;
-    query.equalTo("objectId", argument.RequestID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "RequestID": argument.RequestID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetRequestData", dataParams)
 
     //Remove this in pending of teacher
     var teachers = JSON.parse(await Parse.Cloud.run("GetTeachers"));
@@ -92,11 +94,12 @@ Parse.Cloud.define("DeleteRequest", async(request) =>{
 //ApproveRequest(Provide RequestID and BadgeID)
 //Basically calls DeleteRequest and RewardBadge
 Parse.Cloud.define("ApproveRequest", async(request) =>{
-    const Request = Parse.Object.extend("Request");
-    const query = new Parse.Query(Request);
-    const argument = request.params;
-    query.equalTo("objectId", argument.RequestID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "RequestID": argument.RequestID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetRequestData", dataParams)
 
     var params = {
         "BadgeID" : argument.BadgeID,
@@ -116,6 +119,9 @@ Parse.Cloud.define("GetRequestData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.RequestID);
     const res = await query.first();
+    if(argument.Type == 1){
+        return res
+    }
     return JSON.stringify(res);
 });
 

@@ -55,12 +55,12 @@ Parse.Cloud.afterSave("Trophy", async(request) => {
 
 //Must specify id of Trophy with name of "TrophyID"
 Parse.Cloud.define("EditTrophy", async(request) => {
-    const Trophy = Parse.Object.extend("Trophy");
-    const query = new Parse.Query(Trophy);
     const argument = request.params;
-
-    query.equalTo("objectId", argument.TrophyID);
-    const res = await query.first();
+    const params = {
+        "TrophyID": argument.TrophyID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetTrophyData", params)
 
     var list_of_attr = ["TrophyName", "TrophyDescription", "TrophyPoints", 
                     "TrophyType", "BadgesIDNeeded",
@@ -102,12 +102,12 @@ Parse.Cloud.define("EditTrophy", async(request) => {
 });
 
 Parse.Cloud.define("DeleteTrophy", async(request) => {
-    const Trophy = Parse.Object.extend("Trophy");
-    const query = new Parse.Query(Trophy);
     const argument = request.params;
-
-    query.equalTo("objectId", argument.TrophyID);
-    const res = await query.first();
+    const params = {
+        "TrophyID": argument.TrophyID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetTrophyData", params)
 
     //If a student has a trophy in this, reject
     var students = JSON.parse(await Parse.Cloud.run("GetStudents"));
@@ -142,6 +142,9 @@ Parse.Cloud.define("GetTrophyData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.TrophyID);
     const res = await query.first();
+    if(argument.Type == 1){
+        return res
+    }
     return JSON.stringify(res);
 });
 
@@ -226,10 +229,11 @@ Parse.Cloud.define("RewardTrophy", async(request) => {
     const argument = request.params;
 
     //Query trophy muna, importante si XP
-    const Trophy = Parse.Object.extend("Trophy");
-    const trophyQuery = new Parse.Query(Trophy); 
-    trophyQuery.equalTo("objectId", argument.TrophyID);
-    const res = await trophyQuery.first();
+    const params = {
+        "TrophyID": argument.TrophyID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetTrophyData", params)
     var trophyXP = res.get("TrophyPoints");
 
     //Query student sunod, tas kunon si trophiesIDEarned
@@ -265,10 +269,11 @@ Parse.Cloud.define("RewardHouseTrophy", async(request) => {
     const argument = request.params;
 
     //Query trophy muna, importante si XP
-    const Trophy = Parse.Object.extend("Trophy");
-    const trophyQuery = new Parse.Query(Trophy); 
-    trophyQuery.equalTo("objectId", argument.TrophyID);
-    const res = await trophyQuery.first();
+    const params = {
+        "TrophyID": argument.TrophyID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetTrophyData", params)
     var trophyXP = res.get("TrophyPoints");
 
     //Then Query house, then get the trophiesUnlocked

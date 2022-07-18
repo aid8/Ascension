@@ -31,11 +31,12 @@ Parse.Cloud.afterSave("House", async(request)=>{
 
 //Must specify id of House with name of "HouseID"
 Parse.Cloud.define("EditHouse", async(request) => {
-    const House = Parse.Object.extend("House");
-    const query = new Parse.Query(House);
-    const argument = request.params;
-    query.equalTo("objectId", argument.HouseID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "HouseID": argument.HouseID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetHouseData", dataParams)
 
     var list_of_attr = ["HouseName", "HouseBannerIDPointer", "HousePopulation", "HouseXP",
     ];
@@ -56,11 +57,12 @@ Parse.Cloud.define("EditHouse", async(request) => {
 
 //Must specify id of House with name of "HouseID"
 Parse.Cloud.define("DeleteHouse", async(request) => {
-    const House = Parse.Object.extend("House");
-    const query = new Parse.Query(House);
-    const argument = request.params;
-    query.equalTo("objectId", argument.HouseID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "HouseID": argument.HouseID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetHouseData", dataParams)
 
     if(res.get("HousePopulation") >= 1){
         return Promise.reject("House should have no members before deleting! Consider changing the house of the members.");
@@ -77,6 +79,9 @@ Parse.Cloud.define("GetHouseData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.HouseID);
     const res = await query.first();
+    if(argument.Type == 1){
+        return res
+    }
 
     //Pass HouseBadgesEarned Data
     var HouseBadgesEarned = [];
@@ -111,11 +116,12 @@ Parse.Cloud.define("GetHouses", async(_request) => {
 //ChangeHouseBanner
 //Must specify id of House with name of "HouseID" and "BannerID"
 Parse.Cloud.define("ChangeHouseBanner", async(request) => {
-    const House = Parse.Object.extend("House");
-    const query = new Parse.Query(House);
-    const argument = request.params;
-    query.equalTo("objectId", argument.HouseID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "HouseID": argument.HouseID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetHouseData", dataParams)
     res.set("HouseBannerIDPointer",  argument.HouseBannerIDPointer);
     res.save().then(()=>{
         console.log("Successfully Changed House Banner");
@@ -125,11 +131,12 @@ Parse.Cloud.define("ChangeHouseBanner", async(request) => {
 //Must specify id of House with name of "HouseID" and "XP"
 //This will add/subtract the "ModifyXP" given
 Parse.Cloud.define("ModifyHouseXP", async(request) => {
-    const House = Parse.Object.extend("House");
-    const query = new Parse.Query(House);
-    const argument = request.params;
-    query.equalTo("objectId", argument.HouseID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "HouseID": argument.HouseID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetHouseData", dataParams)
 
     var xp = res.get("HouseXP");
     xp += argument.XP;
@@ -151,10 +158,12 @@ Parse.Cloud.define("AddHouseMember", async(request) => {
     const res0 = await query0.first();
     res0.set("StudentHouseIDPointer", argument.HouseID);
 
-    const House = Parse.Object.extend("House");
-    const query = new Parse.Query(House);
-    query.equalTo("objectId", argument.HouseID);
-    const res = await query.first();
+    //Get House based on HouseID
+    const dataParams = {
+        "HouseID": argument.HouseID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetHouseData", dataParams)
 
     //And as well as the Banner of the student
     res0.set("BannerID", res.get("HouseBannerIDPointer"));
@@ -186,10 +195,11 @@ Parse.Cloud.define("DeleteHouseMember", async(request) => {
     res0.set("StudentHouseIDPointer", null);
     res0.save();
 
-    const House = Parse.Object.extend("House");
-    const query = new Parse.Query(House);
-    query.equalTo("objectId", argument.HouseID);
-    const res = await query.first();
+    const dataParams = {
+        "HouseID": argument.HouseID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetHouseData", dataParams)
 
     //Decrement Population
     var population = res.get("HousePopulation");

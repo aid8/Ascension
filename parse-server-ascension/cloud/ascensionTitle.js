@@ -13,18 +13,23 @@ Parse.Cloud.define("AddAscensionTitle", async(request) => {
 });
 
 Parse.Cloud.define("DeleteAscensionTitle", async(request) =>{
-    const AscensionTitle = Parse.Object.extend("AscensionTitle")
-    const qry = new Parse.Query(AscensionTitle)
-    const result = await qry.get(request.params.AscensionId)
-    result.destroy()
+    const argument = request.params
+    const dataParams = {
+        "AscensionId": argument.AscensionId,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetAscensionTitleData", dataParams)
+    res.destroy()
 });
 
 Parse.Cloud.define("UpdateAscensionTitle", async(request) =>{
-    const AscensionTitle = Parse.Object.extend("AscensionTitle")
-    const qry = new Parse.Query(AscensionTitle)
     const argument = request.params
-    const result = await qry.get(argument.AscensionId)
-    result.save({
+    const dataParams = {
+        "AscensionId": argument.AscensionId,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetAscensionTitleData", dataParams)
+    res.save({
         "AscensionName": argument.NewAscensionName,
         "AscensionXpRangeCap": argument.NewAscensionXpRangeCap,
         "AscensionXpRangeStart": argument.NewAscensionXpRangeStart,
@@ -44,6 +49,9 @@ Parse.Cloud.define("GetAscensionTitleData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.AscensionId);
     const res = await query.first();
+    if(argument.Type == 1){
+        return res
+    }
     return JSON.stringify(res);
 });
 

@@ -12,11 +12,12 @@ Parse.Cloud.define("AddCourse", async(request) => {
 
 //Must specify id of course with name of "CourseID" then the attribute name along with the new value
 Parse.Cloud.define("EditCourse", async(request) =>{
-    const Course = Parse.Object.extend("Course");
-    const query = new Parse.Query(Course);
-    const argument = request.params;
-    query.equalTo("objectId", argument.CourseID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "CourseID": argument.CourseID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetCourseData", dataParams)
     
     var list_of_attr = ["CourseName", "CourseCode", "CourseDegreesIDPointers",];
     var list_of_arguments = [argument.CourseName, argument.CourseCode, argument.CourseDegreesIDPointers,];
@@ -34,11 +35,12 @@ Parse.Cloud.define("EditCourse", async(request) =>{
 
 //Must specify id of course with name of "CourseID"
 Parse.Cloud.define("DeleteCourse", async(request) =>{
-    const Course = Parse.Object.extend("Course");
-    const query = new Parse.Query(Course);
-    const argument = request.params;
-    query.equalTo("objectId", argument.CourseID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "CourseID": argument.CourseID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetCourseData", dataParams)
 
     //Should throw error if a student/teacher has a course on this CourseID
     var students = JSON.parse(await Parse.Cloud.run("GetStudents"));
@@ -70,6 +72,9 @@ Parse.Cloud.define("GetCourseData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.CourseID);
     const res = await query.first();
+    if(argument.Type == 1){
+        return res
+    }
     return JSON.stringify(res);
 });
 
