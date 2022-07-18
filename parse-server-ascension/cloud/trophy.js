@@ -290,7 +290,7 @@ Parse.Cloud.define("RewardHouseTrophy", async(request) => {
         houseTrophiesIDUnlocked.push(obj.id);
         houseXP += trophyXP;
         res1.set("HouseTrophiesIDUnlocked", houseTrophiesIDUnlocked);
-        res1.set("XP", houseXP);
+        res1.set("HouseXP", houseXP);
         res1.save();
     });
 });
@@ -304,13 +304,19 @@ Parse.Cloud.define("RemoveTrophy", async(request) =>{
     query.equalTo("objectId", argument.StudentID);
     const res = await query.first();
 
+    //GetRewardData
+    const rewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", argument));
+    var trophyXP = rewardData.RewardData.TrophyPoints;
+
     //UpdateStudent
     let rewards = res.get("TrophiesIDUnlocked");
+    let studentXP = res.get("XP");
     const index = rewards.indexOf(argument.RewardID);
     if(index > -1){
         rewards.splice(index, 1);
     }
     res.set("TrophiesIDUnlocked", rewards);
+    res.set("XP", studentXP - trophyXP);
 
     //Check if trophy is in ChosenTrophies
 
@@ -332,13 +338,19 @@ Parse.Cloud.define("RemoveHouseTrophy", async(request) =>{
     query.equalTo("objectId", argument.HouseID);
     const res = await query.first();
 
+    //GetRewardData
+    const rewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", argument));
+    var trophyXP = rewardData.RewardData.TrophyPoints;
+
     //Update House
     let rewards = res.get("HouseTrophiesIDUnlocked");
+    let houseXP = res.get("HouseXP");
     const index = rewards.indexOf(argument.RewardID);
     if(index > -1){
         rewards.splice(index, 1);
     }
     res.set("HouseTrophiesIDUnlocked", rewards);
+    res.set("HouseXP", houseXP - trophyXP);
     res.save();
 
     //Remove Reward Object
