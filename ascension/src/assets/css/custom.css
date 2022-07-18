@@ -1,0 +1,197 @@
+/* 1 User's Personal Information */
+/* 2 User's Role */
+/* 3 User's ID Number & Year Level/Job Title */
+/* 4 Submit Button */
+
+/* FOR SIGN UP/IN PAGE */
+body {
+    background-image: url('/src/assets/img/background/bg-default.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0;
+    font-family: 'Lexend', 'sans-serif';}
+.developer_logo {
+    position: absolute;
+    display: fixed;
+    margin: 20px;
+    width: 100px;}
+
+.signup {
+    padding: 70px 0px;}
+.signin {
+    padding: 150px;
+    overflow: auto;
+}
+.form {
+    background-color: rgb(0 0 0/0.2);
+    background-repeat: no-repeat;
+    backdrop-filter: blur(2px);
+    border: 1px solid white;
+    margin: auto;
+    padding-bottom: 30px;
+    width: 400px;}
+.form > .ascension_text_logo {
+    display: block;
+    margin: 50px auto;
+    width: 180px;}
+/* 1 User's Personal Information */
+.form .text_box {
+    background-color: rgb(0 0 0/0.4);
+    display: block;
+    margin: 5px auto;
+    border: solid 1px gray;
+    padding: 15px 20px 15px 20px; /*top, right, bottom, left*/
+    color: white;
+    font-size: 12px;
+    width: 320px;
+    height: 50px;}
+/* 2 User's Role*/
+.form .radio_container {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 0px; /*top-bottom, right-left*/
+    text-align: center;
+    height: 50px;}
+.form .radio_button {
+    vertical-align: middle;
+    margin-right: 5px;}
+.form .radio_label {
+    color: white;
+    margin-right: 10px;
+    vertical-align: middle;
+    font-size: 12px;}
+/* 3 User's ID Number & Year Level/Job Title */
+.form .box{
+    display: block;
+    margin: 10px 5px;
+    text-align: center;}
+.form .text_box_half {
+    background-color: rgb(0 0 0/0.4);
+    border: solid 1px gray;
+    margin: 0px 5px;
+    padding: 15px 20px 15px 20px; /*top, right, bottom, left*/
+    color: white;
+    font-size: 12px;
+    width: 155px;
+    height: 50px;}
+.form .drop_down_box_half {
+    background-color: rgb(0 0 0/0.4);
+    border: solid 1px gray;
+    margin: 0px 5px;
+    padding: 15px 20px 15px 15px; /*top, right, bottom, left*/
+    color: white;
+    font-size: 12px;
+    width: 155px;
+    height: 50px;}
+.form .drop_down_box_half > option {
+    color: black;
+    font-size: 12px;}
+.form .drop_down_box {
+    background-color: rgb(0 0 0/0.4);
+    display: block;
+    margin: 10px auto;
+    border: solid 1px gray;
+    padding: 15px 20px 15px 20px; /*top, right, bottom, left*/
+    color: white;
+    font-size: 12px;
+    width: 320px;
+    height: 50px;}
+/* 4 List of Courses */
+.form .list_container{
+    display: block;
+    margin: auto;
+    margin-bottom: 10px;
+    background-color: rgb(0 0 0/0.6);
+    border: 1px solid gray;
+    width: 320px;}
+.form .list_container .list_label {
+    text-align: left;
+    padding: 5px 10px;
+    border-bottom: 1px solid gray;
+    color: white;
+    font-weight: normal;
+    font-size: 10px;}
+.form .list_container .list_text {
+    color: white;
+    padding: 0px 10px;
+    width: 295px;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 10px;}
+.form .list_container .list_button {
+    width: 25px;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 16px;}
+.form .list_container .list_button .select_remove_button {
+    color: theme('colors.blue');
+    margin: 0px 3px;}
+/* 5 Extra Info (eg. already have an account? sign in) */
+.extra_info_form {
+    background-color: rgb(0 0 0/0.2);
+    border: 1px solid white;
+    margin: auto;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: white;
+    padding: 50px 10px;
+    width: 400px;}
+.extra_info_form > a {
+    font-weight: bold;
+    color: theme('colors.blue');}
+/* 6 Submit Buttons */
+.signup_button {
+    display: block;
+    background-color: theme('colors.blue');
+    color: white;
+    font-size: 10px; 
+    margin: auto;
+    margin-top: 30px;
+    vertical-align: middle;
+    width: 320px;
+    height: 40px;}
+.signin_gmail_button {
+    display: block;
+    background-color: theme('colors.red');
+    color: white;
+    font-size: 10px; 
+    margin: auto;
+    margin-top: 0px;
+    vertical-align: middle;
+    width: 320px;
+    height: 40px;}
+.signin_gmail_button > i {
+    font-size: 12px;
+    margin-right: 10px;}
+
+.form > .or_separator {
+    text-align: center;}
+
+.form > .or_separator > .line {
+    width: 150px; 
+    display: inline-block;
+    border-bottom: 1px solid theme('colors.gray'); 
+    line-height: 0.1px;
+    margin: 25px auto;}
+
+.form > .or_separator > span {
+    margin: 0px 10px;
+    color: white;
+    font-size: 12px;
+    vertical-align: middle;}
+
+footer {
+    width: 100%;
+    height: 30px;
+    position: absolute;
+    vertical-align: middle;
+    text-align: center;
+    color: white;
+    bottom: 0px;}
+footer span{
+    margin: 10px;
+    font-size: 12px;
+     }
