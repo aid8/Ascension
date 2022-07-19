@@ -91,7 +91,7 @@
 
     BADGE ENTITY
         Function: AddBadge()
-        Parameters: BadgeName, BadgeDescription, BadgePoints, BadgeType : ("Student", "House"), BadgeImage : base64, BadgeImageName
+        Parameters: BadgeName, BadgeDescription, BadgePoints, BadgeType : ("Student", "House"), BadgeImage : base64, BadgeImageName, BadgeDesignInspiration
         Purpose: Save the badge object into the database
 
         Function: EditBadge()
@@ -127,17 +127,17 @@
         Parameters: RewardID, HouseID
         Purpose: Removes a badge from a student. Splices the RewardID from HouseBadgesIDEarned and Destroys the Reward Object and subtracts the XP / Points from the house
 
-        Function: GetUnacquiredBadge()
+        Function: GetUnacquiredBadges()
         Paramaters: StudentID
         Purpose: Returns student missing badges with the BadgeType of Student
 
-        Function: GetUnacquiredHouseBadge()
+        Function: GetUnacquiredHouseBadges()
         Paramaters: HouseID
         Purpose: Returns house missing badges with the BadgeType of House
 
     TROPHY ENTITY
         Function: AddTrophy()
-        Parameters: TrophyName, TrophyDescription, TrophyPoints, TrophyImage, TrophyType : ("Student", "House"), BadgesIDNeeded : [Array of BadgesID], TrophyImageName : base64
+        Parameters: TrophyName, TrophyDescription, TrophyPoints, TrophyImage, TrophyType : ("Student", "House", "Ultimate"), BadgesIDNeeded : [Array of BadgesID], TrophyImageName : base64, TrophyDesignInspiration
         Purpose: Save the Trophy object into the database
 
         Function: afterSave(Trophy)
@@ -193,7 +193,7 @@
         Parameters: RewardID, HouseID
         Purpose: Removes a badge from a student. Splices the RewardID from BadgesIDEarned and Destroys the Reward Object and subtracts the XP / points to the student
 
-        Function: VerifyUltimateBadge()
+        Function: VerifyUltimateTrophy()
         Parameters: StudentID
         Purpose: Rewards student an ultimate badge if all trophies are earned
 
