@@ -154,7 +154,7 @@
             <button @click="deleteAscensionTitle(title.objectId)">Delete</button>
         </li>
     </ul>
-
+    <!-- TO DO AFTER FIXING XP RANGE START -->
     <h3>Get Ascension Title</h3>
     <span>Xp Value: </span>
     <input v-model="XpInput" type="number"><button @click="searchAscensionTitleFromXp(XpInput)">Search</button>
@@ -405,7 +405,6 @@
                 }
                 await Parse.Cloud.run("AddCourse", params);
                 this.ShowRelevantDegrees = false
-                this.CourseDegreesIDPointers.length = 0
                 alert("Added Course");
             },
 
@@ -416,11 +415,11 @@
             },
 
             setCourseDegree(degId){
-                if(degId == null){
-                    this.CourseDegreesIDPointers.length = 0
-                }
-                else if(this.CourseDegreesIDPointers.indexOf(degId) == -1){
+                if(degId != null){
                     this.CourseDegreesIDPointers.push(degId)
+                }
+                else{
+                    this.CourseDegreesIDPointers.length = 0
                 }
             },
 
@@ -529,7 +528,6 @@
                     "BadgesIDNeeded": this.AssignedBadgesForTrophy,
                     "TrophyImageName" : this.TrophyImageName,
                 }
-                this.AssignedBadgesForTrophy.length = 0
                 await Parse.Cloud.run("AddTrophy", params).then(alert("Added Trophy"));
             },
 
