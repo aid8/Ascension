@@ -76,6 +76,8 @@ Parse.Cloud.define("DeleteTeacher", async(request) => {
     
 });
 
+//Must specify id of teacher with name of "TeacherID"; Specify Type to 1 only if you need the query's result (object)
+//Returns the data of a teacher or the query's result based on the value of Type
 Parse.Cloud.define("GetTeacherData", async(request) => {
     const Teacher = Parse.Object.extend("Teacher");
     const query = new Parse.Query(Teacher);

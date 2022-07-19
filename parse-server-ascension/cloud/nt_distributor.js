@@ -76,6 +76,8 @@ Parse.Cloud.define("DeleteNT_Distributor", async(request) => {
     
 });
 
+//Must specify id of NT_Distributor with name of "NT_DistributorID"; Specify Type to 1 only if you need the query's result (object)
+//Returns the data of an NT_Distributor or the query's result based on the value of Type
 Parse.Cloud.define("GetNT_DistributorData", async(request) => {
     const NT_Distributor = Parse.Object.extend("NT_Distributor");
     const query = new Parse.Query(NT_Distributor);

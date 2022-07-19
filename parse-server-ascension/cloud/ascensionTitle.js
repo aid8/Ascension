@@ -43,6 +43,8 @@ Parse.Cloud.define("GetAscensionTitles", async(_request) =>{
     return JSON.stringify(res);
 });
 
+//Must specify id of Ascension Title with name of "AscensionId"; Specify Type to 1 only if you need the query's result (object)
+//Returns the data of an ascension title or the query's result based on the value of Type
 Parse.Cloud.define("GetAscensionTitleData", async(request) => {
     const AscensionTitle = Parse.Object.extend("AscensionTitle");
     const query = new Parse.Query(AscensionTitle);

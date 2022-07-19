@@ -62,8 +62,8 @@ Parse.Cloud.define("DeleteUnit", async(request) =>{
     });
 });
 
-//Must specify id of unit with name of "UnitID"
-//Returns the data of a unit
+//Must specify id of unit with name of "UnitID"; Specify Type to 1 only if you need the query's result (object)
+//Returns the data of a unit or the query's result based on the value of Type
 Parse.Cloud.define("GetUnitData", async(request) => {
     const Unit = Parse.Object.extend("Unit");
     const query = new Parse.Query(Unit);

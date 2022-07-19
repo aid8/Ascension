@@ -132,7 +132,8 @@ Parse.Cloud.define("DeleteCosmetic", async(request) => {
     });
 });
 
-//Must specify id of cosmetic with name of "CosmeticID"
+//Must specify id of cosmetic with name of "CosmeticID";  Specify Type to 1 only if you need the query's result (object)
+//Returns the data of a course or the query's result based on the value of Type
 Parse.Cloud.define("GetCosmeticData", async(request) => {
     const Cosmetic = Parse.Object.extend("Cosmetic");
     const query = new Parse.Query(Cosmetic);
