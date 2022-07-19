@@ -193,9 +193,9 @@
         Parameters: RewardID, HouseID
         Purpose: Removes a badge from a student. Splices the RewardID from BadgesIDEarned and Destroys the Reward Object and subtracts the XP / points to the student
 
-        Function: VerifyUltimateBadge()
+        Function: VerifyUltimateTrophy()
         Parameters: StudentID
-        Purpose: Rewards student an ultimate badge if all trophies are earned
+        Purpose: Rewards student an ultimate trophy if all trophies are earned. (If there is no ultimate trophy, it creates a new one with type of "Ultimate" and has no image and points, this is named as "Ultimate Trophy"). The admin can create an Ultimate Trophy by setting the trophies' type by "Ultimate". Or the admin can edit the automatically created Ultimate Trophy. There should be only one Trophy with type of Ultimate.
 
         Function: GetUnacquiredTrophies()
         Parameters: StudentID
