@@ -21,6 +21,7 @@ Parse.Cloud.define("AddTrophy", async(request) => {
             "TrophyImage" : link,
             "TrophyType" : argument.TrophyType,
             "BadgesIDNeeded" : argument.BadgesIDNeeded,
+            "TrophyDesignInspiration" : argument.TrophyDesignInspiration,
         }, { useMasterKey: true }).then(()=>{
             console.log("Successfully Added Trophy!");
         });
@@ -63,11 +64,11 @@ Parse.Cloud.define("EditTrophy", async(request) => {
     const res = await Parse.Cloud.run("GetTrophyData", params)
 
     var list_of_attr = ["TrophyName", "TrophyDescription", "TrophyPoints", 
-                    "TrophyType", "BadgesIDNeeded",
+                    "TrophyType", "BadgesIDNeeded", "TrophyDesignInspiration"
     ];
     
     var list_of_arguments =[argument.TrophyName, argument.TrophyDescription, argument.TrophyPoints, 
-                           argument.TrophyType, argument.BadgesIDNeeded
+                           argument.TrophyType, argument.BadgesIDNeeded, argument.TrophyDesignInspiration
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
