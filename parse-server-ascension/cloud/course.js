@@ -64,8 +64,8 @@ Parse.Cloud.define("DeleteCourse", async(request) =>{
     });
 });
 
-//Must specify id of course with name of "CourseID"
-//Returns the data of a course
+//Must specify id of course with name of "CourseID"; Specify Type to 1 only if you need the query's result (object)
+//Returns the data of a course or the query's result based on the value of Type
 Parse.Cloud.define("GetCourseData", async(request) => {
     const Course = Parse.Object.extend("Course");
     const query = new Parse.Query(Course);

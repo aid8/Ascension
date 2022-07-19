@@ -72,7 +72,8 @@ Parse.Cloud.define("DeleteHouse", async(request) => {
     });
 });
 
-//Must specify id of House with name of "HouseID"
+//Must specify id of House with name of "HouseID"; Specify Type to 1 only if you need the query's result (object)
+//Returns the data of a house or the query's result based on the value of Type
 Parse.Cloud.define("GetHouseData", async(request) => {
     const House = Parse.Object.extend("House");
     const query = new Parse.Query(House);

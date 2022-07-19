@@ -26,8 +26,8 @@
         Purpose: Delete the student from the database
 
         Function: GetStudentData()
-        Parameters: StudentID
-        Purpose: Retrieve the data stored in student object
+        Parameters: StudentID, Type
+        Purpose: Retrieve the data stored in student object, or returns query's result if Type is equal to 1
 
         Function: AssignHouse()
         Parameters: StudentID, HouseID
@@ -82,8 +82,8 @@
         Purpose: Delete the Teacher from the database
 
         Function: GetTeacherData()
-        Parameters: TeacherID
-        Purpose: Retrieve the data stored in Teacher object
+        Parameters: TeacherID, Type
+        Purpose: Retrieve the data stored in Teacher object, or returns query's result if Type is equal to 1
 
         Function: GetTeachers()
         Parameters: 
@@ -104,8 +104,8 @@
         Purpose: Delete the badge from the database
 
         Function: GetBadgeData()
-        Parameters: BadgeID
-        Purpose: Retrieve the data stored in badge object
+        Parameters: BadgeID, Type
+        Purpose: Retrieve the data stored in badge object, or returns query's result if Type is equal to 1
 
         Function: GetBadges()
         Parameters: BadgeType
@@ -154,8 +154,8 @@
         Purpose: Delete the Trophy from the database
 
         Function: GetTrophyData()
-        Parameters: TrophyID
-        Purpose: Retrieve the data stored in Trophy object
+        Parameters: TrophyID, Type
+        Purpose: Retrieve the data stored in Trophy object, or returns query's result if Type is equal to 1
 
         Function: GetTrophies()
         Parameters: TrophyType
@@ -220,8 +220,8 @@
         Purpose: Delete the Trophy from the database. Check first if there are teachers/nt_distributors that belong to the unit object, if yes, throw an error.
 
         Function: GetUnitData()
-        Parameters: UnitD
-        Purpose: Retrieve the data stored in unit object
+        Parameters: UnitD, Type
+        Purpose: Retrieve the data stored in unit object, or returns query's result if Type is equal to 1
 
         Function: GetUnits()
         Parameters: 
@@ -242,8 +242,8 @@
         Purpose: Delete the Degree from the database. Check first if there are students  that have this degree, if yes, throw an error.
 
         Function: GetDegreeData()
-        Parameters: DegreeID
-        Purpose: Retrieve the data stored in Degree object
+        Parameters: DegreeID, Type
+        Purpose: Retrieve the data stored in Degree object, or returns query's result if Type is equal to 1
 
         Function: GetDegrees()
         Parameters: 
@@ -264,8 +264,8 @@
         Purpose: Delete the Course from the database. Check first if there are students  that have this course, if yes, throw an error.
 
         Function: GetCourseData()
-        Parameters: CourseID
-        Purpose: Retrieve the data stored in Course object
+        Parameters: CourseID, Type
+        Purpose: Retrieve the data stored in Course object, or returns query's result if Type is equal to 1
 
         Function: GetCourses()
         Parameters: 
@@ -287,8 +287,8 @@
         Purpose: Delete the Cosmetic from the database. Check first if this is a default cosmetic, if yes, throw an error. 
 
         Function: GetCosmeticData()
-        Parameters: CosmeticID
-        Purpose: Retrieve the data stored in cosmetic object
+        Parameters: CosmeticID, Type
+        Purpose: Retrieve the data stored in cosmetic object, or returns query's result if Type is equal to 1
 
         Function: GetCosmetics()
         Parameters: 
@@ -313,8 +313,8 @@
         Purpose: Delete the AscensionTitle from the database
 
         Function: GetAscensionTitleData()
-        Parameters: AscensionTitleID
-        Purpose: Retrieve the data stored in AscensionTitle object
+        Parameters: AscensionTitleID, Type
+        Purpose: Retrieve the data stored in AscensionTitle object, or returns query's result if Type is equal to 1
 
         Function: GetAscensionTitles()
         Parameters: 
@@ -342,8 +342,8 @@
         Purpose: Delete the House from the database if house population is zero
 
         Function: GetHouseData()
-        Parameters: HouseID
-        Purpose: Retrieve the data stored in House object
+        Parameters: HouseID, Type
+        Purpose: Retrieve the data stored in House object, or returns query's result if Type is equal to 1
 
         Function: GetHouses()
         Parameters: 
@@ -383,8 +383,8 @@
         Purpose: Delete the Request from the database
 
         Function: GetRequestData()
-        Parameters: RequestID
-        Purpose: Retrieve the data stored in Request object
+        Parameters: RequestID, Type
+        Purpose: Retrieve the data stored in Request object, or returns query's result if Type is equal to 1
 
         Function: GetRequests()
         Parameters: 

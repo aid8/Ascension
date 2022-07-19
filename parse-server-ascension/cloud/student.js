@@ -117,6 +117,8 @@ Parse.Cloud.define("DeleteStudent", async(request) =>{
     BadgesIDEarned will have BadgesEarned containing the data of each badges
     ChosenTrophies will have ChosenTrophiesData
     Same as TrophiesIDUnlocked, AvatarsIDUnlocked, etc.. 
+    ---New: Stecify Type to 1 only if you need the query's result (object)---
+    Returns the data of a student or the query's result based on the value of Type    
 */
 Parse.Cloud.define("GetStudentData", async(request) => {
     const Student = Parse.Object.extend("Student");

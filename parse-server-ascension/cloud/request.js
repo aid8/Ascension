@@ -111,8 +111,8 @@ Parse.Cloud.define("ApproveRequest", async(request) =>{
     await Parse.Cloud.run("DeleteRequest", params);
 });
 
-//Must specify id of request with name of "RequestID"
-//Returns the data of a request
+//Must specify id of request with name of "RequestID"; Specify Type to 1 only if you need the query's result (object)
+//Returns the data of a request or the query's result based on the value of Type
 Parse.Cloud.define("GetRequestData", async(request) => {
     const Request = Parse.Object.extend("Request");
     const query = new Parse.Query(Request);

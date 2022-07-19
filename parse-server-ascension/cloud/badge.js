@@ -134,6 +134,8 @@ Parse.Cloud.define("DeleteBadge", async(request) => {
     });
 });
 
+//Must specify id of badge with name of "BadgeID"; Specify Type to 1 only if you need the query's result (object)
+//Returns the data of a badge or the query's result based on the value of Type
 Parse.Cloud.define("GetBadgeData", async(request) => {
     const Badge = Parse.Object.extend("Badge");
     const query = new Parse.Query(Badge);

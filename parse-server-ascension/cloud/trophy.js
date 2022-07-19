@@ -136,6 +136,8 @@ Parse.Cloud.define("DeleteTrophy", async(request) => {
     });
 });
 
+//Must specify id of trophy with name of "TrophyID"; Specify Type to 1 only if you need the query's result (object)
+//Returns the data of a trophy or the query's result based on the value of Type
 Parse.Cloud.define("GetTrophyData", async(request) => {
     const Trophy = Parse.Object.extend("Trophy");
     const query = new Parse.Query(Trophy);
