@@ -34,12 +34,12 @@ Parse.Cloud.afterSave("NT_Distributor", async(request)=>{
 
 //Must specify id of nt_distributor with name of "NT_DistributorID"
 Parse.Cloud.define("EditNT_Distributor", async(request) => {
-    const NT_Distributor = Parse.Object.extend("NT_Distributor");
-    const query = new Parse.Query(NT_Distributor);
-    const argument = request.params;
-
-    query.equalTo("objectId", argument.NT_DistributorID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "NT_DistributorID": argument.NT_DistributorID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetNT_DistributorData", dataParams)
 
     var list_of_attr = ["FirstName", "MiddleName", "LastName", 
                         "Email", "ContactNumber", "RegisterDate", "JobTitle", 
@@ -63,12 +63,12 @@ Parse.Cloud.define("EditNT_Distributor", async(request) => {
 });
 
 Parse.Cloud.define("DeleteNT_Distributor", async(request) => {
-    const NT_Distributor = Parse.Object.extend("NT_Distributor");
-    const query = new Parse.Query(NT_Distributor);
-    const argument = request.params;
-
-    query.equalTo("objectId", argument.NT_DistributorID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "NT_DistributorID": argument.NT_DistributorID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetNT_DistributorData", dataParams)
 
     res.destroy().then(() => {
         console.log("Successfully Deleted NT_Distributor");
@@ -82,6 +82,9 @@ Parse.Cloud.define("GetNT_DistributorData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.NT_DistributorID);
     const res = await query.first();
+    if(argument.Type == 1){
+        return res
+    }
     return JSON.stringify(res);
 });
 

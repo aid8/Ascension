@@ -24,12 +24,12 @@ Parse.Cloud.define("AddBadge", async(request) => {
 
 //Must specify id of badge with name of "BadgeID"
 Parse.Cloud.define("EditBadge", async(request) => {
-    const Badge = Parse.Object.extend("Badge");
-    const query = new Parse.Query(Badge);
-    const argument = request.params;
-
-    query.equalTo("objectId", argument.BadgeID);
-    const res = await query.first();
+    const argument = request.params
+    const params = {
+        "BadgeID": argument.BadgeID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetBadgeData", params)
 
     var list_of_attr = ["BadgeName", "BadgeDescription", "BadgePoints", 
                         "BadgeType"
@@ -70,12 +70,12 @@ Parse.Cloud.define("EditBadge", async(request) => {
 });
 
 Parse.Cloud.define("DeleteBadge", async(request) => {
-    const Badge = Parse.Object.extend("Badge");
-    const query = new Parse.Query(Badge);
-    const argument = request.params;
-    
-    query.equalTo("objectId", argument.BadgeID);
-    const res = await query.first();
+    const argument = request.params
+    const params = {
+        "BadgeID": argument.BadgeID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetBadgeData", params)
     
     //If a student has this, return error
     var students = JSON.parse(await Parse.Cloud.run("GetStudents"));
@@ -140,7 +140,11 @@ Parse.Cloud.define("GetBadgeData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.BadgeID);
     const res = await query.first();
+    if(argument.Type == 1){
+        return res
+    }
     return JSON.stringify(res);
+    
 });
 
 //If BadgeType is defined, query depending on badgetype
@@ -222,13 +226,14 @@ Parse.Cloud.define("GetUnacquiredHouseBadges", async(request) => {
 //BadgeID, StudentID needed
 //For rewarding students
 Parse.Cloud.define("RewardBadge", async(request) => {
-    const argument = request.params;
-
+    const argument = request.params
     //Query badge first, check if badge is good for student and get xp
-    const Badge = Parse.Object.extend("Badge");
-    const badgeQuery = new Parse.Query(Badge); 
-    badgeQuery.equalTo("objectId", argument.BadgeID);
-    const res = await badgeQuery.first();
+    const params = {
+        "BadgeID": argument.BadgeID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetBadgeData", params)
+
     if(res.get("BadgeType") != "Student"){
         return Promise.reject("Cannot Reward this Badge! This badge is not available for students.");
     }
@@ -266,12 +271,13 @@ Parse.Cloud.define("RewardBadge", async(request) => {
 //For rewarding houses
 Parse.Cloud.define("RewardHouseBadge", async(request) => {
     const argument = request.params;
-
+    
     //Query badge first, check if badge is good for house and get xp
-    const Badge = Parse.Object.extend("Badge");
-    const badgeQuery = new Parse.Query(Badge); 
-    badgeQuery.equalTo("objectId", argument.BadgeID);
-    const res = await badgeQuery.first();
+    const params = {
+        "BadgeID": argument.BadgeID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetBadgeData", params)
     if(res.get("BadgeType") != "House"){
         return Promise.reject("Cannot Reward this Badge! This badge is not available for houses.");
     }

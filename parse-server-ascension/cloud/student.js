@@ -60,12 +60,12 @@ Parse.Cloud.afterSave("Student", async(request)=>{
 
 //Must specify id of student with name of "StudentID" then the attribute name along with the new value
 Parse.Cloud.define("EditStudent", async(request) =>{
-    const Student = Parse.Object.extend("Student");
-    const query = new Parse.Query(Student);
     const argument = request.params;
-
-    query.equalTo("objectId", argument.StudentID);
-    const res = await query.first();
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams)
     
     var list_of_attr = ["FirstName", "MiddleName", "LastName", "Email", "ContactNumber", 
                         "RegisterDate", "UserName", "Address", "SchoolID",
@@ -95,12 +95,12 @@ Parse.Cloud.define("EditStudent", async(request) =>{
 
 //Must specify id of student with name of "StudentID"
 Parse.Cloud.define("DeleteStudent", async(request) =>{
-    const Student = Parse.Object.extend("Student");
-    const query = new Parse.Query(Student);
     const argument = request.params;
-
-    query.equalTo("objectId", argument.StudentID);
-    const res = await query.first();
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams)
 
     var params = {
         "HouseID" : res.get("StudentHouseIDPointer"),
@@ -124,6 +124,10 @@ Parse.Cloud.define("GetStudentData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.StudentID);
     const res = await query.first();
+
+    if(argument.Type == 1){
+        return res
+    }
 
     //Pass BadgesEarned Data
     var BadgesEarned = [];
@@ -222,11 +226,12 @@ Parse.Cloud.define("AssignHouse", async(request) => {
 
 //Must specify id of student with name of "StudentID" and new "HouseID"
 Parse.Cloud.define("ChangeStudentHouse", async(request) => {
-    const Student = Parse.Object.extend("Student");
-    const query = new Parse.Query(Student);
     const argument = request.params;
-    query.equalTo("objectId", argument.StudentID);
-    const res = await query.first();
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams)
     
     var params = {
         "StudentID" : argument.StudentID,
@@ -242,11 +247,12 @@ Parse.Cloud.define("ChangeStudentHouse", async(request) => {
 
 //Must specify id of student with name of "StudentID", along with three top trophiesID named "TrophiesID_1", "TrophiesID_2", "TrophiesID_3"
 Parse.Cloud.define("ChangeTopTrophies", async(request) => {
-    const Student = Parse.Object.extend("Student");
-    const query = new Parse.Query(Student);
     const argument = request.params;
-    query.equalTo("objectId", argument.StudentID);
-    const res = await query.first();
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams)
     var ChosenTrophies = [argument.TrophiesID_1, argument.TrophiesID_2, argument.TrophiesID_3]
 
     for(let i = 0; i < ChosenTrophies.length; ++i){
@@ -263,11 +269,12 @@ Parse.Cloud.define("ChangeTopTrophies", async(request) => {
 
 //Must specify id of student with name of "StudentID", CosmeticID and CosmeticType
 Parse.Cloud.define("AddStudentCosmetic", async(request) => {
-    const Student = Parse.Object.extend("Student");
-    const query = new Parse.Query(Student);
     const argument = request.params;
-    query.equalTo("objectId", argument.StudentID);
-    const res = await query.first();
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams)
     var cosmeticName = {
         "Avatar" : "AvatarsIDUnlocked",
         "Frame" : "FrameIDUnlocked",
@@ -285,11 +292,12 @@ Parse.Cloud.define("AddStudentCosmetic", async(request) => {
 //Must specify id of student with name of "StudentID", CosmeticID and CosmeticType
 //Useful for event/timed cosmetic
 Parse.Cloud.define("DeleteStudentCosmetic", async(request) => {
-    const Student = Parse.Object.extend("Student");
-    const query = new Parse.Query(Student);
-    const argument = request.params;
-    query.equalTo("objectId", argument.StudentID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams)
     var cosmeticName = {
         "Avatar" : "AvatarsIDUnlocked",
         "Frame" : "FrameIDUnlocked",
@@ -309,11 +317,12 @@ Parse.Cloud.define("DeleteStudentCosmetic", async(request) => {
 
 //Must specify id of student with name of "StudentID", CosmeticType and CosmeticID
 Parse.Cloud.define("ChangeEquippedStudentCosmetic", async(request) => {
-    const Student = Parse.Object.extend("Student");
-    const query = new Parse.Query(Student);
-    const argument = request.params;
-    query.equalTo("objectId", argument.StudentID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams)
     var cosmeticIndex = {
         "Avatar" : 0,
         "Frame" : 1,
@@ -332,11 +341,12 @@ Parse.Cloud.define("ChangeEquippedStudentCosmetic", async(request) => {
 //Must specify id of student with name of "StudentID", "DisplayTitle" with value of boolean
 //Change console.log to the proper function of getting ascension title
 Parse.Cloud.define("DisplayStudentXPTitle", async(request) => {
-    const Student = Parse.Object.extend("Student");
-    const query = new Parse.Query(Student);
-    const argument = request.params;
-    query.equalTo("objectId", argument.StudentID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams)
 
     if(argument.DisplayTitle){
         var params = {"XpInput" : res.get("XP")};

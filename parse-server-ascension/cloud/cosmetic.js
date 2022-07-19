@@ -20,12 +20,12 @@ Parse.Cloud.define("AddCosmetic", async(request) => {
 
 //Must specify id of cosmetic with name of "CosmeticID"
 Parse.Cloud.define("EditCosmetic", async(request) => {
-    const Cosmetic = Parse.Object.extend("Cosmetic");
-    const query = new Parse.Query(Cosmetic);
-    const argument = request.params;
-
-    query.equalTo("objectId", argument.CosmeticID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "CosmeticID": argument.CosmeticID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetCosmeticData", dataParams)
 
     var list_of_attr = ["CosmeticType", "CosmeticName",
     ];
@@ -80,10 +80,11 @@ Parse.Cloud.define("DeleteCosmetic", async(request) => {
         return Promise.reject("Cannot Delete Default Cosmetic!");
     }
 
-    const Cosmetic = Parse.Object.extend("Cosmetic");
-    const query = new Parse.Query(Cosmetic);
-    query.equalTo("objectId", argument.CosmeticID);
-    const res = await query.first();
+    const dataParams = {
+        "CosmeticID": argument.CosmeticID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetCosmeticData", dataParams)
 
     //Remove this cosmetic if is unlocked by student
     //If this cosmetic is equipped, change it to the defaultID
@@ -138,6 +139,10 @@ Parse.Cloud.define("GetCosmeticData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.CosmeticID);
     const res = await query.first();
+    if(argument.Type == 1){
+        return res
+    }
+    
     return JSON.stringify(res);
 });
 

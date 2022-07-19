@@ -12,11 +12,12 @@ Parse.Cloud.define("AddUnit", async(request) => {
 
 //Must specify id of unit with name of "UnitID" then the attribute name along with the new value
 Parse.Cloud.define("EditUnit", async(request) =>{
-    const Unit = Parse.Object.extend("Unit");
-    const query = new Parse.Query(Unit);
-    const argument = request.params;
-    query.equalTo("objectId", argument.UnitID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "UnitID": argument.UnitID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetUnitData", dataParams)
     
     var list_of_attr = ["UnitName", "UnitContactNumber", "UnitType",];
     var list_of_arguments = [argument.UnitName, argument.UnitContactNumber, argument.UnitType,];
@@ -34,11 +35,12 @@ Parse.Cloud.define("EditUnit", async(request) =>{
 
 //Must specify id of unit with name of "UnitID"
 Parse.Cloud.define("DeleteUnit", async(request) =>{
-    const Unit = Parse.Object.extend("Unit");
-    const query = new Parse.Query(Unit);
-    const argument = request.params;
-    query.equalTo("objectId", argument.UnitID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "UnitID": argument.UnitID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetUnitData", dataParams)
 
     //Should throw error if a teacher/nt belongs to this unit/UnitID
     var teachers = JSON.parse(await Parse.Cloud.run("GetTeachers"));
@@ -68,6 +70,9 @@ Parse.Cloud.define("GetUnitData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.UnitID);
     const res = await query.first();
+    if(argument.Type == 1){
+        return res
+    }
     return JSON.stringify(res);
 });
 

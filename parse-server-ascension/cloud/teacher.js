@@ -35,12 +35,12 @@ Parse.Cloud.afterSave("Teacher", async(request)=>{
 
 //Must specify id of teacher with name of "TeacherID"
 Parse.Cloud.define("EditTeacher", async(request) => {
-    const Teacher = Parse.Object.extend("Teacher");
-    const query = new Parse.Query(Teacher);
-    const argument = request.params;
-
-    query.equalTo("objectId", argument.TeacherID);
-    const res = await query.first();
+    const argument = request.params
+    const dataParams = {
+        "TeacherID": argument.TeacherID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetTeacherData", dataParams)
 
     var list_of_attr = ["FirstName", "MiddleName", "LastName", 
                         "Email", "ContactNumber", "RegisterDate", "JobTitle", 
@@ -64,13 +64,12 @@ Parse.Cloud.define("EditTeacher", async(request) => {
 });
 
 Parse.Cloud.define("DeleteTeacher", async(request) => {
-    const Teacher = Parse.Object.extend("Teacher");
-    const query = new Parse.Query(Teacher);
-    const argument = request.params;
-
-    query.equalTo("objectId", argument.TeacherID);
-    const res = await query.first();
-
+    const argument = request.params
+    const dataParams = {
+        "TeacherID": argument.TeacherID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetTeacherData", dataParams)
     res.destroy().then(() => {
         console.log("Successfully Deleted Teacher");
     });
@@ -83,7 +82,10 @@ Parse.Cloud.define("GetTeacherData", async(request) => {
     const argument = request.params;
     query.equalTo("objectId", argument.TeacherID);
     const res = await query.first();
-
+    if(argument.Type == 1){
+        return res
+    }
+    
     //Pass PendingApprovalRewardingData
     var PendingApprovalRewardingData = [];
     var params;
