@@ -55,6 +55,8 @@
     <input v-model="BadgeType" type="text"><br>
     <span>Badge Image </span>
     <input @change="onBadgeImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
+    <span>Badge Design Inspiration: </span>
+    <input v-model="BadgeDesignInspiration" type="text"><br>
     <button @click="addBadge()">Add Badge</button><br>
 
     <h3>Edit / Delete Badge</h3>
@@ -68,6 +70,8 @@
     <input v-model="NewBadgeType" type="text"><br>
     <span>Badge Image: </span>
     <input @change="onNewBadgeImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
+    <span>Badge Design Inspiration: </span>
+    <input v-model="NewBadgeDesignInspiration" type="text"><br>
     <button @click="editBadge()">Edit Badge</button><br><br>
     <button @click="getBadges()">Load Available Badges</button>
     <ul v-if="ShowBadges">
@@ -87,6 +91,8 @@
     <input v-model="TrophyPoints" type="number"><br>
     <span>Trophy Image: </span>
     <input @change="onTrophyImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
+    <span>Trophy Design Inspiration: </span>
+    <input v-model="TrophyDesignInspiration" type="text"><br>
     <span>Trophy Type: </span>
     <input v-model="TrophyType" type="text"><br>
     <span>Required Badges: </span>
@@ -109,6 +115,8 @@
     <input v-model="NewTrophyPoints" type="number"><br>
     <span>Trophy Image: </span>
     <input @change="onNewTrophyImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
+    <span>Trophy Design Inspiration: </span>
+    <input v-model="NewTrophyDesignInspiration" type="text"><br>
     <span>Trophy Type: </span>
     <input v-model="NewTrophyType" type="text"><br>
     <span>Required Badges: </span>
@@ -269,12 +277,14 @@
                 BadgeImage: '',
                 BadgeImageName: '',
                 BadgeType: '',
+                BadgeDesignInspiration: '',
                 NewBadgeName: '',
                 NewBadgeDescription: '',
                 NewBadgePoints: '',
                 NewBadgeImage: '',
                 NewBadgeImageName: '',
                 NewBadgeType: '',
+                NewBadgeDesignInspiration: '',
                 BadgeIdPointer: '',
                 Badges: [],
                 
@@ -285,6 +295,7 @@
                 TrophyPoints: 0,
                 TrophyImage: '',
                 TrophyImageName: '',
+                TrophyDesignInspiration: '',
                 AvailableBadgesForTrophy: [],
                 AssignedBadgesForTrophy: [],
                 NewTrophyType: '',
@@ -293,6 +304,7 @@
                 NewTrophyPoints: 0,
                 NewTrophyImage: '',
                 NewTrophyImageName: '',
+                NewTrophyDesignInspiration: '',
                 NewTrophyID : '',
                 AssignedBadgesforNewTrophy: [],
                 Trophies: [],
@@ -419,8 +431,12 @@
                 if(degId == null){
                     this.CourseDegreesIDPointers.length = 0
                 }
-                else if(this.CourseDegreesIDPointers.indexOf(degId) == -1){
+                else if(this.CourseDegreesIDPointers.indexOf(degId) == -1)
+                if(degId != null){
                     this.CourseDegreesIDPointers.push(degId)
+                }
+                else{
+                    this.CourseDegreesIDPointers.length = 0
                 }
             },
 
@@ -444,6 +460,7 @@
                     "BadgeType" : this.BadgeType,
                     "BadgeImage" : this.BadgeImage,
                     "BadgeImageName" : this.BadgeImageName,
+                    "BadgeDesignInspiration" : this.BadgeDesignInspiration,
                 }
                 await Parse.Cloud.run("AddBadge", params).then(alert("Added Badge!"));
             },
@@ -481,6 +498,7 @@
                     "BadgePoints" : this.NewBadgePoints,
                     "BadgeType" : this.NewBadgeType,
                     "BadgeImage" : this.NewBadgeImage,
+                    "BadgeDesignInspiration" : this.NewBadgeDesignInspiration,
                     "BadgeID" : this.BadgeIdPointer,
                 }
                 if(this.NewBadgeImageName != ""){
@@ -500,6 +518,7 @@
                 this.NewBadgePoints = Badge.BadgePoints
                 this.NewBadgeType = Badge.BadgeType
                 this.NewBadgeImage = Badge.BadgeImage
+                this.NewBadgeDesignInspiration = Badge.BadgeDesignInspiration
                 this.BadgeIdPointer = Badge.objectId
             },
             
@@ -528,6 +547,7 @@
                     "TrophyType": this.TrophyType,
                     "BadgesIDNeeded": this.AssignedBadgesForTrophy,
                     "TrophyImageName" : this.TrophyImageName,
+                    "TrophyDesignInspiration" : this.TrophyDesignInspiration,
                 }
                 this.AssignedBadgesForTrophy.length = 0
                 await Parse.Cloud.run("AddTrophy", params).then(alert("Added Trophy"));
@@ -559,6 +579,7 @@
                     "TrophyImage": this.NewTrophyImage,
                     "TrophyType": this.NewTrophyType,
                     "BadgesIDNeeded": this.AssignedBadgesforNewTrophy,
+                    "TrophyDesignInspiration" : this.NewTrophyDesignInspiration,
                 }
                 if(this.NewTrophyImageName != ""){
                     params["TrophyImageName"] = this.NewTrophyImageName;
@@ -586,6 +607,7 @@
                 this.NewTrophyImage = trophy.TrophyImage
                 this.NewTrophyType = trophy.TrophyType
                 this.AssignedBadgesforNewTrophy = trophy.BadgesIDNeeded
+                this.NewTrophyDesignInspiration = trophy.TrophyDesignInspiration
             },
 
             async getTrophies(){

@@ -16,6 +16,7 @@ Parse.Cloud.define("AddBadge", async(request) => {
             "BadgePoints" : argument.BadgePoints,
             "BadgeImage" : link,
             "BadgeType" : argument.BadgeType,
+            "BadgeDesignInspiration" : argument.BadgeDesignInspiration,
         }, { useMasterKey: true }).then(()=>{
             console.log("Successfully added Badge!");
         });
@@ -32,11 +33,11 @@ Parse.Cloud.define("EditBadge", async(request) => {
     const res = await Parse.Cloud.run("GetBadgeData", params)
 
     var list_of_attr = ["BadgeName", "BadgeDescription", "BadgePoints", 
-                        "BadgeType"
+                        "BadgeType", "BadgeDesignInspiration"
     ];
     
     var list_of_arguments =[argument.BadgeName, argument.BadgeDescription, argument.BadgePoints,
-                            argument.BadgeType,
+                            argument.BadgeType, argument.BadgeDesignInspiration
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
