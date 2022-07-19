@@ -13,8 +13,6 @@
         display: none;
     }
 </style>
-
-
 <template>
     <head>
         <title>Admin</title>
@@ -151,7 +149,6 @@
                         </div>
                     </form>
                 </div>
-                
                 <!--right section-->
                 <div class="block col-span-1">
                     <!--sub navigation bar-->
