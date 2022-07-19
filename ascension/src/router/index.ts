@@ -35,6 +35,12 @@ const routes: Array<RouteRecordRaw> = [
     name: 'RedirectPage',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/RedirectPage.vue')
   },
+
+  {
+    path: '/AccountSettings',
+    name: 'AccountSettings',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/AccountSettings.vue')
+  },
 ]
 
 const router = createRouter({
