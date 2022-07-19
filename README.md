@@ -1,4 +1,6 @@
-STUDENT ENTITY
+# Ascension
+## CLOUD FUNCTIONS
+    STUDENT ENTITY
     Function: AddStudent()
     Parameters: FirstName, MiddleName, LastName, Email, ContactNumber, 
                 UserName, Address, SchoolID, YearLevel, StudentUnitIDPointer, 
