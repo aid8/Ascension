@@ -393,6 +393,31 @@
         Function: ApproveRequest()
         Parameters: RequestID, BadgeID
         Purpose: Deletes the requests and rewards the badge
+
+    ANNOUNCEMENT ENTITY
+        Function: AddAnnouncement()
+        Parameters: AnnouncementText, UserIDPointer, HouseIDPointer
+        Purpose: Saves an announcement object to the database
+
+        Function: beforeSave(Announcement)
+        Parameters:  UserIDPointer
+        Purpose: Verifies if the UserID is not a student. (Only non-student users can make announcements)
+
+        Function: EditAnnouncement()
+        Parameters: AnnouncementID, AnnouncementText, UserIDPointer, HouseIDPointer
+        Purpose: Edit the attribute/s of the announcement
+
+        Function: DeleteAnnouncement()
+        Parameters: AnnouncementID
+        Purpose: Delete the Announcement from the database
+
+        Function: GetAnnouncementData()
+        Parameters: AnnouncementID, Type
+        Purpose: Retrieve the data stored in Announcement object, or returns query's result if Type is equal to 1
+
+        Function: GetAnnouncements()
+        Parameters: 
+        Purpose: Get all the Announcements saved in the database.
         
     OTHER FUNCTIONS
         Function: GetRewardData()
