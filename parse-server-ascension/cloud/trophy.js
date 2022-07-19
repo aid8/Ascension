@@ -1,6 +1,6 @@
 /*
     Functions that are incomplete:
-    - VerifyUltimateBadge
+    - VerifyUltimateTrophy
 */
 var Global = require('./global');
 
@@ -261,9 +261,9 @@ Parse.Cloud.define("RewardTrophy", async(request) => {
         res1.set("XP", studentXP);
         res1.save();
 
-        //Call VerifyUltimateBadge
+        //Call VerifyUltimateTrophy
         var param = {"StudentID" : argument.StudentID};
-        await Parse.Cloud.run("VerifyUltimateBadge", param);
+        await Parse.Cloud.run("VerifyUltimateTrophy", param);
     });
 });
 
@@ -443,7 +443,12 @@ Parse.Cloud.define("VerifyTrophyRemoval", async(request) =>{
     var TrophiesRewardID = StudentData.TrophiesIDUnlocked;
 
     //Check and remove trophy
+    var TrophyRemoved = false;
+    var UltimateTrophyRewardID = "";
     for(let i = 0; i < Trophies.length; ++i){
+        if(Trophies[i].TrophyType == "Ultimate"){
+            UltimateTrophyRewardID = TrophiesRewardID[i];
+        }
         let BadgesIDNeeded = Trophies[i].BadgesIDNeeded;
         let count = 0;
         for(const badge of Badges){
@@ -457,7 +462,16 @@ Parse.Cloud.define("VerifyTrophyRemoval", async(request) =>{
                 "RewardID" : TrophiesRewardID[i],
             };
             await Parse.Cloud.run("RemoveTrophy", param);
+            TrophyRemoved = true;
         }
+    }
+    //Remove UltimateTrophy
+    if(TrophyRemoved && UltimateTrophyRewardID != ""){
+        param = {
+            "StudentID" : argument.StudentID,
+            "RewardID" : UltimateTrophyRewardID,
+        }
+        await Parse.Cloud.run("RemoveTrophy", param);
     }
 });
 
@@ -493,15 +507,46 @@ Parse.Cloud.define("VerifyHouseTrophyRemoval", async(request) =>{
 });
 
 //StudentID
-Parse.Cloud.define("VerifyUltimateBadge", async(request) =>{
+Parse.Cloud.define("VerifyUltimateTrophy", async(request) =>{
     const argument = request.params;
     //Gets the Data of student
     var param = {"StudentID" : argument.StudentID};
     var StudentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
     var TrophiesID = StudentData.TrophiesIDUnlocked;
-    const totalTrophies = JSON.parse(await Parse.Cloud.run("GetTrophies"));
+    param = {"TrophyType" : "Student"};
+    const totalTrophies = JSON.parse(await Parse.Cloud.run("GetTrophies", param));
 
     if(totalTrophies.length == TrophiesID.length){
-        console.log("THIS STUDENT SHOULD BE REWARDED WILL ULTIMATE BADGE");
+        const Trophy = Parse.Object.extend("Trophy");
+        const query = new Parse.Query(Trophy);
+        query.equalTo("TrophyType", "Ultimate");
+        const res = await query.first();
+
+        if(res == undefined){
+            const trophy = new Trophy();
+            param = {
+                "TrophyName" : "Ultimate Trophy",
+                "TrophyDescription" : "Given to students when all trophies are acquired",
+                "TrophyDesignInspiration" : "",
+                "TrophyPoints" : 0,
+                "TrophyImage" : "",
+                "TrophyType" : "Ultimate",
+                "BadgesIDNeeded" : [],
+            }
+            trophy.save(param).then(async (obj)=>{
+                param = {
+                    "TrophyID" : obj.id,
+                    "StudentID" : StudentData.objectId,
+                }
+                await Parse.Cloud.run("RewardTrophy", param);
+            });
+        }
+        else{
+            param = {
+                "TrophyID" : res.id,
+                "StudentID" : StudentData.objectId,
+            }
+            await Parse.Cloud.run("RewardTrophy", param);
+        }
     }
 });
