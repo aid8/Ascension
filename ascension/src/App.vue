@@ -10,8 +10,7 @@
 
 <script>
   import Parse from 'parse';
-  import './assets/tailwind.css';
-  Parse.serverURL = "http://localhost:1337/api";
+  Parse.serverURL = "http://localhost:1338/api";
   Parse.initialize("myAppId", "jspass");
 
   export default{
