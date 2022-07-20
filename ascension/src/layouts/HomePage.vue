@@ -3,7 +3,7 @@
         <title>Ascension</title>
     </head>
 
-    <header class="fixed z-[5] w-[100%] bg-black/15 backdrop-blur-[5px] border-b-[1px] border-gray font-Lexend text-center text-white">
+    <header class="absolute z-[5] w-[100%] bg-black/15 backdrop-blur-[5px] border-b-[1px] border-gray font-Lexend text-center text-white">
         <div class="w-5/6">
             <img src="../assets/img/logo/text-logo-default.png" class="ml-5 mt-2 -mb-4 w-32"/>
         </div>
@@ -16,26 +16,168 @@
 
     <body class="flex items-center align-middle overflow-y-hidden pb-4 mb-12 row-2">
         <div>
-            <div class="bg-[url('/src/assets/img/background/bg-2.jpg')] bg-cover bg-fixed justify-center  w-screen h-screen">
-                <div>
-                    <div class="font-Lexend text-white mb-4">
-                        <div class="mx-44 py-64">
-                            <h1 class="text-6xl mb-4">The best way to<br />motivate students.</h1>
-                            <p class=" text-2xl mb-4">Ascension is a gamified academic program that<br />encourages students to perform better in school.</p>
-                            <div class="float-left my-2">
-                                <button class="hover:text-gold text-2xl mr-2 underline decoration-gold decoration-2 underline-offset-4" @click="logInStudent()">Join the Ascension</button>
-                            </div>
-                            <div>
-                                <button class="hover:text-gold text-2xl m-2 underline decoration-gold decoration-2 underline-offset-4">Learn More</button>
-                            </div>
-                        </div>
+            <div class="">
+                <div class="absolute mt-12 font-Lexend text-white">
+                    <ul class="flex flex-wrap ml-6">
+                        <li class="mr-6 hover:text-gold">
+                            <button @click="currentTab(1)">Overview</button>
+                        </li>
+                        <li class="mr-6 hover:text-gold">
+                            <button @click="currentTab(2)">Daily Quotes</button>
+                        </li>
+                        <li class="mr-6 hover:text-gold">
+                            <button @click="currentTab(3)">Trivia</button>
+                        </li>
+                        <li class="mr-6 hover:text-gold">
+                            <button @click="currentTab(4)">Wordle</button>
+                        </li>
+                    </ul>
                 </div>
-            </div>
-        </div>
 
-        <div class="bg-default bg-cover bg-fixed text-white">
+                    <div><!-- Tab contents -->
+                        <div v-if="tab === 1">
+                            <div class="absolute mt-12 font-Lexend text-white">
+                                <ul class="flex flex-wrap ml-6">
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(1)" class="text-gold underline decoration-gold decoration-2 underline-offset-4">Overview</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(2)">Daily Quotes</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(3)">Trivia</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(4)">Wordle</button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-[url('/src/assets/img/background/bg-2.jpg')] bg-cover justify-center  w-screen h-screen">
+                                <div class="font-Lexend text-white">
+                                    <div class="mx-44 py-56">
+                                        <h1 class="text-6xl mb-4">The best way to<br />motivate students.</h1>
+                                        <p class=" text-2xl mb-4">Ascension is a gamified academic program that<br />encourages students to perform better in school.</p>
+                                        <div class="float-left my-2">
+                                            <button class="hover:text-gold text-2xl mr-2 underline decoration-gold decoration-2 underline-offset-4" @click="logInStudent()">Join the Ascension</button>
+                                        </div>
+                                        <div>
+                                            <button class="hover:text-gold text-2xl m-2 underline decoration-gold decoration-2 underline-offset-4">Learn More</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
+                        <div v-if="tab === 2">
+                            <div class="absolute mt-12 font-Lexend text-white">
+                                <ul class="flex flex-wrap ml-6">
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(1)">Overview</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(2)" class="text-gold underline decoration-gold decoration-2 underline-offset-4">Daily Quotes</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(3)">Trivia</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(4)">Wordle</button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-[url('/src/assets/img/background/bg-2.jpg')] bg-cover justify-center  w-screen h-screen">
+                                <div class="font-Lexend text-white">
+                                    <div class="text-center py-64">
+                                        <div class="text-2xl tracking-wider">
+                                            The best things
+                                        </div>
+                                        <div class="font-medium text-5xl tracking-widest">
+                                            IN LIFE
+                                        </div>
+                                        <div class="text-2xl">
+                                            are actually really
+                                        </div>
+                                        <div class="font-bold text-3xl tracking-widest">
+                                            EXPENSIVE
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
+                        <div v-if="tab === 3">
+                            <div class="absolute mt-12 font-Lexend text-white">
+                                <ul class="flex flex-wrap ml-6">
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(1)">Overview</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(2)">Daily Quotes</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(3)" class="text-gold underline decoration-gold decoration-2 underline-offset-4">Trivia</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(4)">Wordle</button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-[url('/src/assets/img/background/bg-2.jpg')] bg-cover justify-center  w-screen h-screen">
+                                <div class="font-Lexend text-white">
+                                    <div class="flex justify-center items-center px-44 py-80">
+                                        <button class="font-default text-center hover:shadow-2xl rounded-full border p-5 text-white" @click="toggleModal = !toggleModal">Did You Know?</button>
+                                    </div>
+
+                                    <div v-if="toggleModal" class="absolute inset-0 w-screen flex justify-center items-center -z-5 bg-black bg-opacity-60">
+                                            <div class="absolute bg-blue h-2/3 w-1/2 py-64 text-center">
+                                                <div>
+                                                    This is a Trivia
+                                                </div>
+                                                <button @click="toggleModal = !toggleModal">Done</button>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
+                        <div v-if="tab === 4">
+                            <div class="absolute mt-12 font-Lexend text-white">
+                                <ul class="flex flex-wrap ml-6">
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(1)">Overview</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(2)">Daily Quotes</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(3)">Trivia</button>
+                                    </li>
+                                    <li class="mr-6 hover:text-gold">
+                                        <button @click="currentTab(4)" class="text-gold underline decoration-gold decoration-2 underline-offset-4">Wordle</button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-[url('/src/assets/img/background/bg-2.jpg')] bg-cover justify-center  w-screen h-screen">
+                                <div class="font-Lexend text-white">
+                                    <div class="text-white mb-4">
+                                        <div class="px-40 py-56">
+                                            <h1 class="text-6xl mb-4">Try WORDLE</h1>
+                                            <p class=" text-2xl mb-4">Wordle is an online 5-letter word game. Each day a new word is <br />released and players have six attempts to guess what the word of the day is.</p>
+                                            <div>
+                                                <button class="hover:text-gold text-2xl p-2 underline decoration-gold decoration-2 underline-offset-4">PLAY</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>    
+                        </div>
+                    </div>
+            </div>
+
+        <div>
             <div>
-                <div class=""> <!-- getAnnouncements() -->
+                <div class="absolute bg-default bg-cover bg-fixed text-white w-screen"> <!-- getAnnouncements() -->
                     <section class="hero container max-w-7xl mx-auto px-10 flex">
                         <img class="mt-28" src="../assets/img/posts/Orsem.jpg"/>
                     </section>
@@ -110,10 +252,12 @@
             return{
                 userType: '',
                 loggedIn: false,
+                toggleModal: false,
+                tab: 1,
             }
         },
         components:{
-           
+            
         },
         beforeMount(){
             var currentUser = Parse.User.current();
@@ -148,7 +292,10 @@
             async logOut(){
                 await Parse.User.logOut();
                 this.$router.go(0); //refresh the page
-            }
+            },
+            currentTab: function (tabNumber) {
+            this.tab = tabNumber;
+            },
         }
     }
 </script>
