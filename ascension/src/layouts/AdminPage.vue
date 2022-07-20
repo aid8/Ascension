@@ -94,7 +94,12 @@
     <span>Trophy Design Inspiration: </span>
     <input v-model="TrophyDesignInspiration" type="text"><br>
     <span>Trophy Type: </span>
-    <input v-model="TrophyType" type="text"><br>
+    <input type="radio" id="Student" value="Student" v-model="TrophyType" />
+    <label for="Student">Student</label>
+    <input type="radio" id="House" value="House" v-model="TrophyType" />
+    <label for="House">House</label>
+    <input type="radio" id="Ultimate" value="Ultimate" v-model="TrophyType" />
+    <label for="Ultimate">Ultimate</label><br>
     <span>Required Badges: </span>
     <button @click="getBadgesForTrophy()">Load Badges</button>
     <ul v-if="ShowBadgesForTrophy">
@@ -118,7 +123,12 @@
     <span>Trophy Design Inspiration: </span>
     <input v-model="NewTrophyDesignInspiration" type="text"><br>
     <span>Trophy Type: </span>
-    <input v-model="NewTrophyType" type="text"><br>
+    <input type="radio" id="Student" value="Student" v-model="NewTrophyType" />
+    <label for="Student">Student</label>
+    <input type="radio" id="House" value="House" v-model="NewTrophyType" />
+    <label for="House">House</label>
+    <input type="radio" id="Ultimate" value="Ultimate" v-model="NewTrophyType" />
+    <label for="Ultimate">Ultimate</label><br>
     <span>Required Badges: </span>
     <button @click="getBadgesForUpdatedTrophy()">Load Badges</button>
     <ul v-if="NewShowBadgesForTrophy">
@@ -185,7 +195,14 @@
     <span>Cosmetic Name: </span>
     <input v-model="CosmeticName" type="text"><br>
     <span>Cosmetic Type: </span>
-    <input v-model="CosmeticType" type="text"><br>
+    <input type="radio" id="Avatar" value="Avatar" v-model="CosmeticType" />
+    <label for="Avatar">Avatar</label>
+    <input type="radio" id="Frame" value="Frame" v-model="CosmeticType" />
+    <label for="Frame">Frame</label>
+    <input type="radio" id="CoverPhoto" value="CoverPhoto" v-model="CosmeticType" />
+    <label for="CoverPhoto">Cover Photo</label>
+    <input type="radio" id="Banner" value="Banner" v-model="CosmeticType" />
+    <label for="Banner">Banner</label><br>
     <span>Cosmetic Image </span>
     <input @change="onCosmeticImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
     <button @click="addCosmetic()">Add Cosmetic</button><br>
@@ -194,7 +211,15 @@
     <span>Cosmetic Name: </span>
     <input v-model="NewCosmeticName" type="text"><br>
     <span>Cosmetic Type: </span>
-    <input v-model="NewCosmeticType" type="text"><br>
+    <input v-model="NewCosmeticType" type="text">
+    <input type="radio" id="Avatar" value="Avatar" v-model="NewCosmeticType" />
+    <label for="Avatar">Avatar</label>
+    <input type="radio" id="Frame" value="Frame" v-model="NewCosmeticType" />
+    <label for="Frame">Frame</label>
+    <input type="radio" id="CoverPhoto" value="CoverPhoto" v-model="NewCosmeticType" />
+    <label for="CoverPhoto">Cover Photo</label>
+    <input type="radio" id="Banner" value="Banner" v-model="NewCosmeticType" />
+    <label for="Banner">Banner</label><br>
     <span>Cosmetic Image </span>
     <input @change="onNewCosmeticImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
     <button @click="editCosmetic()">Edit Cosmetic</button><br>
