@@ -608,7 +608,7 @@
                 openModifyTab: 'units', //units, degrees, courses, trophies, badges, titles, cosmetics, houses
                 popUp: '', //editStudent, closePopUp
                 openStudent: 1,
-                isHidden: true
+                isHidden: true,
                 
                 //Backend Variables
                 //Containers
@@ -649,8 +649,7 @@
             },
             viewStudent: function (studentNumber) {
                 this.openStudent = studentNumber
-            }
-
+            },
             activeSubTab: function (subTabsNumber) {
                 this.openSubTab = subTabsNumber
             },
