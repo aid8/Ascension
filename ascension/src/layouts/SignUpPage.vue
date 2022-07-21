@@ -18,7 +18,7 @@
 </style>
 <template>
     <body>
-        <main class="relative flex flex-col items-center justify-center min-w-[1000px] h-[100vh]">
+        <main class="relative justify-center min-w-[1000px] h-[100vh]">
             <img class="absolute top-[10px] left-[10px] w-[80px] h-auto" src="../assets/img/logo/ccs-logo-white.png">
             <img class="absolute top-[10px] right-[10px] w-[80px] h-auto" src="../assets/img/logo/adnu-logo.png">
             <section class="flex items-center justify-center pt-[50px]">
@@ -30,7 +30,7 @@
                     <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="email" placeholder="Email" />
                     <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="tel" placeholder="Contact Number" />
                     <div class="flex flex-row gap-3 items-center justify-center">
-                        <input type="radio" id="student" v-on:click="showRole('student')" /><label for="student" class="text-[10px] text-white">STUDENT</label>
+                        <input checked type="radio" id="student" v-on:click="showRole('student')" /><label for="student" class="text-[10px] text-white">STUDENT</label>
                         <input type="radio" id="teacher" v-on:click="showRole('teacher')" /><label for="teacher" class="text-[10px] text-white">TEACHER</label>
                         <input type="radio" id="ntDistributor" v-on:click="showRole('ntDistributor')" /><label for="ntDistributor" class="text-[10px] text-white">NT DISTRIBUTOR</label>
                     </div>
