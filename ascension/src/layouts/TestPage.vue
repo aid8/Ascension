@@ -30,9 +30,9 @@
         <main class="mx-[auto] grid grid-cols-12 grid-rows-1 min-w-[1366px] max-w-[1366px]">
             <!--left navigation bar-->
             <nav class="col-span-2 text-[13px] py-[20px] h-[100%] border-r-[1px] border-gray">
-                <button class="block h-[40px] w-[100%] px-[20px] text-right" v-on:click="activeTab(1)" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 1, 'text-gold cursor-default': openTab === 1}">MODIFY</button>
-                <button class="block h-[40px] w-[100%] px-[20px] text-right" v-on:click="activeTab(2)" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 2, 'text-gold cursor-default': openTab === 2}">STUDENT</button>
-                <button class="block h-[40px] w-[100%] px-[20px] text-right" v-on:click="activeTab(3)" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 3, 'text-gold cursor-default': openTab === 3}">GIVER</button>
+                <button class="block h-[40px] w-[100%] px-[20px] text-right" v-on:click="activeTab('modify')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'modify', 'text-gold cursor-default': openTab === 'modify'}">MODIFY</button>
+                <button class="block h-[40px] w-[100%] px-[20px] text-right" v-on:click="activeTab('student')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'student', 'text-gold cursor-default': openTab === 'student'}">STUDENT</button>
+                <button class="block h-[40px] w-[100%] px-[20px] text-right" v-on:click="activeTab('giver')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'giver', 'text-gold cursor-default': openTab === 'giver'}">GIVER</button>
                 <details>
                     <summary class="py-[10px] w-[100%] px-[20px] text-white cursor-pointer text-right">
                         ADMIN
@@ -41,7 +41,7 @@
                 </details>
             </nav>
             <!--add/edit/delete tab-->
-            <section class="grid grid-cols-2 col-span-10" v-bind:class="{'hidden': openTab !== 1, 'block': openTab === 1}">
+            <section class="grid grid-cols-2 col-span-10" v-bind:class="{'hidden': openTab !== 'modify', 'block': openTab === 'modify'}">
                 <!--middle section-->
                 <div class="py-[30px] remove-scroll col-span-1 h-[100vh] overflow-y-scroll">
                     <!--units-->
@@ -164,17 +164,17 @@
                 <div class="col-span-1">
                     <!--sub navigation bar-->
                     <nav class="grid grid-cols-8 col-span-1">
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeSubTab(1)" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openSubTab !== 1, 'text-gold border-b-[1px] border-gold cursor-default': openSubTab === 1}" title="List of Units, Degrees, and Courses">UNITS</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeSubTab(2)" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openSubTab !== 2, 'text-gold border-b-[1px] border-gold cursor-default': openSubTab === 2}" title="List of Units, Degrees, and Courses">DEGREES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeSubTab(3)" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openSubTab !== 3, 'text-gold border-b-[1px] border-gold cursor-default': openSubTab === 3}" title="List of Units, Degrees, and Courses">COURSES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeSubTab(4)" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openSubTab !== 4, 'text-gold border-b-[1px] border-gold cursor-default': openSubTab === 4}" title="List of Badges and Trophies">TROPHIES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeSubTab(5)" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openSubTab !== 5, 'text-gold border-b-[1px] border-gold cursor-default': openSubTab === 5}" title="List of Badges and Trophies">BADGES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeSubTab(6)" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openSubTab !== 6, 'text-gold border-b-[1px] border-gold cursor-default': openSubTab === 6}" title="List of Ascension Titles">TITLES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeSubTab(7)" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openSubTab !== 7, 'text-gold border-b-[1px] border-gold cursor-default': openSubTab === 7}" title="List of Houses">COSMETICS</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeSubTab(8)" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openSubTab !== 8, 'text-gold border-b-[1px] border-gold cursor-default': openSubTab === 8}" title="List of Houses">HOUSE</button>
+                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('units')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'units', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'units'}" title="List of Units, Degrees, and Courses">UNITS</button>
+                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('degrees')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'degrees', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'degrees'}" title="List of Units, Degrees, and Courses">DEGREES</button>
+                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('courses')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'courses', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'courses'}" title="List of Units, Degrees, and Courses">COURSES</button>
+                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('trophies')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'trophies', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'trophies'}" title="List of Badges and Trophies">TROPHIES</button>
+                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('badges')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'houses', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'houses'}" title="List of Badges and Trophies">BADGES</button>
+                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('titles')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'titles', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'titles'}" title="List of Ascension Titles">TITLES</button>
+                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('cosmetics')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'cosmetics', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'cosmetics'}" title="List of Houses">COSMETICS</button>
+                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('houses')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'houses', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'houses'}" title="List of Houses">HOUSES</button>
                     </nav>
                     <!--units tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 1, 'block': openSubTab === 1}">
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'units', 'block': openModifyTab === 'units'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li>
@@ -192,7 +192,7 @@
                         </ul>
                     </div>
                     <!--degrees tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 2, 'block': openSubTab === 2}">
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'degrees', 'block': openModifyTab === 'degrees'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li>
@@ -210,7 +210,7 @@
                         </ul>
                     </div>
                     <!--courses tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 3, 'block': openSubTab === 3}">
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'courses', 'block': openModifyTab === 'courses'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li>
@@ -228,7 +228,7 @@
                         </ul>
                     </div>
                     <!--trophies tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 4, 'block': openSubTab === 4}">
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'trophies', 'block': openModifyTab === 'trophies'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li>
@@ -253,7 +253,7 @@
                         </ul>
                     </div>
                     <!--badges tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 5, 'block': openSubTab === 5}">
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'badges', 'block': openModifyTab === 'badges'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li>
@@ -278,7 +278,7 @@
                         </ul>
                     </div>
                     <!--ascension title tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 6, 'block': openSubTab === 6}">
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'titles', 'block': openModifyTab === 'titles'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li>
@@ -303,7 +303,7 @@
                         </ul>
                     </div>
                     <!--cosmetics tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 7, 'block': openSubTab === 7}">
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'cosmetics', 'block': openModifyTab === 'cosmetics'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li>
@@ -328,7 +328,7 @@
                         </ul>
                     </div>
                     <!--house tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 8, 'block': openSubTab === 8}">
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'houses', 'block': openModifyTab === 'houses'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li>
@@ -354,16 +354,15 @@
                     </div>
                 </div>
             </section>
-
             <!--student list-->
-            <section class="grid col-span-10 h-[100vh]" v-bind:class="{'hidden': openTab !== 2, 'block': openTab === 2}">
-                <!--bottom section-->
+            <section class="grid col-span-10 h-[100vh]" v-bind:class="{'hidden': openTab !== 'student', 'block': openTab === 'student'}">
                 <div class="col-span-1 px-[30px] py-[30px]">
-                    <div class="grid grid-cols-11 mb-[10px] mx-[auto] w-[100%]">
-                        <div class="col-span-5 flex items-center justify-start">
-                            <div class="relative flex items-center justify-center w-[150px] h-[150px] mr-[10px]">
-                                <img class="absolute h-[120px] w-[120px] rounded-full" loading="lazy" alt="Avatar" src="../assets/img/avatar/avatar.jpg" />
-                                <img class="absolute h-[130px] w-[130px] rounded-full" loading="lazy" alt="Frame" src="../assets/img/frames/frame_sample.png" />
+                    <!--selected user-->
+                    <div class="grid grid-cols-11 mb-[10px] mx-[auto] h-[25vh] w-[100%]">
+                        <!--user image-->
+                        <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-5 flex items-center justify-start">
+                            <div class="relative flex items-center justify-center w-[150px] h-[150px] mr-[5px]">
+                                <img class="border-[5px] border-white absolute h-[120px] w-[120px] rounded-full" loading="lazy" alt="Avatar" src="../assets/img/avatar/avatar.jpg" />
                             </div>
                             <div>
                                 <span class="block text-[22px] text-gold">Username#123</span>
@@ -373,22 +372,27 @@
                                 <span class="block text-[12px] text-white">rbufete@gbox.adnu.edu.ph</span>
                             </div>
                         </div>
-
-                        <div class="col-span-1 flex items-center justify-center">
+                        <!--house logo-->
+                        <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-1 flex items-center justify-center">
                             <img class="w-[90px] h-[auto]" loading="lazy" title="Liberalitas" alt="House Logo" src="../assets/img/logo/liberalitas-logo.png" />
                         </div>
-                        <div class="col-span-1 flex items-center justify-center">
+                        <!--status logo-->
+                        <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-1 flex items-center justify-center">
                             <img class="w-[70px] h-[auto]" loading="lazy" title="Duke" alt="Status Logo" src="../assets/img/logo/status-logo.png" />
                         </div>
-                        <div class="col-span-1 flex items-center justify-center">
+                        <!--house banner-->
+                        <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-1 flex items-center justify-center">
                             <img class="w-[60px] h-[auto]" loading="lazy" title="Liberalitas banner" alt="House Banner" src="../assets/img/banner/liberalitas-banner.png" />
                         </div>
-                        <div class="col-span-3 flex flex-col items-center justify-center">
+                        <!--top three badges and recently obtained badges-->
+                        <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-3 flex flex-col items-center justify-center">
+                                <!--trophies-->
                                 <div class="grid grid-cols-3 items-center justify-center gap-3">
                                     <img class="col-span-1 inline-block w-[50px] h-[auto]" title="Trophy Name" loading="lazy" alt="Trophy 1" src="../assets/img/trophies/trophy_1.png" />
                                     <img class="col-span-1 inline-block w-[50px] h-[auto]" title="Trophy Name" loading="lazy" alt="Trophy 2" src="../assets/img/trophies/trophy_1.png" />
                                     <img class="col-span-1 inline-block w-[50px] h-[auto]" title="Trophy Name" loading="lazy" alt="Trophy 3" src="../assets/img/trophies/trophy_1.png" />
                                 </div>
+                                <!--badges-->
                                 <span class="block border-gray border-b-[1px] my-[5px] mx-[auto] leading-[0.1px] w-[250px]"></span> <!--separator-->
                                 <div class="grid grid-cols-5 items-center justify-center gap-3">
                                     <img class="col-span-1 inline-block w-[35px] h-[auto]" title="Badge Name" loading="lazy" alt="Badge 1" src="../assets/img/badges/badge_1.png" />
@@ -407,19 +411,19 @@
                     <table class="mx-[auto] border-gray w-[100%] border-[1px]">
                         <thead class="bg-black/20 border-b-[1px] border-gray text-white flex flex-col">
                             <tr class="py-[5px] px-[10px]">
-                                <th class="sticky w-[60px] text-[13px] text-center font-normal"></th>
+                                <th class="sticky w-[40px] text-[13px] text-center font-normal"></th>
                                 <th class="sticky w-[320px] text-[13px] text-center font-normal">Name</th>
                                 <th class="sticky w-[120px] text-[13px] text-center font-normal">School ID</th>
                                 <th class="sticky w-[350px] text-[13px] text-center font-normal">Degree</th>
-                                <th class="sticky w-[60px] text-[13px] text-center font-normal">Year</th>
+                                <th class="sticky w-[50px] text-[13px] text-center font-normal">Year</th>
                                 <th class="sticky w-[100px] text-[13px] text-center font-normal">House</th>
-                                <th class="sticky w-[45px] text-[13px] text-center font-normal">Action</th>
+                                <th class="sticky w-[75px] text-[13px] text-center font-normal">Action</th>
                             </tr>
                         </thead>
                         <tbody class=" bg-black/30 remove-scroll text-white overflow-y-scroll flex flex-col h-[51vh]">
                             <tr class="py-[5px] px-[10px]">
-                                <td class="w-[60px] text-center">
-                                    <button class="text-[25px] hover:text-white/50 active:text-white/20"><i class="fa-solid fa-eye"></i></button>
+                                <td class="w-[40px] text-center">
+                                    <button class="text-[25px] hover:text-white/50 active:text-white/20" v-on:click="viewStudent(1)"><i class="fa-solid fa-eye"></i></button>
                                 </td>
                                 <td class="w-[320px] text-[12px] text-left">
                                     <div class="flex items-center justify-start">
@@ -432,56 +436,165 @@
                                 </td>
                                 <td class="w-[120px] text-[12px] text-center">CO201911002</td>
                                 <td class="w-[350px] text-[12px] text-left">Bachelor of Science in Digital Arts and Illustration</td>
-                                <td class="w-[60px] text-[12px] text-center">4</td>
+                                <td class="w-[50px] text-[12px] text-center">4</td>
                                 <td class="w-[100px] text-[12px] text-center">Liberalitas</td>
-                                <td class="w-[45px] text-[12px] text-center">
-                                    <button class="bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
+                                <td class="w-[75px] text-[12px] text-center">
+                                    <button class="mr-[5px] bg-blue hover:bg-blue_hover active:bg-blue_active w-[30px] h-[30px] text-white" title="Edit this user" v-on:click="activePopUp('editStudent')"><i class="fa-solid fa-user-pen"></i></button>
+                                    <button class="ml-[5px] bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
                                 </td>
                             </tr>
-                            
                         </tbody>
                     </table>
+                    <!--pop up menu (edit menu)-->  
+                    <div class="flex items-center justify-center absolute inset-[0px] m-[auto] bg-black/20 backdrop-blur-[20px] w-[100vw] h-[100vh]" v-bind:class="{'hidden': popUp === 'closePopUp', 'hidden': popUp !== 'editStudent', 'flex': popUp === 'editStudent'}">
+                        <div class="absolute inset-[0px] m-[auto] bg-black/50 text-white border-[1px] border-gray h-[70vh] w-[75vh] remove-scroll overflow-scroll">
+                            <!--header-->
+                            <header class="flex flex-row gap-2 items-center sticky top-[0px] bg-black border-b-[1px] border-gray px-[10px]">
+                                <button class="text-white hover:text-gold my-[auto]" v-on:click="activePopUp('closePopUp')"><i class="fa-solid fa-angle-left"></i></button>
+                                <span class="w-[100%] text-[12px]">Rondale Floyd Magtibay Bufete</span>
+                                <div class="float-right flex flex-row">
+                                    <button class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-red_hover active:text-red_active" title="Delete this user"><i class="fa-solid fa-user-slash"></i>DELETE</button>
+                                    <button class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-blue_hover active:text-blue_active" title="Save changes"><i class="fa-solid fa-floppy-disk"></i>SAVE</button>
+                                </div>
+                            </header>
+                            <!--student information-->
+                            <section class="flex flex-col gap-3 items-center justify-center py-[20px]">
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="First Name" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Middle Name" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Last Name" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Current Address" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="tel" placeholder="Contact Number" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Email" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="School ID" />
+                                <select class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">
+                                    <option class="text-black">Current Degree</option>
+                                    <option class="text-black">Degree Name</option>
+                                </select>
+                                <!--year level-->
+                                <select class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">
+                                    <option class="text-black">1</option>
+                                    <option class="text-black">2</option>
+                                    <option class="text-black">3</option>
+                                    <option class="text-black">4</option>
+                                </select>
+                                <!--courses taken by student-->
+                                <details class="w-[28vw] cursor-pointer flex flex-col">
+                                    <summary class="py-[5px] text-[12px]">COURSE LIST</summary>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
+                                        <input required class="bg-red hover:bg-red_hover active:to-red_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
+                                    </div>
+                                </details>
+                                <!--add courses-->
+                                <details class="w-[28vw] cursor-pointer flex flex-col">
+                                    <summary class="py-[5px] text-[12px]">ADD COURSE</summary>
+                                    <select class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">
+                                        <option hidden>Choose Degree</option>
+                                        <option class="text-black">Degree Name</option>
+                                    </select>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
+                                        <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                                    </div>
+                                </details>
+                            </section>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             <!--giver list-->
-            <section class="grid col-span-10 h-[100vh]" v-bind:class="{'hidden': openTab !== 3, 'block': openTab === 3}">
+            <section class="grid col-span-10 h-[100vh]" v-bind:class="{'hidden': openTab !== 'giver', 'block': openTab === 'giver'}">
                 <div class="col-span-1 px-[30px] py-[30px]">
                     <!--search bar-->
                     <form class="mb-[10px] mx-[auto] w-[100%]">
                         <input class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[400px] px-[10px]" type="text" placeholder="Search giver..." />
                     </form>
-                    <!--student list-->
+                    <!--giver list-->
                     <table class="mx-[auto] border-gray w-[100%] border-[1px]">
                         <thead class="bg-black/20 border-b-[1px] border-gray text-white flex flex-col">
                             <tr class="py-[5px] px-[10px]">
                                 <th class="sticky w-[320px] text-[13px] text-center font-normal">Name</th>
                                 <th class="sticky w-[120px] text-[13px] text-center font-normal">School ID</th>
-                                <th class="sticky w-[200px] text-[13px] text-center font-normal">Job Title</th>
+                                <th class="sticky w-[170px] text-[13px] text-center font-normal">Job Title</th>
                                 <th class="sticky w-[120px] text-[13px] text-center font-normal">Contact Number</th>
                                 <th class="sticky w-[250px] text-[13px] text-center font-normal">Email</th>
-                                <th class="sticky w-[40px] text-[13px] text-center font-normal">Action</th>
+                                <th class="sticky w-[75px] text-[13px] text-center font-normal">Action</th>
                             </tr>
                         </thead>
-                        <tbody class=" bg-black/30 remove-scroll text-white overflow-y-scroll flex flex-col h-[75vh]">
+                        <tbody class=" bg-black/30 remove-scroll text-white overflow-y-scroll flex flex-col h-[78vh]">
                             <tr class="py-[5px] px-[10px]">
                                 <td class="w-[320px] text-[12px] text-left">What The Fritz</td>
                                 <td class="w-[120px] text-[12px] text-center">CO201912345</td>
-                                <td class="w-[200px] text-[12px] text-left">Professor</td>
+                                <td class="w-[170px] text-[12px] text-left">Professor</td>
                                 <td class="w-[120px] text-[12px] text-center">09123456789</td>
                                 <td class="w-[250px] text-[12px] text-left">wfritz@gbox.adnu.edu.ph</td>
-                                <td class="w-[40px] text-[12px] text-center">
-                                    <button class="bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
+                                <td class="w-[75px] text-[12px] text-center">
+                                    <button class="mr-[5px] bg-blue hover:bg-blue_hover active:bg-blue_active w-[30px] h-[30px] text-white" title="Edit this user" v-on:click="activePopUp('editGiver')"><i class="fa-solid fa-user-pen"></i></button>
+                                    <button class="ml-[5px] bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
                                 </td>
                             </tr>
                             
                         </tbody>
                     </table>
+
+                    <!--pop up menu (edit menu)-->  
+                    <div class="flex items-center justify-center absolute inset-[0px] m-[auto] bg-black/20 backdrop-blur-[20px] w-[100vw] h-[100vh]" v-bind:class="{'hidden': popUp === 'closePopUp', 'hidden': popUp !== 'editGiver', 'flex': popUp === 'editGiver'}">
+                        <div class="absolute inset-[0px] m-[auto] bg-black/50 text-white border-[1px] border-gray h-[70vh] w-[75vh] remove-scroll overflow-scroll">
+                            <!--header-->
+                            <header class="flex flex-row gap-2 items-center sticky top-[0px] bg-black border-b-[1px] border-gray px-[10px]">
+                                <button class="text-white hover:text-gold my-[auto]" v-on:click="activePopUp('closePopUp')"><i class="fa-solid fa-angle-left"></i></button>
+                                <span class="w-[100%] text-[12px]">What The Fritz</span>
+                                <div class="float-right flex flex-row">
+                                    <button class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-red_hover active:text-red_active" title="Delete this user"><i class="fa-solid fa-user-slash"></i>DELETE</button>
+                                    <button class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-blue_hover active:text-blue_active" title="Save changes"><i class="fa-solid fa-floppy-disk"></i>SAVE</button>
+                                </div>
+                            </header>
+                            <!--student information-->
+                            <section class="flex flex-col gap-3 items-center justify-center py-[20px]">
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="First Name" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Middle Name" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Last Name" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="tel" placeholder="Contact Number" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Email" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="School ID" />
+                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Job Title" />
+                                <select class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">  
+                                    <option class="text-black">Current Unit</option>
+                                    <option class="text-black">Unit Name</option>
+                                </select>
+                                <!--courses taken by student-->
+                                <details class="w-[28vw] cursor-pointer flex flex-col">
+                                    <summary class="py-[5px] text-[12px]">COURSE LIST</summary>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
+                                        <input required class="bg-red hover:bg-red_hover active:to-red_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
+                                    </div>
+                                </details>
+                                <!--add courses-->
+                                <details class="w-[28vw] cursor-pointer flex flex-col">
+                                    <summary class="py-[5px] text-[12px]">ADD COURSE</summary>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
+                                        <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                                    </div>
+                                </details>
+                            </section>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
     </body>
-</template>
+</template> 
 
 <script>
     import Parse from 'parse';
@@ -490,17 +603,26 @@
     export default {
         data(){
             return{
-                openTab: 1,
-                openSubTab: 1
+                openTab: 'student', //modify, student, giver
+                openModifyTab: 'units', //units, degrees, courses, trophies, badges, titles, cosmetics, houses
+                popUp: '', //editStudent, closePopUp
+                openStudent: 1,
+                isHidden: true
             }
         },
 
         methods: {
-            activeTab: function (tabsNumber) {
-                this.openTab = tabsNumber
+            activeTab: function (tabType) {
+                this.openTab = tabType
             },
-            activeSubTab: function (subTabsNumber) {
-                this.openSubTab = subTabsNumber
+            activeModifyTab: function (modifyTabType) {
+                this.openModifyTab = modifyTabType
+            },
+            activePopUp: function (popUpType) {
+                this.popUp = popUpType
+            },
+            viewStudent: function (studentNumber) {
+                this.openStudent = studentNumber
             }
         },
         computed: {
