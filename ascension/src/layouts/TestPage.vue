@@ -47,46 +47,46 @@
                     <!--units-->
                     <form class="mb-[20px] grid justify-center">
                         <legend class="mb-[10px] text-white text-[13px]">UNIT</legend>
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Unit Name" />
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="tel" placeholder="Contact Number" />
+                        <input v-model="UnitName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Unit Name" />
+                        <input v-model="UnitContactNumber" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="tel" placeholder="Contact Number" />
                         <div class="mb-[10px]">
-                            <input required class="align-middle mr-[5px]" type="radio" id="department" value="Department" />
+                            <input v-model="UnitType" required class="align-middle mr-[5px]" type="radio" id="department" value="Department" />
                             <label class="text-white text-[12px] align-middle mr-[20px]" for="department">Department</label>
-                            <input required class="align-middle mr-[5px]" type="radio" id="office" value="Office" />
+                            <input v-model="UnitType" required class="align-middle mr-[5px]" type="radio" id="office" value="Office" />
                             <label class="text-white text-[12px] align-middle mr-[20px]" for="office">Office</label>
                         </div>
                         <div class="w-[400px] grid grid-cols-3 gap-2">
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="EDIT" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                            <input @click="deleteUnit()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editUnit()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addUnit()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
                     <!--degrees-->
                     <form class="mb-[20px] grid justify-center">
                         <legend class="mb-[10px] text-white text-[13px]">DEGREE</legend>
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Degree Name" />
-                        <select required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
-                            <option hidden>Select Department/Office</option>
-                            <option class="text-black">Department Name</option>
+                        <input v-model="DegreeName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Degree Name" />
+                        <select v-model="DegreeUnitIDPointer" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
+                            <option hidden value="">Select Department</option>
+                            <option v-for="department in Departments" :key="department.objectId" v-bind:value="department.objectId">{{ department.UnitName }}</option>
                         </select>
                         <div class="w-[400px] grid grid-cols-3 gap-2">
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="EDIT" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                            <input @click="deleteDegree()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editDegree()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addDegree()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
                     <!--courses-->
                     <form class="mb-[20px] grid justify-center">
                         <legend class="mb-[10px] text-white text-[13px]">COURSE</legend>
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Course Name" />
-                        <select required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
-                            <option hidden>Select Course</option>
-                            <option class="text-black">Degree Name</option>
+                        <input v-model="CourseName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Course Name" />
+                        <legend class="mb-[10px] text-white text-[13px]">SELECT DEGREES (CTRL TO SELECT MULTIPLE)</legend> <!--TO FIX -->
+                        <select v-model="CourseDegreesIDPointers" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[400px] px-[10px]">
+                            <option v-for="degree in Degrees" :key="degree.objectId" v-bind:value="degree.objectId">{{ degree.DegreeName }}</option>
                         </select>
                         <div class="w-[400px] grid grid-cols-3 gap-2">
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="EDIT" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                            <input @click="deleteCourse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editCourse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addCourse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
                     <!--badges-->
@@ -177,15 +177,15 @@
                     <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 1, 'block': openSubTab === 1}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
-                            <li>
+                            <li v-for="unit in Units" :key="unit.objectId" v-bind:value="unit.objectId">
                                 <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
                                     <!--button-->
                                     <div class="flex items-center justify-center col-span-1 pr-[10px]">
-                                        <button class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i class="fa-solid fa-check"></i></button>
+                                        <button @click="selectUnit(unit)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedUnitID === unit.objectId" class="fa-solid fa-check"></i></button>
                                     </div>
                                     <!--text-->
                                     <div class="flex col-span-9 cursor-default">
-                                        <div class="flex justify-center items-center w-[auto]">Unit Name</div>
+                                        <div class="flex justify-center items-center w-[auto]">{{unit.UnitName}}</div>
                                     </div>
                                 </div>
                             </li>
@@ -195,15 +195,15 @@
                     <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 2, 'block': openSubTab === 2}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
-                            <li>
+                            <li v-for="degree in Degrees" :key="degree.objectId" v-bind:value="degree.objectId">
                                 <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
                                     <!--button-->
                                     <div class="flex items-center justify-center col-span-1 pr-[10px]">
-                                        <button class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i class="fa-solid fa-check"></i></button>
+                                        <button @click="selectDegree(degree)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedDegreeID === degree.objectId" class="fa-solid fa-check"></i></button>
                                     </div>
                                     <!--text-->
                                     <div class="flex col-span-8 cursor-default">
-                                        <div class="flex justify-center items-center w-[auto]">Degree Name</div>
+                                        <div class="flex justify-center items-center w-[auto]">{{degree.DegreeName}}</div>
                                     </div>
                                 </div>
                             </li>
@@ -213,15 +213,15 @@
                     <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openSubTab !== 3, 'block': openSubTab === 3}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
-                            <li>
+                            <li v-for="course in Courses" :key="course.objectId" v-bind:value="course.objectId">
                                 <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
                                     <!--button-->
                                     <div class="flex items-center justify-center col-span-1 pr-[10px]">
-                                        <button class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i class="fa-solid fa-check"></i></button>
+                                        <button @click="selectCourse(course)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedCourseID === course.objectId" class="fa-solid fa-check"></i></button>
                                     </div>
                                     <!--text-->
                                     <div class="flex col-span-8 cursor-default">
-                                        <div class="flex justify-center items-center w-[auto]">Course Name</div>
+                                        <div class="flex justify-center items-center w-[auto]">{{course.CourseName}}</div>
                                     </div>
                                 </div>
                             </li>
@@ -491,18 +491,297 @@
         data(){
             return{
                 openTab: 1,
-                openSubTab: 1
+                openSubTab: 1,
+
+                //Containers
+                Departments: [],
+                Units: [],
+                Degrees: [],
+                Courses: [],
+
+                //Unit Variables
+                UnitName: '',
+                UnitContactNumber: '',
+                UnitType: '', 
+                SelectedUnitID: '',
+
+                //Degree Variables
+                DegreeName: '',
+                DegreeUnitIDPointer: '',
+                SelectedDegreeID: '',
+
+                //Course Variables
+                CourseName: '',
+                CourseCode: '',
+                CourseDegreesIDPointers: [],
+                SelectedCourseID: '',
             }
         },
 
         methods: {
+            //Frontend Functions
             activeTab: function (tabsNumber) {
                 this.openTab = tabsNumber
             },
+
             activeSubTab: function (subTabsNumber) {
                 this.openSubTab = subTabsNumber
-            }
+            },
+
+            //Container Functions
+            async getDepartments(){
+                var params = {"UnitType" : "Department"};
+                const res = JSON.parse(await Parse.Cloud.run("GetUnits", params));
+                this.Departments = res;
+            },
+
+            async getUnits(){
+                const res = JSON.parse(await Parse.Cloud.run("GetUnits"));
+                this.Units = res;
+            },
+
+            async getDegrees(){
+                const res = JSON.parse(await Parse.Cloud.run("GetDegrees"));
+                this.Degrees = res;
+            },
+
+            async getCourses(){
+                const res = JSON.parse(await Parse.Cloud.run("GetCourses"));
+                this.Courses = res;
+            },
+
+            //Unit Functions
+            async addUnit(){
+                var params = {
+                    "UnitName": this.UnitName,
+                    "UnitContactNumber": this.UnitContactNumber,
+                    "UnitType" : this.UnitType,
+                };
+                await Parse.Cloud.run("AddUnit", params);
+                alert("Added Unit!");
+
+                //Update Departments and Units
+                this.getUnits();
+                this.getDepartments();
+            },
+
+            selectUnit(unit){
+                if(this.SelectedUnitID !== unit.objectId){
+                    this.SelectedUnitID = unit.objectId;
+                    this.UnitName = unit.UnitName;
+                    this.UnitContactNumber = unit.UnitContactNumber;
+                    this.UnitType = unit.UnitType;
+                }
+                else{
+                    this.resetSelectedUnit();
+                }
+            },
+
+            resetSelectedUnit(){
+                this.SelectedUnitID = "";
+                this.UnitName = "";
+                this.UnitContactNumber = "";
+                this.UnitType = "";
+            },
+
+            async editUnit(){
+                if(this.UnitName === "" || this.UnitContactNumber === "" || this.UnitTpe === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "UnitID" : this.SelectedUnitID,
+                    "UnitName": this.UnitName,
+                    "UnitContactNumber": this.UnitContactNumber,
+                    "UnitType" : this.UnitType,
+                };
+                await Parse.Cloud.run("EditUnit", params);
+                alert("Edited Unit!");
+                this.resetSelectedUnit();
+
+                //Update Departments and Units
+                this.getUnits();
+                this.getDepartments();
+            },
+
+            async deleteUnit(){
+                if(this.SelectedUnitID === ""){
+                    alert("Please select a Unit to Delete!");
+                    return;
+                }
+                var params = {
+                    "UnitID" : this.SelectedUnitID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteUnit", params);
+                    alert("Deleted Unit!");
+                    this.resetSelectedUnit();
+
+                    //Update Departments and Units
+                    this.getUnits();
+                    this.getDepartments();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Degree Functions
+            async addDegree(){
+                var params = {
+                    "DegreeName" : this.DegreeName,
+                    "DegreeUnitIDPointer" : this.DegreeUnitIDPointer,
+                }
+                await Parse.Cloud.run("AddDegree", params);
+                alert("Added Degree");
+
+                //Update degrees
+                this.getDegrees();
+            },
+
+            selectDegree(degree){
+                if(this.SelectedDegreeID !== degree.objectId){
+                    this.SelectedDegreeID = degree.objectId;
+                    this.DegreeName = degree.DegreeName;
+                    this.DegreeUnitIDPointer = degree.DegreeUnitIDPointer;
+                }
+                else{
+                    this.resetSelectedDegree();
+                }
+            },
+
+            resetSelectedDegree(){
+                this.SelectedDegreeID = "";
+                this.DegreeName = "";
+                this.DegreeUnitIDPointer = "";
+            },
+
+            async editDegree(){
+                if(this.DegreeName === "" || this.DegreeUnitIDPointer === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "DegreeID" : this.SelectedDegreeID,
+                    "DegreeName": this.DegreeName,
+                    "DegreeUnitIDPointer": this.DegreeUnitIDPointer,
+                };
+                await Parse.Cloud.run("EditDegree", params);
+                alert("Edited Degree!");
+                this.resetSelectedDegree();
+
+                //Update degrees
+                this.getDegrees();
+            },
+
+            async deleteDegree(){
+                if(this.SelectedDegreeID === ""){
+                    alert("Please select a Degree to Delete!");
+                    return;
+                }
+                var params = {
+                    "DegreeID" : this.SelectedDegreeID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteDegree", params);
+                    alert("Deleted Degree!");
+                    this.resetSelectedDegree();
+
+                    //Update degrees
+                    this.getDegrees();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Course Functions
+            async addCourse(){
+                var params = {
+                    "CourseName" : this.CourseName,
+                    "CourseCode" : this.CourseCode, 
+                    "CourseDegreesIDPointers": this.CourseDegreesIDPointers
+                }
+                await Parse.Cloud.run("AddCourse", params);
+                alert("Added Course");
+
+                //Update courses
+                this.getCourses();
+            },
+
+            selectCourse(course){
+                if(this.SelectedCourseID !== course.objectId){
+                    this.SelectedCourseID = course.objectId;
+                    this.CourseName = course.CourseName;
+                    this.CourseCode = course.CourseCode;
+                    this.CourseDegreesIDPointers = course.CourseDegreesIDPointers;
+                }
+                else{
+                    this.resetSelectedCourse();
+                }
+            },
+
+            resetSelectedCourse(){
+                this.SelectedCourseID = "";
+                this.CourseName = "";
+                this.CourseCode = "";
+                this.CourseDegreesIDPointers = [];
+            },
+
+            async editCourse(){
+                if(this.CourseName === "" || this.CourseCode === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "CourseID" : this.SelectedCourseID,
+                    "CourseName" : this.CourseName,
+                    "CourseCode" : this.CourseCode, 
+                    "CourseDegreesIDPointers": this.CourseDegreesIDPointers
+                };
+                await Parse.Cloud.run("EditCourse", params);
+                alert("Edited Course!");
+                this.resetSelectedCourse();
+
+                //Update courses
+                this.getCourses();
+            },
+
+            async deleteCourse(){
+                if(this.SelectedCourseID === ""){
+                    alert("Please select a Course to Delete!");
+                    return;
+                }
+                var params = {
+                    "CourseID" : this.SelectedCourseID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteCourse", params);
+                    alert("Deleted Course!");
+                    this.resetSelectedCourse();
+
+                    //Update courses
+                    this.getCourses();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
         },
+
+        beforeMount(){
+            this.getDepartments();
+            this.getUnits();
+            this.getDegrees();
+            this.getCourses();
+        },
+
         computed: {
             isDisabled() {
                 return this.categoryName.length > 0;
