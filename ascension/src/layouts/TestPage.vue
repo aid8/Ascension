@@ -29,15 +29,13 @@
         -->
         <main class="mx-[auto] grid grid-cols-12 grid-rows-1 min-w-[1366px] max-w-[1366px]">
             <!--left navigation bar-->
-            <nav class="col-span-2 text-[13px] py-[20px] h-[100%] border-r-[1px] border-gray">
-                <button class="block h-[40px] w-[100%] px-[20px] text-right" v-on:click="activeTab('modify')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'modify', 'text-gold cursor-default': openTab === 'modify'}">MODIFY</button>
-                <button class="block h-[40px] w-[100%] px-[20px] text-right" v-on:click="activeTab('student')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'student', 'text-gold cursor-default': openTab === 'student'}">STUDENT</button>
-                <button class="block h-[40px] w-[100%] px-[20px] text-right" v-on:click="activeTab('giver')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'giver', 'text-gold cursor-default': openTab === 'giver'}">GIVER</button>
-                <details>
-                    <summary class="py-[10px] w-[100%] px-[20px] text-white cursor-pointer text-right">
-                        ADMIN
-                    </summary>
-                    <button class="block h-[40px] w-[100%] px-[20px] text-right bg-black/20 text-white hover:text-gold">SIGN OUT</button>
+            <nav class="flex flex-col items-center justify-start col-span-2 text-[13px] py-[20px] h-[100%] border-r-[1px] border-gray">
+                <button class="w-[100%] py-[10px] px-[20px] text-right" v-on:click="activeTab('modify')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'modify', 'text-gold cursor-default': openTab === 'modify'}">MODIFY</button>
+                <button class="w-[100%] py-[10px] px-[20px] text-right" v-on:click="activeTab('student')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'student', 'text-gold cursor-default': openTab === 'student'}">STUDENT</button>
+                <button class="w-[100%] py-[10px] px-[20px] text-right" v-on:click="activeTab('giver')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'giver', 'text-gold cursor-default': openTab === 'giver'}">GIVER</button>
+                <details class="text-right w-full cursor-pointer">
+                    <summary class="text-white py-[10px] px-[20px]">ADMIN</summary>
+                    <button class="bg-black/20 px-[20px] text-white w-full text-right py-[10px]">SIGN OUT</button>
                 </details>
             </nav>
             <!--add/edit/delete tab-->
@@ -448,8 +446,8 @@
                                 <th class="sticky w-[75px] text-[13px] text-center font-normal">Action</th>
                             </tr>
                         </thead>
-                        <tbody v-for="student in Students" :key="student.objectId" v-bind:value="student.objectId" class=" bg-black/30 remove-scroll text-white overflow-y-scroll flex flex-col">
-                            <tr class="py-[5px] px-[10px]">
+                        <tbody class="bg-black/30 remove-scroll text-white overflow-y-scroll h-[50vh] flex flex-col">
+                            <tr v-for="student in Students" :key="student.objectId" v-bind:value="student.objectId" class="py-[5px] px-[10px]">
                                 <td class="w-[40px] text-center">
                                     <button @click="selectStudent(student)" class="text-[25px] hover:text-white/50 active:text-white/20"><i class="fa-solid fa-eye"></i></button>
                                 </td>
@@ -1404,7 +1402,7 @@
 
                 //Setup try catch for deleting
                 try{
-                    await Parse.Cloud.run("DeleteAsccensionTitle", params);
+                    await Parse.Cloud.run("DeleteAscensionTitle", params);
                     alert("Deleted Ascension Title!");
                      this.resetSelectedAscensionTitle();
 
