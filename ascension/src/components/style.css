@@ -1,0 +1,28 @@
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+nav .menu-item {
+    padding: 10px 20px;
+    position: relative;
+    text-align: center;
+    display: flex;
+    transition: 0.4s;
+    padding-top: 1.5%;
+    padding-bottom: 1.5%;
+}
+
+nav .menu-item.active,
+nav .menu-item:hover {
+    background-color: rgba(0, 0, 0, 0.600);
+    /* border-bottom-color: gold; */
+}
+
+li {
+    padding-left: 2%;
+    padding-right: 2%;
+}
+
