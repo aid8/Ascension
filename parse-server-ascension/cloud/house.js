@@ -103,6 +103,11 @@ Parse.Cloud.define("GetHouseData", async(request) => {
     }
     res.set("HouseTrophiesUnlocked", HouseTrophiesUnlocked);
 
+    //Pass HouseBanner link
+    params = {"CosmeticID" : res.get("HouseBannerIDPointer")};
+    const banner = JSON.parse(await Parse.Cloud.run("GetCosmeticData", params));
+    res.set("HouseBanner", banner.CosmeticImage);
+
     return JSON.stringify(res);
 });
 
