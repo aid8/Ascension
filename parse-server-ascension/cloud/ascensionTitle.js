@@ -12,6 +12,28 @@ Parse.Cloud.define("AddAscensionTitle", async(request) => {
     });
 });
 
+Parse.Cloud.define("EditAscensionTitle", async(request) =>{
+    const argument = request.params
+    const dataParams = {
+        "AscensionId": argument.AscensionId,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetAscensionTitleData", dataParams);
+    
+    var list_of_attr = ["AscensionName", "AscensionXpRangeCap", "AscensionXpRangeStart",];
+    var list_of_arguments = [argument.AscensionName, argument.AscensionXpRangeCap, argument.AscensionXpRangeStart,];
+
+    for(let i = 0; i < list_of_attr.length; ++i){
+        if(list_of_arguments[i] != null){
+            res.set(list_of_attr[i], list_of_arguments[i]);
+        }
+    }
+
+    res.save().then(()=>{
+        console.log("Successfully Edited AscensionTitle!");
+    });
+});
+
 Parse.Cloud.define("DeleteAscensionTitle", async(request) =>{
     const argument = request.params
     const dataParams = {

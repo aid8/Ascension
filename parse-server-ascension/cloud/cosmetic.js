@@ -133,7 +133,6 @@ Parse.Cloud.define("DeleteCosmetic", async(request) => {
 });
 
 //Must specify id of cosmetic with name of "CosmeticID";  Specify Type to 1 only if you need the query's result (object)
-//Returns the data of a course or the query's result based on the value of Type
 Parse.Cloud.define("GetCosmeticData", async(request) => {
     const Cosmetic = Parse.Object.extend("Cosmetic");
     const query = new Parse.Query(Cosmetic);
@@ -143,7 +142,16 @@ Parse.Cloud.define("GetCosmeticData", async(request) => {
     if(argument.Type == 1){
         return res
     }
-    
+
+    const Global = JSON.parse(await Parse.Cloud.run("GetGlobal"));
+    if(Global.DefaultAvatarID === argument.CosmeticID || Global.DefaultBannerID === argument.CosmeticID
+    || Global.DefaultCoverPhotoID === argument.CosmeticID || Global.DefaultFrameID === argument.CosmeticID){
+        res.set("CosmeticDefault", true);
+    }
+    else{
+        res.set("CosmeticDefault", false);
+    }
+
     return JSON.stringify(res);
 });
 

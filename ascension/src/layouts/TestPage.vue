@@ -79,7 +79,8 @@
                     <form class="mb-[20px] grid justify-center">
                         <legend class="mb-[10px] text-white text-[13px]">COURSE</legend>
                         <input v-model="CourseName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Course Name" />
-                        <legend class="mb-[10px] text-white text-[13px]">SELECT DEGREES (CTRL TO SELECT MULTIPLE)</legend> <!--TO FIX -->
+                        <input v-model="CourseCode" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Course Code" />
+                        <legend class="mb-[10px] text-white text-[13px]">SELECT DEGREES (CTRL TO SELECT MULTIPLE)</legend>
                         <select v-model="CourseDegreesIDPointers" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[400px] px-[10px]">
                             <option v-for="degree in Degrees" :key="degree.objectId" v-bind:value="degree.objectId">{{ degree.DegreeName }}</option>
                         </select>
@@ -92,71 +93,97 @@
                     <!--badges-->
                     <form class="mb-[20px] grid justify-center">
                         <legend class="mb-[10px] text-white text-[13px]">BADGE</legend>
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Badge Name" />
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Description" />
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Badge Points" />
-                        <input required class="text-[12px] h-[40px] w-[400px]" type="file" />
+                        <input v-model="BadgeName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Badge Name" />
+                        <input v-model="BadgeDescription" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Description" />
+                        <input v-model="BadgeDesignInspiration" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Design Inspiration" />
+                        <input v-model="BadgePoints" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Badge Points" />
+                        <div class="mb-[10px]">
+                            <input v-model="BadgeType" required class="align-middle mr-[5px]" type="radio" id="studentBadgeType" value="Student" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="studentBadgeType">Student</label>
+                            <input v-model="BadgeType" required class="align-middle mr-[5px]" type="radio" id="houseBadgeType" value="House" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="houseBadgeType">House</label>
+                        </div>
+                        <input @change="onBadgeImageSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="BadgeFileUpload"/>
                         <div class="w-[400px] grid grid-cols-3 gap-2">
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="EDIT" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                            <input @click="deleteBadge()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editBadge()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addBadge()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
                     <!--trophies-->
                     <form class="mb-[20px] grid justify-center">
                         <legend class="mb-[10px] text-white text-[13px]">TROPHY</legend>
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Trophy Name" />
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Description" />
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Trophy Points" />
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Trophy Type" />
-                        <input required class="text-[12px] h-[40px] w-[400px]" type="file" />
+                        <input v-model="TrophyName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Trophy Name" />
+                        <input v-model="TrophyDescription" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Description" />
+                        <input v-model="TrophyDesignInspiration" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Design Inspiration" />
+                        <input v-model="TrophyPoints" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Trophy Points" />
+                        <div class="mb-[10px]">
+                            <input v-model="TrophyType" required class="align-middle mr-[5px]" type="radio" id="studentTrophyType" value="Student" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="studentTrophyType">Student</label>
+                            <input v-model="TrophyType" required class="align-middle mr-[5px]" type="radio" id="houseTrophyType" value="House" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="houseTrophyType">House</label>
+                            <input v-model="TrophyType" required class="align-middle mr-[5px]" type="radio" id="ultimateTrophyType" value="Ultimate" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="ultimateTrophyType">Ultimate</label>
+                        </div>
+                        <legend v-if="TrophyType !== 'Ultimate' && TrophyType !== ''" class="mb-[10px] text-white text-[13px]">SELECT BADGES NEEDED BY TROPHY (CTRL TO SELECT MULTIPLE)</legend>
+                        <select v-if="TrophyType !== 'Ultimate' && TrophyType !== ''" v-model="BadgesIDNeeded" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[400px] px-[10px]">
+                            <template v-if="TrophyType === 'Student'">
+                                <option v-for="badge in StudentBadges" :key="badge.objectId" v-bind:value="badge.objectId">{{ badge.BadgeName }}</option>
+                            </template>
+                            <template v-if="TrophyType === 'House'">
+                                <option v-for="badge in HouseBadges" :key="badge.objectId" v-bind:value="badge.objectId">{{ badge.BadgeName }}</option>
+                            </template>
+                        </select>
+                        <input @change="onTrophyImageSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="TrophyFileUpload"/>
                         <div class="w-[400px] grid grid-cols-3 gap-2">
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="EDIT" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                            <input @click="deleteTrophy()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editTrophy()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addTrophy()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
                     <!--title-->
                     <form class="mb-[20px] grid justify-center">
                         <legend class="mb-[10px] text-white text-[13px]">ASCENSION TITLE</legend>
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Ascension Title" />
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" min="0" max="940" type="number" placeholder="Starting XP Value" />
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" min="120px" max="1020" type="number" placeholder="Max XP Value" />
+                        <input v-model="AscensionName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Ascension Title" />
+                        <input v-model="AscensionXpRangeStart" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" min="0" max="940" type="number" placeholder="Starting XP Value" />
+                        <input v-model="AscensionXpRangeCap" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" min="120px" max="1020" type="number" placeholder="Max XP Value" />
                         <div class="w-[400px] grid grid-cols-3 gap-2">
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="EDIT" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                            <input @click="deleteAscensionTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editAscensionTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addAscensionTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
                     <!--cosmetics-->
                     <form class="mb-[20px] grid justify-center">
                         <legend class="mb-[10px] text-white text-[13px]">COSMETICS</legend>
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Cosmetic Name" />
-                        <select required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
-                            <option hidden>Cosmetic Type</option>
-                            <option class="text-black">Avatar</option>
-                            <option class="text-black">Frames</option>
-                            <option class="text-black">Banner</option>
-                            <option class="text-black">Background</option>
+                        <input v-model="CosmeticName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Cosmetic Name" />
+                        <select v-model="CosmeticType" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
+                            <option hidden value="">Cosmetic Type</option>
+                            <option class="text-black" value="Avatar">Avatar</option>
+                            <option class="text-black" value="Frame">Frames</option>
+                            <option class="text-black" value="Banner">Banner</option>
+                            <option class="text-black" value="CoverPhoto" >Background</option>
                         </select>
-                        <input required class="text-[12px] h-[40px] w-[400px]" type="file" />
+                        <input @change="onCosmeticImageSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="CosmeticFileUpload"/>
                         <div class="w-[400px] grid grid-cols-4 grid-rows-2 gap-2">
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="SET DEFAULT" title="Set default for user's cosmetic" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="EDIT" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="ADD" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer col-span-4" type="submit" value="SET DEFAULT FOR ALL" title="Set default for all user's cosmetic" />
+                            <input @click="deleteCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="setDefaultCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="SET DEFAULT" title="Set default for user's cosmetic" />
+                            <input @click="editCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
                     <!--house-->
                     <form class="mb-[20px] grid justify-center">
                         <legend class="mb-[10px] text-white text-[13px]">HOUSE</legend>
-                        <input required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="House Name" />
-                        <input required class="text-[12px] h-[40px] w-[400px]" type="file" />
+                        <input v-model="HouseName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="House Name" />
+                        <select v-model="HouseBannerIDPointer" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
+                            <option hidden value="">Select Banner</option>
+                            <option v-for="banner in Banners" :key="banner.objectId" v-bind:value="banner.objectId">{{ banner.CosmeticName }}</option>
+                        </select>
                         <div class="w-[400px] grid grid-cols-3 gap-2">
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="EDIT" />
-                            <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                            <input @click="deleteHouse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editHouse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addHouse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
                 </div>
@@ -167,8 +194,8 @@
                         <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('units')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'units', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'units'}" title="List of Units, Degrees, and Courses">UNITS</button>
                         <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('degrees')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'degrees', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'degrees'}" title="List of Units, Degrees, and Courses">DEGREES</button>
                         <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('courses')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'courses', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'courses'}" title="List of Units, Degrees, and Courses">COURSES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('trophies')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'trophies', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'trophies'}" title="List of Badges and Trophies">TROPHIES</button>
                         <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('badges')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'houses', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'houses'}" title="List of Badges and Trophies">BADGES</button>
+                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('trophies')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'trophies', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'trophies'}" title="List of Badges and Trophies">TROPHIES</button>
                         <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('titles')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'titles', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'titles'}" title="List of Ascension Titles">TITLES</button>
                         <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('cosmetics')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'cosmetics', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'cosmetics'}" title="List of Houses">COSMETICS</button>
                         <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('houses')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'houses', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'houses'}" title="List of Houses">HOUSES</button>
@@ -227,51 +254,51 @@
                             </li>
                         </ul>
                     </div>
-                    <!--trophies tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'trophies', 'block': openModifyTab === 'trophies'}">
+                    <!--badges tab-->
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'badges', 'block': openModifyTab === 'badges'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
-                            <li>
+                            <li v-for="badge in Badges" :key="badge.objectId" v-bind:value="badge.objectId">
                                 <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
                                     <!--button-->
                                     <div class="flex items-center justify-center col-span-1 pr-[10px]">
-                                        <button class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i class="fa-solid fa-check"></i></button>
+                                        <button @click="selectBadge(badge)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedBadgeID === badge.objectId" class="fa-solid fa-check"></i></button>
                                     </div>
                                     <!--image and text-->
                                     <div class="flex col-span-7 cursor-default">
                                         <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px]">
-                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="Trophy" src="../assets/img/trophies/trophy_1.png" />
+                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="Badge" v-bind:src="badge.BadgeImage" />
                                         </div>
-                                        <div class="flex justify-center items-center w-[auto]">Trophy 1</div>
+                                        <div class="flex justify-center items-center w-[auto]">{{badge.BadgeName}}</div>
                                     </div>
                                     <!--number of badges contained-->
                                     <div class="flex justify-end items-center col-span-2 cursor-default">
-                                        <span class="text-right mr-[10px] w-[auto]">Trophy Type</span>
+                                        <span class="text-right mr-[10px] w-[auto]">{{badge.BadgeType}}</span>
                                     </div>
                                 </div>
                             </li>
                         </ul>
                     </div>
-                    <!--badges tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'badges', 'block': openModifyTab === 'badges'}">
+                    <!--trophies tab-->
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'trophies', 'block': openModifyTab === 'trophies'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
-                            <li>
+                            <li v-for="trophy in Trophies" :key="trophy.objectId" v-bind:value="trophy.objectId">
                                 <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
                                     <!--button-->
                                     <div class="flex items-center justify-center col-span-1 pr-[10px]">
-                                        <button class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i class="fa-solid fa-check"></i></button>
+                                        <button @click="selectTrophy(trophy)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedTrophyID === trophy.objectId" class="fa-solid fa-check"></i></button>
                                     </div>
                                     <!--image and text-->
                                     <div class="flex col-span-7 cursor-default">
                                         <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px]">
-                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="Badge" src="../assets/img/badges/badge_1.png" />
+                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="Trophy" v-bind:src="trophy.TrophyImage" />
                                         </div>
-                                        <div class="flex justify-center items-center w-[auto]">Badge 1</div>
+                                        <div class="flex justify-center items-center w-[auto]">{{trophy.TrophyName}}</div>
                                     </div>
                                     <!--number of badges contained-->
                                     <div class="flex justify-end items-center col-span-2 cursor-default">
-                                        <span class="text-right mr-[10px] w-[auto]">Badge Type</span>
+                                        <span class="text-right mr-[10px] w-[auto]">{{trophy.TrophyType}}</span>
                                     </div>
                                 </div>
                             </li>
@@ -281,22 +308,22 @@
                     <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'titles', 'block': openModifyTab === 'titles'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
-                            <li>
+                            <li v-for="title in AscensionTitles" :key="title.objectId" v-bind:value="title.objectId">
                                 <!--whole item-->
                                 <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
                                     <!--button-->
                                     <div class="flex items-center justify-center col-span-1 pr-[10px]">
-                                        <button class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i class="fa-solid fa-check"></i></button>
+                                        <button @click="selectAscensionTitle(title)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedAscensionTitleID === title.objectId" class="fa-solid fa-check"></i></button>
                                     </div>
                                     <!--image and text-->
                                     <div class="flex col-span-7 cursor-default w-[100%]">
-                                        <div class="flex justify-center items-center w-[auto]">Ascension Title</div>
+                                        <div class="flex justify-center items-center w-[auto]">{{title.AscensionName}}</div>
                                     </div>
                                     <!--number of badges contained-->
                                     <div class="flex justify-end items-center col-span-2 cursor-default text-right mr-[10px]">
-                                        <span class="w-[auto]">940</span>
+                                        <span class="w-[auto]">{{title.AscensionXpRangeStart}}</span>
                                         <span class="w-[auto] mx-[5px]">-</span>
-                                        <span class="w-[auto]">1020</span>
+                                        <span class="w-[auto]">{{title.AscensionXpRangeCap}}</span>
                                     </div>
                                 </div>
                             </li>
@@ -306,22 +333,23 @@
                     <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'cosmetics', 'block': openModifyTab === 'cosmetics'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
-                            <li>
+                            <li v-for="cosmetic in Cosmetics" :key="cosmetic.objectId" v-bind:value="cosmetic.objectId">
                                 <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
                                     <!--button-->
                                     <div class="flex items-center justify-center col-span-1 pr-[10px]">
-                                        <button class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i class="fa-solid fa-check"></i></button>
+                                        <button @click="selectCosmetic(cosmetic)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedCosmeticID === cosmetic.objectId" class="fa-solid fa-check"></i></button>
                                     </div>
                                     <!--image and text-->
                                     <div class="flex col-span-7 cursor-default">
                                         <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px]">
-                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="Avatar" src="../assets/img/avatar/avatar.jpg" />
+                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="Avatar" v-bind:src="cosmetic.CosmeticImage" />
                                         </div>
-                                        <div class="flex justify-center items-center w-[auto]">Avatar Name</div>
+                                        <div class="flex justify-center items-center w-[auto]">{{cosmetic.CosmeticName}}</div>
                                     </div>
                                     <!--number of badges contained-->
                                     <div class="flex justify-end items-center col-span-2 cursor-default">
-                                        <span class="text-right mr-[10px] w-[auto]">Cosmetic Type</span>
+                                        <i v-if="cosmetic.CosmeticDefault" class="fa-solid fa-gear mr-[10px]"></i>
+                                        <span class="text-right mr-[10px] w-[auto]">{{cosmetic.CosmeticType}}</span>
                                     </div>
                                 </div>
                             </li>
@@ -331,22 +359,22 @@
                     <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'houses', 'block': openModifyTab === 'houses'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
-                            <li>
+                            <li v-for="house in Houses" :key="house.objectId" v-bind:value="house.objectId">
                                 <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
                                     <!--button-->
                                     <div class="flex items-center justify-center col-span-1 pr-[10px]">
-                                        <button class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i class="fa-solid fa-check"></i></button>
+                                        <button @click="selectHouse(house)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedHouseID === house.objectId" class="fa-solid fa-check"></i></button>
                                     </div>
                                     <!--image and text-->
                                     <div class="flex col-span-7 cursor-default">
                                         <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px]">
-                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="House Logo" src="../assets/img/logo/liberalitas-logo.png" />
+                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="House Logo" v-bind:src="house.HouseBanner" />
                                         </div>
-                                        <div class="flex justify-center items-center w-[auto]">Liberalitas</div>
+                                        <div class="flex justify-center items-center w-[auto]">{{house.HouseName}}</div>
                                     </div>
-                                    <!--number of badges contained-->
+                                    <!--number of population--> 
                                     <div class="flex justify-end items-center col-span-2 cursor-default">
-                                        <span class="text-right mr-[10px] w-[auto]"><i class="mr-[5px] fa-solid fa-circle-user"></i>199</span>
+                                        <span class="text-right mr-[10px] w-[auto]"><i class="mr-[5px] fa-solid fa-circle-user"></i>{{house.HousePopulation}}</span>
                                     </div>
                                 </div>
                             </li>
@@ -362,14 +390,14 @@
                         <!--user image-->
                         <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-5 flex items-center justify-start">
                             <div class="relative flex items-center justify-center w-[150px] h-[150px] mr-[5px]">
-                                <img class="border-[5px] border-white absolute h-[120px] w-[120px] rounded-full" loading="lazy" alt="Avatar" src="../assets/img/avatar/avatar.jpg" />
+                                <img v-if="SelectedStudentID !== ''" class="border-[5px] border-white absolute h-[120px] w-[120px] rounded-full" loading="lazy" alt="Avatar" v-bind:src="StudentEquippedCosmeticsData[0].CosmeticImage"/>
                             </div>
                             <div>
-                                <span class="block text-[22px] text-gold">Username#123</span>
-                                <span class="block text-[12px] text-white">Rondale Floyd Magtibay Bufete</span>
-                                <span class="block text-[12px] text-white">Zone 1 Liboro, Ragay, Camarines Sur</span>
-                                <span class="block text-[12px] text-white">09516101009</span>
-                                <span class="block text-[12px] text-white">rbufete@gbox.adnu.edu.ph</span>
+                                <span class="block text-[22px] text-gold">{{StudentUserName}}</span>
+                                <span class="block text-[12px] text-white">{{StudentFirstName}} {{StudentMiddleName}} {{StudentLastName}}</span>
+                                <span class="block text-[12px] text-white">{{StudentAddress}}</span>
+                                <span class="block text-[12px] text-white">{{StudentContactNum}}</span>
+                                <span class="block text-[12px] text-white">{{StudentEmail}}</span>
                             </div>
                         </div>
                         <!--house logo-->
@@ -420,24 +448,24 @@
                                 <th class="sticky w-[75px] text-[13px] text-center font-normal">Action</th>
                             </tr>
                         </thead>
-                        <tbody class=" bg-black/30 remove-scroll text-white overflow-y-scroll flex flex-col h-[51vh]">
+                        <tbody v-for="student in Students" :key="student.objectId" v-bind:value="student.objectId" class=" bg-black/30 remove-scroll text-white overflow-y-scroll flex flex-col">
                             <tr class="py-[5px] px-[10px]">
                                 <td class="w-[40px] text-center">
-                                    <button class="text-[25px] hover:text-white/50 active:text-white/20" v-on:click="viewStudent(1)"><i class="fa-solid fa-eye"></i></button>
+                                    <button @click="selectStudent(student)" class="text-[25px] hover:text-white/50 active:text-white/20"><i class="fa-solid fa-eye"></i></button>
                                 </td>
                                 <td class="w-[320px] text-[12px] text-left">
                                     <div class="flex items-center justify-start">
-                                        <img class="border-[2px] h-[40px] w-[40px] mr-[10px] rounded-full" loading="lazy" alt="Avatar" src="../assets/img/avatar/avatar.jpg" >
+                                        <img class="border-[2px] h-[40px] w-[40px] mr-[10px] rounded-full" loading="lazy" alt="Avatar" v-bind:src="student.EquippedCosmeticsData[0].CosmeticImage">
                                         <div>
-                                            <span class="block my-[-3px] text-[13px]">Username#123</span>
-                                            <span class="block my-[-3px] text-[12px]">Rondale Floyd Magtibay Bufete</span>    
+                                            <span class="block my-[-3px] text-[13px]">{{student.UserName}}</span>
+                                            <span class="block my-[-3px] text-[12px]">{{student.FirstName}} {{student.MiddleName}} {{student.LastName}}</span>    
                                         </div>
                                     </div>
                                 </td>
-                                <td class="w-[120px] text-[12px] text-center">CO201911002</td>
-                                <td class="w-[350px] text-[12px] text-left">Bachelor of Science in Digital Arts and Illustration</td>
-                                <td class="w-[50px] text-[12px] text-center">4</td>
-                                <td class="w-[100px] text-[12px] text-center">Liberalitas</td>
+                                <td class="w-[120px] text-[12px] text-center">{{student.SchoolID}}</td>
+                                <td class="w-[350px] text-[12px] text-left">{{student.StudentDegree.DegreeName}}</td>
+                                <td class="w-[50px] text-[12px] text-center">{{student.YearLevel}}</td>
+                                <td class="w-[100px] text-[12px] text-center">{{student.StudentHouse.HouseName}}</td>
                                 <td class="w-[75px] text-[12px] text-center">
                                     <button class="mr-[5px] bg-blue hover:bg-blue_hover active:bg-blue_active w-[30px] h-[30px] text-white" title="Edit this user" v-on:click="activePopUp('editStudent')"><i class="fa-solid fa-user-pen"></i></button>
                                     <button class="ml-[5px] bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
@@ -607,7 +635,7 @@
                 openTab: 'student', //modify, student, giver
                 openModifyTab: 'units', //units, degrees, courses, trophies, badges, titles, cosmetics, houses
                 popUp: '', //editStudent, closePopUp
-                openStudent: 1,
+                openStudent: 0,
                 isHidden: true,
                 
                 //Backend Variables
@@ -616,6 +644,15 @@
                 Units: [],
                 Degrees: [],
                 Courses: [],
+                Badges: [],
+                HouseBadges: [],
+                StudentBadges: [],
+                Trophies: [],
+                AscensionTitles: [],
+                Cosmetics: [],
+                Banners: [],
+                Houses: [],
+                Students: [],
 
                 //Unit Variables
                 UnitName: '',
@@ -633,11 +670,67 @@
                 CourseCode: '',
                 CourseDegreesIDPointers: [],
                 SelectedCourseID: '',
+                
+                //Badge Variables
+                BadgeName: '',
+                BadgeDescription: '',
+                BadgePoints: '',
+                BadgeImage: '',
+                BadgeImageName: '',
+                BadgeType: '',
+                BadgeDesignInspiration: '',
+                SelectedBadgeID: '',
+
+                //Trophy Variables
+                TrophyName: '',
+                TrophyDescription: '',
+                TrophyPoints: 0,
+                TrophyImage: '',
+                TrophyImageName: '',
+                TrophyType: '',
+                TrophyDesignInspiration: '',
+                BadgesIDNeeded: [],
+                SelectedTrophyID: '',
+
+                //Ascension Title Variables
+                AscensionName: '',
+                AscensionXpRangeStart: 0,
+                AscensionXpRangeCap: 0,
+                SelectedAscensionTitleID: '',
+
+                //Cosmetic Variables
+                CosmeticName: '',
+                CosmeticType: '',
+                CosmeticImage: '',
+                CosmeticImageName: '',
+                SelectedCosmeticID: '',
+
+                //House Variables,
+                HouseName: '',
+                HouseBannerIDPointer: '',
+                SelectedHouseID: '',
+
+                //StudentVariables
+                StudentFirstName: '',
+                StudentMiddleName: '',
+                StudentLastName: '',
+                StudentContactNum: '',
+                StudentEmail: '',
+                StudentDegreeIDPointer: '',
+                StudentUnitIDPointer: '',
+                StudentUserName: '',
+                StudentAddress: '',
+                StudentSchoolID: '',
+                StudentCoursesIDPointer: [],
+                StudentEquippedCosmeticsData: [],
+                SelectedStudentID: '',
+
+                //Giver Variables
             }
         },
 
         methods: {
-            //Frontend Functions
+            //==================Frontend Functions====================
             activeTab: function (tabType) {
                 this.openTab = tabType
             },
@@ -654,9 +747,9 @@
                 this.openSubTab = subTabsNumber
             },
             
-            //Backend Functions
+            //==================Backend Functions======================
             //Container Functions
-            async getDepartments(){
+            async getDepartments(){ //Combine this with units
                 var params = {"UnitType" : "Department"};
                 const res = JSON.parse(await Parse.Cloud.run("GetUnits", params));
                 this.Departments = res;
@@ -677,8 +770,113 @@
                 this.Courses = res;
             },
 
+            async getBadges(){
+                const res = JSON.parse(await Parse.Cloud.run("GetBadges"));
+                this.Badges = res;
+
+                var params = {"BadgeType" : "Student"};
+                this.StudentBadges = JSON.parse(await Parse.Cloud.run("GetBadges", params));
+                params["BadgeType"] = "House";
+                this.HouseBadges = JSON.parse(await Parse.Cloud.run("GetBadges", params));
+            },
+
+            async getTrophies(){
+                const res = JSON.parse(await Parse.Cloud.run("GetTrophies"));
+                this.Trophies = res;
+            },
+
+            async getAscensionTitles(){
+                const res = JSON.parse(await Parse.Cloud.run("GetAscensionTitles"));
+                this.AscensionTitles = res;
+            },
+
+            async getCosmetics(){
+                const res = JSON.parse(await Parse.Cloud.run("GetCosmetics"));
+                this.Cosmetics = res;
+                
+                var params = {"CosmeticType" : "Banner"};
+                this.Banners = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
+
+                //Get Data for defaults
+                const Global = JSON.parse(await Parse.Cloud.run("GetGlobal"));
+                for(var cosmetic of this.Cosmetics){
+                    if(cosmetic.objectId === Global.DefaultAvatarID || cosmetic.objectId === Global.DefaultFrameID
+                    || cosmetic.objectId === Global.DefaultCoverPhotoID || cosmetic.objectId === Global.DefaultBannerID){
+                        cosmetic["CosmeticDefault"] = true;
+                    }
+                    else{
+                        cosmetic["CosmeticDefault"] = false;
+                    }
+                }
+            },
+
+            async getHouses(){
+                const res = JSON.parse(await Parse.Cloud.run("GetHouses"));
+                this.Houses = res;
+
+                //Add house banner
+                for(var house of this.Houses){
+                    var params = {"HouseID" : house.objectId};
+                    const data = JSON.parse(await Parse.Cloud.run("GetHouseData", params));
+                    house["HouseBanner"] = data.HouseBanner;
+                }
+            },
+
+            async getStudents(){
+                const res = JSON.parse(await Parse.Cloud.run("GetStudents"));
+                for(const student of res){
+                    var param = {"StudentID" : student.objectId};
+                    this.Students.push(JSON.parse(await Parse.Cloud.run("GetStudentData", param)));
+                }
+            },
+            
+            //Other Functions
+            getBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            },
+
+            checkIncompleteData(type){
+                if(type === "Unit"){
+                    return (this.UnitName === "" || this.UnitContactNumber === "" || this.UnitTpe === "");
+                }
+                else if(type === "Degree"){
+                    return (this.DegreeName === "" || this.DegreeUnitIDPointer === "");
+                }
+                else if(type === "Course"){
+                    return (this.CourseName === "" || this.CourseCode === "");
+                }
+                else if(type === "Badge"){
+                    return (this.BadgeName === "" || this.BadgeDescription === "" || this.BadgePoints === "" 
+                    || this.BadgeType === "" || this.BadgeDesignInspiration === "");
+                }
+                else if(type === "Trophy"){
+                    return (this.TrophyName === "" || this.TrophyDescription === "" || this.TrophyPoints === "" 
+                    || this.TrophyType === "" || this.TrophyDesignInspiration === "");
+                }
+                else if(type === "AscensionTitle"){
+                    return (this.AscensionName === "");
+                }
+                else if(type === "Cosmetic"){
+                    return (this.CosmeticName === "" || this.CosmeticType === "");
+                }
+                else if(type === "House"){
+                    return (this.HouseName === "" || this.HouseBannerIDPointer === "");
+                }
+
+                return false;
+            },
+
             //Unit Functions
             async addUnit(){
+                if(this.checkIncompleteData("Unit")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
                     "UnitName": this.UnitName,
                     "UnitContactNumber": this.UnitContactNumber,
@@ -686,6 +884,7 @@
                 };
                 await Parse.Cloud.run("AddUnit", params);
                 alert("Added Unit!");
+                this.resetSelectedUnit();
 
                 //Update Departments and Units
                 this.getUnits();
@@ -712,7 +911,7 @@
             },
 
             async editUnit(){
-                if(this.UnitName === "" || this.UnitContactNumber === "" || this.UnitTpe === ""){
+                if(this.checkIncompleteData("Unit")){
                     alert("Please completely fill out the form!");
                     return;
                 }
@@ -757,12 +956,17 @@
 
             //Degree Functions
             async addDegree(){
+                if(this.checkIncompleteData("Degree")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
                     "DegreeName" : this.DegreeName,
                     "DegreeUnitIDPointer" : this.DegreeUnitIDPointer,
                 }
                 await Parse.Cloud.run("AddDegree", params);
                 alert("Added Degree");
+                this.resetSelectedDegree();
 
                 //Update degrees
                 this.getDegrees();
@@ -786,7 +990,7 @@
             },
 
             async editDegree(){
-                if(this.DegreeName === "" || this.DegreeUnitIDPointer === ""){
+                if(this.checkIncompleteData("Degree")){
                     alert("Please completely fill out the form!");
                     return;
                 }
@@ -828,6 +1032,10 @@
 
             //Course Functions
             async addCourse(){
+                if(this.checkIncompleteData("Course")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
                     "CourseName" : this.CourseName,
                     "CourseCode" : this.CourseCode, 
@@ -835,6 +1043,7 @@
                 }
                 await Parse.Cloud.run("AddCourse", params);
                 alert("Added Course");
+                this.resetSelectedCourse();
 
                 //Update courses
                 this.getCourses();
@@ -860,7 +1069,7 @@
             },
 
             async editCourse(){
-                if(this.CourseName === "" || this.CourseCode === ""){
+                if(this.checkIncompleteData("Course")){
                     alert("Please completely fill out the form!");
                     return;
                 }
@@ -900,6 +1109,536 @@
                     alert(error.message);
                 }
             },
+
+            //Badges Functions
+            async addBadge(){
+                if(this.checkIncompleteData("Badge") || this.BadgeImageName === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "BadgeName" : this.BadgeName,
+                    "BadgeDescription" : this.BadgeDescription,
+                    "BadgePoints" : this.BadgePoints,
+                    "BadgeType" : this.BadgeType,
+                    "BadgeImage" : this.BadgeImage,
+                    "BadgeImageName" : this.BadgeImageName,
+                    "BadgeDesignInspiration" : this.BadgeDesignInspiration,
+                }
+                await Parse.Cloud.run("AddBadge", params);
+                alert("Added Badge!");
+                this.resetSelectedBadge();
+
+                //Update badges
+                this.getBadges();
+            },
+
+            async onBadgeImageSelected(e){
+                var file = e.target.files[0];
+                this.BadgeImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.BadgeImage = data
+                );
+            },
+
+            selectBadge(badge){
+                if(this.SelectedBadgeID !== badge.objectId){
+                    this.SelectedBadgeID = badge.objectId;
+                    this.BadgeName = badge.BadgeName;
+                    this.BadgeDescription = badge.BadgeDescription;
+                    this.BadgePoints = badge.BadgePoints;
+                    this.BadgeType = badge.BadgeType;
+                    this.BadgeImage = badge.BadgeImage;
+                    this.BadgeDesignInspiration = badge.BadgeDesignInspiration;
+                }
+                else{
+                    this.resetSelectedBadge();
+                }
+            },
+
+            resetSelectedBadge(){
+                this.SelectedBadgeID = "";
+                this.BadgeName = "";
+                this.BadgeDescription = "";
+                this.BadgePoints = "";
+                this.BadgeType = "";
+                this.BadgeImage = "";
+                this.BadgeImageName = "";
+                this.BadgeDesignInspiration = "";
+                this.$refs.BadgeFileUpload.value = null;
+            },
+
+            async editBadge(){
+                if(this.checkIncompleteData("Badge")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "BadgeID" : this.SelectedBadgeID,
+                    "BadgeName" : this.BadgeName,
+                    "BadgeDescription" : this.BadgeDescription,
+                    "BadgePoints" : this.BadgePoints,
+                    "BadgeType" : this.BadgeType,
+                    "BadgeDesignInspiration" : this.BadgeDesignInspiration,
+                };
+                //If image is provided to change
+                if(this.BadgeImageName != ""){
+                    params["BadgeImage"] = this.BadgeImage;
+                    params["BadgeImageName"] = this.BadgeImageName;
+                }
+
+                await Parse.Cloud.run("EditBadge", params);
+                alert("Edited Badge!");
+                this.resetSelectedBadge();
+
+                //Update badges
+                this.getBadges();
+            },
+
+            async deleteBadge(){
+                if(this.SelectedBadgeID === ""){
+                    alert("Please select a Badge to Delete!");
+                    return;
+                }
+                var params = {
+                    "BadgeID" : this.SelectedBadgeID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteBadge", params);
+                    alert("Deleted Badge!");
+                    this.resetSelectedBadge();
+
+                    //Update badges
+                    this.getBadges();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Trophy Functions
+            async addTrophy(){
+                if(this.checkIncompleteData("Trophy") || this.TrophyImageName === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "TrophyName": this.TrophyName,
+                    "TrophyDescription": this.TrophyDescription,
+                    "TrophyPoints": this.TrophyPoints,
+                    "TrophyImage": this.TrophyImage,
+                    "TrophyType": this.TrophyType,
+                    "BadgesIDNeeded": this.BadgesIDNeeded,
+                    "TrophyImageName" : this.TrophyImageName,
+                    "TrophyDesignInspiration" : this.TrophyDesignInspiration,
+                }
+                await Parse.Cloud.run("AddTrophy", params);
+                alert("Added Trophy!");
+                this.resetSelectedTrophy();
+
+                //Update trophies
+                this.getTrophies();
+            },
+
+            async onTrophyImageSelected(e){
+                var file = e.target.files[0];
+                this.TrophyImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.TrophyImage = data
+                );
+            },
+            
+            selectTrophy(trophy){
+                if(this.SelectedTrophyID !== trophy.objectId){
+                    this.SelectedTrophyID = trophy.objectId;
+                    this.TrophyName = trophy.TrophyName;
+                    this.TrophyDescription = trophy.TrophyDescription;
+                    this.TrophyPoints = trophy.TrophyPoints;
+                    this.TrophyType = trophy.TrophyType;
+                    this.TrophyImage = trophy.TrophyImage;
+                    this.TrophyDesignInspiration = trophy.TrophyDesignInspiration;
+                }
+                else{
+                    this.resetSelectedTrophy();
+                }
+            },
+
+            resetSelectedTrophy(){
+                this.SelectedTrophyID = "";
+                this.TrophyName = "";
+                this.TrophyDescription = "";
+                this.TrophyPoints = "";
+                this.TrophyType = "";
+                this.TrophyImage = "";
+                this.TrophyImageName = "";
+                this.TrophyDesignInspiration = "";
+                this.$refs.TrophyFileUpload.value = null;
+            },
+
+            async editTrophy(){
+                if(this.checkIncompleteData("Trophy")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "TrophyID" : this.SelectedTrophyID,
+                    "TrophyName": this.TrophyName,
+                    "TrophyDescription": this.TrophyDescription,
+                    "TrophyPoints": this.TrophyPoints,
+                    "TrophyType": this.TrophyType,
+                    "BadgesIDNeeded": this.BadgesIDNeeded,
+                    "TrophyDesignInspiration" : this.TrophyDesignInspiration,
+                };
+                //If image is provided to change
+                if(this.TrophyImageName != ""){
+                    params["TrophyImage"] = this.TrophyImage;
+                    params["TrophyImageName"] = this.TrophyImageName;
+                }
+
+                await Parse.Cloud.run("EditTrophy", params);
+                alert("Edited Trophy!");
+                this.resetSelectedTrophy();
+
+                //Update trophies
+                this.getTrophies();
+            },
+
+            async deleteTrophy(){
+                if(this.SelectedTrophyID === ""){
+                    alert("Please select a Trophy to Delete!");
+                    return;
+                }
+                var params = {
+                    "TrophyID" : this.SelectedTrophyID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteTrophy", params);
+                    alert("Deleted Trophy!");
+                    this.resetSelectedTrophy();
+
+                    //Update trophies
+                    this.getTrophies();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Ascension Title Functions
+            async addAscensionTitle(){
+                if(!(this.AscensionXpRangeCap > 0 && this.AscensionXpRangeStart > -1 && this.AscensionXpRangeStart < this.AscensionXpRangeCap)){
+                    alert("Invalid Range Values!");
+                    return;
+                }
+                else if(this.checkIncompleteData("AscensionTitle")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "AscensionName": this.AscensionName,
+                    "AscensionXpRangeStart": this.AscensionXpRangeStart,
+                    "AscensionXpRangeCap": this.AscensionXpRangeCap,
+                }
+                await Parse.Cloud.run("AddAscensionTitle", params);
+                alert("Added Ascension Title");
+                this.resetSelectedAscensionTitle();
+                
+                //Update AscensionTitles
+                this.getAscensionTitles();
+            },
+
+            selectAscensionTitle(title){
+                if(this.SelectedAscensionTitleID !== title.objectId){
+                    this.SelectedAscensionTitleID = title.objectId;
+                    this.AscensionName = title.AscensionName;
+                    this.AscensionXpRangeStart = title.AscensionXpRangeStart;
+                    this.AscensionXpRangeCap = title.AscensionXpRangeCap;
+                }
+                else{
+                    this.resetSelectedAscensionTitle();
+                }
+            },
+
+            resetSelectedAscensionTitle(){
+                this.SelectedAscensionTitleID = "";
+                this.AscensionName = "";
+                this.AscensionXpRangeStart = 0;
+                this.AscensionXpRangeCap = 0;
+            },
+
+            async editAscensionTitle(){
+                if(!(this.AscensionXpRangeCap > 0 && this.AscensionXpRangeStart > -1 && this.AscensionXpRangeStart < this.AscensionXpRangeCap)){
+                    alert("Invalid Range Values!");
+                    return;
+                }
+                else if(this.checkIncompleteData("AscensionTitle")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "AscensionId" : this.SelectedAscensionTitleID,
+                    "AscensionName": this.AscensionName,
+                    "AscensionXpRangeStart": this.AscensionXpRangeStart,
+                    "AscensionXpRangeCap": this.AscensionXpRangeCap,
+                };
+                await Parse.Cloud.run("EditAscensionTitle", params);
+                alert("Edited Ascension Title!");
+                this.resetSelectedAscensionTitle();
+
+                //Update AscensionTitles
+                this.getAscensionTitles();
+            },
+
+            async deleteAscensionTitle(){
+                if(this.SelectedAscensionTitleID === ""){
+                    alert("Please select an Ascension Title to Delete!");
+                    return;
+                }
+                var params = {
+                    "AscensionId" : this.SelectedAscensionTitleID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteAsccensionTitle", params);
+                    alert("Deleted Ascension Title!");
+                     this.resetSelectedAscensionTitle();
+
+                    //Update AscensionTitles
+                    this.getAscensionTitles();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Cosmetic Functions
+            async addCosmetic(){
+                if(this.checkIncompleteData("Cosmetic") || this.CosmeticImageName === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "CosmeticName" : this.CosmeticName,
+                    "CosmeticType" : this.CosmeticType,
+                    "CosmeticImage" : this.CosmeticImage,
+                    "CosmeticImageName" : this.CosmeticImageName,
+                }
+                await Parse.Cloud.run("AddCosmetic", params);
+                alert("Added " + this.CosmeticType);
+                this.resetSelectedCosmetic();
+
+                //Update Cosmetics
+                this.getCosmetics();
+            },
+
+            selectCosmetic(cosmetic){
+                if(this.SelectedCosmeticID !== cosmetic.objectId){
+                    this.SelectedCosmeticID = cosmetic.objectId;
+                    this.CosmeticName = cosmetic.CosmeticName;
+                    this.CosmeticType = cosmetic.CosmeticType;
+                    this.CosmeticImage = cosmetic.CosmeticImage;
+                }
+                else{
+                    this.resetSelectedCosmetic();
+                }
+            },
+
+            resetSelectedCosmetic(){
+                this.SelectedCosmeticID = "";
+                this.CosmeticName = "";
+                this.CosmeticType = "";
+                this.CosmeticImage = "";
+                this.CosmeticImageName = "";
+                this.$refs.CosmeticFileUpload.value = null;
+            },
+
+            async onCosmeticImageSelected(e){
+                var file = e.target.files[0];
+                this.CosmeticImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.CosmeticImage = data
+                );
+            },
+
+            async editCosmetic(){
+                if(this.checkIncompleteData("Cosmetic")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "CosmeticID" : this.SelectedCosmeticID,
+                    "CosmeticName" : this.CosmeticName,
+                    "CosmeticType" : this.CosmeticType,
+                }
+                //If image is provided to change
+                if(this.CosmeticImageName != ""){
+                    params["CosmeticImage"] = this.CosmeticImage;
+                    params["CosmeticImageName"] = this.CosmeticImageName;
+                }
+                await Parse.Cloud.run("EditCosmetic", params);
+                alert("Edited Cosmetic");
+                this.resetSelectedCosmetic();
+
+                //Update Cosmetics
+                this.getCosmetics();
+            },
+
+            async deleteCosmetic(){
+                if(this.SelectedCosmeticID === ""){
+                    alert("Please select a Cosmetic to Delete!");
+                    return;
+                }
+                var params = {
+                    "CosmeticID" : this.SelectedCosmeticID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteCosmetic", params);
+                    alert("Deleted Cosmetic!");
+                    this.resetSelectedCosmetic();
+
+                    //Update cosmetics
+                    this.getCosmetics();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            async setDefaultCosmetic(){
+                var params = {
+                    "CosmeticID" : this.SelectedCosmeticID,
+                    "CosmeticType" : this.CosmeticType,
+                }
+                await Parse.Cloud.run("SetDefaultCosmetic", params);
+                alert("Changed " + this.CosmeticType + "Default Cosmetic");
+
+                //Update Cosmetics
+                this.getCosmetics();
+            },
+
+            //House Functions
+            async addHouse(){
+                if(this.checkIncompleteData("House")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "HouseName" : this.HouseName,
+                    "HouseBannerIDPointer" : this.HouseBannerIDPointer,
+                }
+                await Parse.Cloud.run("AddHouse", params);
+                alert("Added House");
+                this.resetSelectedHouse();
+
+                //Update houses
+                this.getHouses();
+            },
+
+            selectHouse(house){
+                if(this.SelectedHouseID !== house.objectId){
+                    this.SelectedHouseID = house.objectId;
+                    this.HouseName = house.HouseName;
+                    this.HouseBannerIDPointer = house.HouseBannerIDPointer;
+                }
+                else{
+                    this.resetSelectedHouse();
+                }
+            },
+
+            resetSelectedHouse(){
+                this.SelectedHouseID = "";
+                this.HouseName = "";
+                this.HouseBannerIDPointer = "";
+            },
+
+            async editHouse(){
+                if(this.checkIncompleteData("House")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "HouseID" : this.SelectedHouseID,
+                    "HouseName" : this.HouseName,
+                    "HouseBannerIDPointer" : this.HouseBannerIDPointer,
+                }
+                
+                await Parse.Cloud.run("EditHouse", params);
+                alert("Edited House");
+                this.resetSelectedHouse();
+
+                //Update houses
+                this.getHouses();
+            },
+
+            async deleteHouse(){
+                if(this.SelectedHouseID === ""){
+                    alert("Please select a House to Delete!");
+                    return;
+                }
+                var params = {
+                    "HouseID" : this.SelectedHouseID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteHouse", params);
+                    alert("Deleted House!");
+                    this.resetSelectedHouse();
+
+                    //Update houses
+                    this.getHouses();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Student functions
+            selectStudent(student){
+                if(this.SelectedStudentID !== student.objectId){
+                    this.SelectedStudentID = student.objectId;
+                    this.StudentFirstName = student.FirstName;
+                    this.StudentMiddleName = student.MiddleName;
+                    this.StudentLastName = student.LastName;
+                    this.StudentContactNum = student.ContactNumber;
+                    this.StudentEmail = student.Email;
+                    this.StudentDegreeIDPointer = student.StudentDegreeIDPointer;
+                    this.StudentUnitIDPointer = student.StudentUnitIDPointer;
+                    this.StudentUserName = student.UserName;
+                    this.StudentAddress = student.Address;
+                    this.StudentSchoolID = student.SchoolID;
+                    this.StudentCoursesIDPointer = student.StudentCoursesIDPointer;
+                    this.StudentEquippedCosmeticsData = student.EquippedCosmeticsData;
+                    this.openStudent = 1;
+                }
+                else{
+                    this.openStudent = 0;
+                    this.resetSelectedStudent();
+                }
+            },
+
+            resetSelectedStudent(){
+                this.SelectedStudentID = "";
+                this.StudentFirstName = "";
+                this.StudentMiddleName = "";
+                this.StudentLastName = "";
+                this.StudentContactNum = "";
+                this.StudentEmail = "";
+                this.StudentDegreeIDPointer = "";
+                this.StudentUnitIDPointer = "";
+                this.StudentUserName = "";
+                this.StudentAddress = "";
+                this.StudentSchoolID = "";
+                this.StudentCoursesIDPointer = [];
+                this.StudentEquippedCosmeticsData = [];
+            },
         },
 
         beforeMount(){
@@ -907,6 +1646,12 @@
             this.getUnits();
             this.getDegrees();
             this.getCourses();
+            this.getBadges();
+            this.getTrophies();
+            this.getAscensionTitles();
+            this.getCosmetics();
+            this.getHouses();
+            this.getStudents();
         },
 
         computed: {

@@ -150,6 +150,9 @@
                     "RegisterDate" : "datetoday",
                 }
                 if(this.userType == "Student"){
+                    params["UserName"] = this.UserName;
+                    params["SchoolID"] = this.SchoolID;
+                    params["Address"] = this.Address;
                     params["YearLevel"] = this.YearLevel;
                     params["StudentUnitIDPointer"] = this.StudentUnitIDPointer;
                     params["StudentDegreeIDPointer"] = this.StudentDegreeIDPointer;
