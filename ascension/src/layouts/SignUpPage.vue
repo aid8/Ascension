@@ -30,9 +30,9 @@
                     <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="email" placeholder="Email" />
                     <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="tel" placeholder="Contact Number" />
                     <div class="flex flex-row gap-3 items-center justify-center">
-                        <input checked type="radio" id="student" v-on:click="showRole('student')" /><label for="student" class="text-[10px] text-white">STUDENT</label>
-                        <input type="radio" id="teacher" v-on:click="showRole('teacher')" /><label for="teacher" class="text-[10px] text-white">TEACHER</label>
-                        <input type="radio" id="ntDistributor" v-on:click="showRole('ntDistributor')" /><label for="ntDistributor" class="text-[10px] text-white">NT DISTRIBUTOR</label>
+                        <input checked type="radio" id="student" v-on:click="showRole('student')" name='UserType' /><label for="student" class="text-[10px] text-white">STUDENT</label>
+                        <input type="radio" id="teacher" v-on:click="showRole('teacher')" name='UserType' /><label  for="teacher" class="text-[10px] text-white">TEACHER</label>
+                        <input type="radio" id="ntDistributor" v-on:click="showRole('ntDistributor')" name='UserType' /><label for="ntDistributor" class="text-[10px] text-white">NT DISTRIBUTOR</label>
                     </div>
                     
                     <!--student-->
