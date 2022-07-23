@@ -307,6 +307,11 @@
         Parameters:  AscensionName, AscensionXpRangeCap, AscensionXpRangeStart 
         Purpose: Save the ascension title object into the database
 
+        Function: EditAscensionTitle()
+        Parameters: AscensionId, Name of the attribute/s to be edited, 
+                    New value/s of the attribute/s
+        Purpose: Edit the attribute/s of the AscensionTitle
+
         Function: UpdateAscensionTitle()
         Parameters: AscensionID, Name of the attribute/s to be edited, 
                     New value/s of the attribute/s
