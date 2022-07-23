@@ -24,25 +24,32 @@
     <head>
         <title>Ascension</title>
     </head>
-    <!-- Other home page contents in progress-->
-    <header class="mb-5">
-        <Navbar />
+    
+    <header class="mb-2">
+        <nav class="fixed top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
+            <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png"/></a>
+            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-gold text-[13px] hover:text-gold" href="/StudentProfile"></a></div>
+            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#"></a></div>
+            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#"></a></div>
+            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#"></a></div>
+            <div class="flex items-center justify-end py-[5px] px-[10px] absolute top-[10px] right-[10px] w-[170px]"><a class="text-white text-[12px] hover:text-gold" href="/StudentHomePage">SIGN IN</a></div>
+        </nav>
     </header>
     <body class="flex items-center align-middle overflow-y-hidden overflow-x-hidden">    
     <div>
         <div class="overflow-y-hidden">
                 <div class="absolute mt-12 font-Lexend text-white w-full">
                     <ul class="flex flex-wrap ml-6">
-                        <li class="mr-6 hover:text-gold">
+                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('overview')" v-bind:class="{'text-gold': openTab === 'overview'}">
                             <button @click="currentTab(1)">Overview</button>
                         </li>
-                        <li class="mr-6 hover:text-gold">
+                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('dailyquotes')" v-bind:class="{'text-gold': openTab === 'dailyquotes'}">
                             <button @click="currentTab(2)">Daily Quotes</button>
                         </li>
-                        <li class="mr-6 hover:text-gold">
+                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('trivia')" v-bind:class="{'text-gold': openTab === 'trivia'}">
                             <button @click="currentTab(3)">Trivia</button>
                         </li>
-                        <li class="mr-6 hover:text-gold">
+                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('wordle')" v-bind:class="{'text-gold': openTab === 'wordle'}">
                             <button @click="currentTab(4)">Wordle</button>
                         </li>
                     </ul>
@@ -50,23 +57,6 @@
 
                     <div><!-- Tab contents -->
                         <div v-if="tab === 1" class="overflow-y-hidden">
-                            <div class="absolute mt-12 font-Lexend text-white w-full">
-                                <ul class="flex flex-wrap ml-6">
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(1)" class="text-gold underline decoration-gold decoration-2 underline-offset-4">Overview</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(2)">Daily Quotes</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(3)">Trivia</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(4)">Wordle</button>
-                                    </li>
-                                </ul>
-                            </div>
-
                             <div class="bg-[url('/src/assets/img/background/bg-2.jpg')] static flex bg-cover items-center w-screen h-screen">
                                 <div class="font-Lexend text-white">
                                     <div class="mx-44 flex-wrap w-2/3">
@@ -145,27 +135,11 @@
                                 </div>  
                             </div>    
                         </div>
+                        <!-- Daily Quotes -->
                         <div v-if="tab === 2">
-                            <div class="absolute mt-12 font-Lexend text-white w-full">
-                                <ul class="flex flex-wrap ml-6">
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(1)">Overview</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(2)" class="text-gold underline decoration-gold decoration-2 underline-offset-4">Daily Quotes</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(3)">Trivia</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(4)">Wordle</button>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="bg-[url('/src/assets/img/background/bg-2.jpg')] bg-cover justify-center  w-screen h-screen">
+                            <div class="flex items-center justify-center w-full h-full">
                                 <div class="font-Lexend text-white">
-                                    <div class="text-center py-64">
+                                    <div class="text-center w-screen py-64">
                                         <div class="text-2xl tracking-wider">
                                             The best things
                                         </div>
@@ -182,56 +156,24 @@
                                 </div>
                             </div>    
                         </div>
+                        <!-- Trivia -->
                         <div v-if="tab === 3">
-                            <div class="absolute mt-12 font-Lexend text-white w-full">
-                                <ul class="flex flex-wrap ml-6">
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(1)">Overview</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(2)">Daily Quotes</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(3)" class="text-gold underline decoration-gold decoration-2 underline-offset-4">Trivia</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(4)">Wordle</button>
-                                    </li>
-                                </ul>
-                            </div>
-
                             <div class="justify-center w-full h-full">
                                 <div class="font-Lexend text-white">
-                                    <div class="p-72 flex items-center justify-center text-center">
-                                            <div class="text-3xl px-8 flex-wrap">
+                                    <div class="py-44 flex items-center justify-center text-center">
+                                            <div class="text-3xl px-8 flex-wrap w-2/3">
                                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                                             </div>
                                     </div>
                                 </div>
                             </div>    
                         </div>
+                        <!-- Wordle -->
                         <div v-if="tab === 4">
-                            <div class="absolute mt-12 font-Lexend text-white w-full">
-                                <ul class="flex flex-wrap ml-6">
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(1)">Overview</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(2)">Daily Quotes</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(3)">Trivia</button>
-                                    </li>
-                                    <li class="mr-6 hover:text-gold">
-                                        <button @click="currentTab(4)" class="text-gold underline decoration-gold decoration-2 underline-offset-4">Wordle</button>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div class="bg-[url('/src/assets/img/background/bg-2.jpg')] bg-cover justify-center  w-full h-full">
+                            <div class="bg-cover justify-center w-full h-full">
                                 <div class="font-Lexend text-white">
-                                    <div class="text-white h-screen">
-                                        <div class="px-40 py-64 flex-wrap">
+                                    <div class="text-white">
+                                        <div class="px-40 py-56 flex-wrap">
                                             <h1 class="text-6xl mb-4">Try WORDLE</h1>
                                             <p class=" text-2xl mb-4 w-2/3">Wordle is an online 5-letter word game. Each day a new word is released and players have six attempts to guess what the word of the day is.</p>
                                             <div>
@@ -261,11 +203,8 @@
                                 </footer>
                             </div>
                         </div>
-                    </div>
-                    
-                </div>
-
-                        
+                    </div>       
+                </div>    
         </div>
     </div> 
     </body>
@@ -275,7 +214,7 @@
 </template>
 <script>
     import Parse from 'parse';
-    import Navbar from '../components/HomeNavbar';
+    /*import Navbar from '../components/HomeNavbar';*/
 
     export default{
         data(){
@@ -284,10 +223,11 @@
                 loggedIn: false,
                 toggleModal: false,
                 tab: 1,
+                openTab: 'overview',
             }
         },
         components:{
-            Navbar,
+           /* Navbar,*/
         },
         beforeMount(){
             var currentUser = Parse.User.current();
@@ -325,6 +265,9 @@
             },
             currentTab: function (tabNumber) {
             this.tab = tabNumber;
+            },
+            activeTab: function (tabName) {
+                this.openTab = tabName;
             },
         }
     }
