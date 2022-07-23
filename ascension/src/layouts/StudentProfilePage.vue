@@ -13,6 +13,8 @@
     .remove-scroll::-webkit-scrollbar{
         display: none;
     }
+
+
 </style>
 <template>
     <head>
@@ -229,6 +231,7 @@
                     <div class="flex flex-row pt-[120px] pb-[80px] w-full h-[100%]">
                         <nav class="flex flex-col items-end justify-start w-[250px] border-r-[1px] border-gray">
                             <div class="py-[15px] px-[20px] text-[13px]" v-bind:class="{'border-r-[3px] border-gold text-gold': openCollectionTab === 'avatars', 'border-r-[3px] border-black/0 text-white': openCollectionTab !== 'avatars'}"><a href="#" v-on:click="activeCollectionTab('avatars')">AVATARS</a></div>
+                            <div class="py-[15px] px-[20px] text-[13px]" v-bind:class="{'border-r-[3px] border-gold text-gold': openCollectionTab === 'frames', 'border-r-[3px] border-black/0 text-white': openCollectionTab !== 'frames'}"><a href="#" v-on:click="activeCollectionTab('frames')">FRAMES</a></div>
                             <div class="py-[15px] px-[20px] text-[13px]" v-bind:class="{'border-r-[3px] border-gold text-gold': openCollectionTab === 'backgrounds', 'border-r-[3px] border-black/0 text-white': openCollectionTab !== 'backgrounds'}"><a href="#" v-on:click="activeCollectionTab('backgrounds')">BACKGROUND</a></div>
                             <div class="py-[15px] px-[20px] text-[13px]" v-bind:class="{'border-r-[3px] border-gold text-gold': openCollectionTab === 'trophies', 'border-r-[3px] border-black/0 text-white': openCollectionTab !== 'trophies'}"><a href="#" v-on:click="activeCollectionTab('trophies')">TROPHIES</a></div>
                             <div class="py-[15px] px-[20px] text-[13px]" v-bind:class="{'border-r-[3px] border-gold text-gold': openCollectionTab === 'badges', 'border-r-[3px] border-black/0 text-white': openCollectionTab !== 'badges'}"><a href="#" v-on:click="activeCollectionTab('badges')">BADGES</a></div>
@@ -281,6 +284,59 @@
                                     <div class="float-right relative flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
                                             <img class="w-auto h-auto brightness-[0.30] grayscale" src="../assets/img/avatar/avatar.jpg" />
+                                            <span class="absolute text-[70px] text-white"><i class="fa-solid fa-lock"></i></span>
+                                        </div>
+                                        <span class="text-white text-[18px]">Item Name</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--frames tab-->
+                        <div class="relative flex flex-row gap-5 w-full items-start justify-start px-[20px]" v-bind:class="{'hidden': openCollectionTab !== 'frames', 'flex': openCollectionTab === 'frames'}">
+                            <!--item list-->
+                            <div class="flex items-center justify-center bg-black/70 border-gray border-[1px] w-[68%] h-full remove-scroll overflow-y-scroll">
+                                <div class="block w-full h-full p-[10px]">
+                                    <div class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('unlockedFrames')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'unlockedFrames'}">
+                                        <img class="h-[auto] w-[auto]" src="../assets/img/frames/frame_sample.png" />
+                                    </div>
+                                    <div class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('lockedFrames')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'lockedFrames'}">
+                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" src="../assets/img/frames/frame_sample.png" />
+                                        <span class="absolute text-[30px] text-white"><i class="fa-solid fa-lock"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--selected item-->
+                            <div class="flex items-start justify-center w-[25%] h-full" v-bind:class="{'hidden': showItem !== 'unlockedFrames', 'flex': showItem === 'unlockedFrames'}">
+                                <div class="flex flex-col items-start justify-start gap-3 h-full remove-scroll overflow-y-scroll">
+                                    <!--full image of selected item with item name-->
+                                    <div class="float-right flex flex-col items-center justify-center gap-3 w-full">
+                                        <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
+                                            <img class="w-auto h-auto" src="../assets/img/frames/frame_sample.png" />
+                                        </div>
+                                        <span class="text-white text-[18px]">Item Name</span>
+                                    </div>
+                                    <!--other information of selected item-->
+                                    <div class="w-full">
+                                        <span class="text-gold text-[13px]">Date Acquisition:</span>
+                                        <p class="text-white text-[12px]">July 22, 2022</p>
+                                    </div>
+                                    <div class="w-full">
+                                        <span class="text-gold text-[13px] h-full">Type:</span>
+                                        <p class="text-white text-[12px]">Badge Type Name</p>
+                                    </div>
+                                    <div class="w-full">
+                                        <span class="text-gold text-[13px] h-full">Description:</span>
+                                        <p class="text-white text-[12px]">Description description  description  description description description description</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--selected lock item-->
+                            <div class="flex items-start justify-center w-[25%] h-full" v-bind:class="{'hidden': showItem !== 'lockedFrames', 'flex': showItem === 'lockedFrames'}">
+                                <div class="flex flex-col items-start justify-start gap-3 h-full remove-scroll overflow-y-scroll">
+                                    <!--full image of selected item with item name-->
+                                    <div class="float-right relative flex flex-col items-center justify-center gap-3 w-full">
+                                        <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
+                                            <img class="w-auto h-auto brightness-[0.30] grayscale" src="../assets/img/frames/frame_sample.png" />
                                             <span class="absolute text-[70px] text-white"><i class="fa-solid fa-lock"></i></span>
                                         </div>
                                         <span class="text-white text-[18px]">Item Name</span>
