@@ -197,6 +197,10 @@
         Parameters: StudentID
         Purpose: Rewards student an ultimate trophy if all trophies are earned. (If there is no ultimate trophy, it creates a new one with type of "Ultimate" and has no image and points, this is named as "Ultimate Trophy"). The admin can create an Ultimate Trophy by setting the trophies' type by "Ultimate". Or the admin can edit the automatically created Ultimate Trophy. There should be only one Trophy with type of Ultimate.
 
+        Function: VerifyUltimateTrophyExists()
+        Parameters: None
+        Purpose: Checks if an ultimate trophy is already in the database. Returns true or false
+
         Function: GetUnacquiredTrophies()
         Parameters: StudentID
         Purpose: Gives student missing trophies
@@ -302,11 +306,6 @@
         Function: AddAscensionTitle()
         Parameters:  AscensionName, AscensionXpRangeCap, AscensionXpRangeStart 
         Purpose: Save the ascension title object into the database
-
-        Function: EditAscensionTitle()
-        Parameters: AscensionId, Name of the attribute/s to be edited, 
-                    New value/s of the attribute/s
-        Purpose: Edit the attribute/s of the AscensionTitle
 
         Function: UpdateAscensionTitle()
         Parameters: AscensionID, Name of the attribute/s to be edited, 

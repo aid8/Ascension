@@ -3,12 +3,23 @@
     - VerifyUltimateTrophy
 */
 var Global = require('./global');
+var UltTrophyExists = false;
 
 Parse.Cloud.define("AddTrophy", async(request) => {
     const Trophy = Parse.Object.extend("Trophy");
     const trophy = new Trophy();
     const argument = request.params;
 
+    UltTrophyExists = await Parse.Cloud.run("VerifyUltimateTrophyExists")
+    if(argument.TrophyType == "Ultimate"){
+        if(UltTrophyExists){
+            return Promise.reject("Ultimate Trophy already exists!")
+        }
+        else{
+            UltTrophyExists = true
+        }
+    }
+    
     var convertedImage = {base64: argument.TrophyImage};
     var parseFile = new Parse.File(argument.TrophyImageName, convertedImage);
 
@@ -26,6 +37,7 @@ Parse.Cloud.define("AddTrophy", async(request) => {
             console.log("Successfully Added Trophy!");
         });
     });
+    
 });
 
 Parse.Cloud.afterSave("Trophy", async(request) => {  
@@ -132,6 +144,9 @@ Parse.Cloud.define("DeleteTrophy", async(request) => {
     param = {"url" : imageToDelete};
     await Parse.Cloud.run("DeleteFile", param);
 
+    if(res.get("TrophyType") == "Ultimate"){
+        UltTrophyExists = false;
+    }
     res.destroy().then(() => {
         console.log("Successfully Deleted Trophy");
     });
@@ -549,4 +564,12 @@ Parse.Cloud.define("VerifyUltimateTrophy", async(request) =>{
             await Parse.Cloud.run("RewardTrophy", param);
         }
     }
+});
+
+Parse.Cloud.define("VerifyUltimateTrophyExists", async(request) =>{
+    const Trophy = Parse.Object.extend("Trophy");
+    const ultQuery = new Parse.Query(Trophy);
+    ultQuery.equalTo("TrophyType", "Ultimate");
+    const res = await ultQuery.first();
+    return (res) ? true : false
 });

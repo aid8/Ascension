@@ -1232,12 +1232,18 @@
                     "TrophyImageName" : this.TrophyImageName,
                     "TrophyDesignInspiration" : this.TrophyDesignInspiration,
                 }
-                await Parse.Cloud.run("AddTrophy", params);
-                alert("Added Trophy!");
-                this.resetSelectedTrophy();
+                try{
+                    await Parse.Cloud.run("AddTrophy", params);
+                    alert("Added Trophy!");
+                    this.resetSelectedTrophy();
 
-                //Update trophies
-                this.getTrophies();
+                    //Update trophies
+                    this.getTrophies();
+                }
+                catch(e){
+                    alert(e.message)
+                }
+                
             },
 
             async onTrophyImageSelected(e){
