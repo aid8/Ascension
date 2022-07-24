@@ -27,7 +27,7 @@
 <template>
     <nav class="flex flex-wrap static items-center justify-between top-0 fixed px-4 bg-black/20 backdrop-blur-sm shadow-lg text-white font-default w-screen z-50 py-4 lg:py-0">
         <div class="md:ml-5 w-32 cursor-pointer">
-            <a href="../StudentProfile">
+            <a href="../GiverProfile">
                 <img src="../assets/img/logo/text-logo-default.png"/>
             </a>
         </div>

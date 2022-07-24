@@ -27,16 +27,16 @@
 <template>
     <nav class="flex flex-wrap static items-center justify-between top-0 fixed px-4 bg-black/20 backdrop-blur-sm shadow-lg text-white font-default w-screen z-50 py-4 lg:py-0">
         <div class="md:ml-5 w-32 cursor-pointer">
-            <a href="../StudentProfile">
+            <a href="../StudentHomeProfile">
                 <img src="../assets/img/logo/text-logo-default.png"/>
             </a>
         </div>
 
         <div class="hidden w-full lg:inline-flex lg:flex-grow lg:w-auto py-4 pr-4 lg:py-0" id="navigation">
             <ul class="lg:inline-flex lg:flex-grow lg:justify-center z-50">
-                <li class="menu-item"><a href="/StudentProfile">PROFILE</a></li>
-                <li class="menu-item"><a href="/StudentQuestDaily">QUEST</a></li>
-                <li class="menu-item"><a href="/StudentLeaderboard">LEADERBOARD</a></li>
+                <li class="menu-item"><a href="/StudentProfilePage">PROFILE</a></li>
+                <li class="menu-item"><a href="/StudentQuestPage">QUEST</a></li>
+                <li class="menu-item"><a href="/StudentLeaderboardPage">LEADERBOARD</a></li>
                 <li class="menu-item"><a href="#">NOTIFICATION</a></li>
             </ul>
         </div>

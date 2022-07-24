@@ -12,7 +12,7 @@
 </template>
 
     <script>
-        import Navbar from '../components/Navbar';
+        import Navbar from '../components/HomeNavbar';
 
         export default{
             components: {
@@ -33,7 +33,7 @@
         </div>
 
         <div class="ml-auto">
-            <button class="hover:text-gold hover:decoration-gold underline decoration-white decoration-2 underline-offset-4" @click="SignIn()">Sign In</button>
+            <button class="hover:text-gold hover:decoration-gold underline decoration-white decoration-2 underline-offset-4" @click="SignUpPage()">Sign Up</button>
         </div>
 
     </nav>
@@ -50,9 +50,9 @@ export default {
         }
     },
     methods:{
-        async SignIn(){
+        async SignUpPage(){
             let host = window.location.host
-            window.location.href ='http://' + host + '/SignIn';
+            window.location.href ='http://' + host + '/SignUpPage';
         },
         async Home(){
             let host = window.location.host
