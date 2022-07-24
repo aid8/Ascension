@@ -36,6 +36,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "about" */ '../layouts/RedirectPage.vue')
   },
   {
+    path: '/StudentHomePage',
+    name: 'StudentHomePage',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/StudentHomePage.vue')
+  },
+  {
     path: '/AccountSettings',
     name: 'AccountSettings',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/AccountSettings.vue')
@@ -59,6 +64,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/HomeTest',
     name: 'HomeTest',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/HomeTest.vue')
+  },
+  {
+    path: '/SignUpPage',
+    name: 'SignUpPage',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/SignUpPage.vue')
   },
 ]
 
