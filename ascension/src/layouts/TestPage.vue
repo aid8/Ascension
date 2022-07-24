@@ -405,14 +405,14 @@
                         <!--top three trophies and recently obtained badges-->
                         <div v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-3 flex flex-col items-center justify-center">
                                 <!--trophies-->
-                                <div class="grid grid-cols-3 items-center justify-center gap-3">
+                                <div class="flex flex-row gap-3 items-center justify-center">
                                     <template v-for="trophy in StudentChosenTrophies" :key="trophy">
                                         <img v-if="trophy !== null" class="col-span-1 inline-block w-[50px] h-[auto]" v-bind:title="trophy.TrophyName" loading="lazy"  v-bind:alt="trophy.TrophyName" v-bind:src="trophy.TrophyImage" />
                                     </template>
                                 </div>
                                 <!--badges-->
                                 <span class="block border-gray border-b-[1px] my-[5px] mx-[auto] leading-[0.1px] w-[250px]"></span> <!--separator-->
-                                <div class="grid grid-cols-5 items-center justify-center gap-3">
+                                <div class="flex flex-row gap-2 items-center justify-center">
                                     <template v-for="badge in StudentAcquiredBadges" :key="badge">
                                         <img v-if="badge !== null" class="col-span-1 inline-block w-[35px] h-[auto]" v-bind:title="badge.BadgeName" loading="lazy" v-bind:alt="badge.BadgeName" v-bind:src="badge.BadgeImage" />
                                     </template>
@@ -1713,6 +1713,7 @@
                     }
                     //Sort data by date rewarded(not sure)
                     this.StudentAcquiredBadges.sort(function(first, second) {
+                        if(first === null || second === null) return false;
                         return first.DateRewarded > second.DateRewarded;
                     });
                 }

@@ -15,7 +15,15 @@
             await user.linkWith("google", { authData }).then(async (_obj)=>{
                 await Parse.User.logInWith('google', { authData });
                 let host = window.location.host;
-                window.location.href ='http://' + host + '/AccountCreation';
+                let currentUser = Parse.User.current();
+                if(currentUser){
+                    if(currentUser.get("AccountType") === "Student"){
+                        window.location.href ='http://' + host + '/StudentHomePage';
+                    }
+                }
+                else{
+                    window.location.href ='http://' + host + '/SignUpPage';
+                }
             });   
         }
     }

@@ -32,7 +32,7 @@
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#"></a></div>
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#"></a></div>
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#"></a></div>
-            <div class="flex items-center justify-end py-[5px] px-[10px] absolute top-[10px] right-[10px] w-[170px]"><a class="text-white text-[12px] hover:text-gold" href="/StudentHomePage">SIGN IN</a></div>
+            <div class="flex items-center justify-end py-[5px] px-[10px] absolute top-[10px] right-[10px] w-[170px]"><button @click="logInUser()" class="text-white text-[12px] hover:text-gold">SIGN IN</button></div>
         </nav>
     </header>
     <body class="flex items-center align-middle overflow-y-hidden overflow-x-hidden">    
@@ -63,7 +63,7 @@
                                         <h1 class="text-6xl mb-4">The best way to motivate students.</h1>
                                         <p class=" text-2xl mb-4">Ascension is a gamified academic program that<br />encourages students to perform better in school.</p>
                                         <div class="float-left my-2">
-                                            <button class="hover:text-gold text-2xl mr-2 underline decoration-gold decoration-2 underline-offset-4" @click="logInStudent()">Join the Ascension</button>
+                                            <button class="hover:text-gold text-2xl mr-2 underline decoration-gold decoration-2 underline-offset-4" @click="logInUser()">Join the Ascension</button>
                                         </div>
                                         <div>
                                             <button class="hover:text-gold text-2xl m-2 underline decoration-gold decoration-2 underline-offset-4" @click="currentTab(5)">Learn More</button>
@@ -219,56 +219,48 @@
     export default{
         data(){
             return{
-                userType: '',
-                loggedIn: false,
+                //FRONTEND VARIABLES
                 toggleModal: false,
                 tab: 1,
                 openTab: 'overview',
+                
+                //BACKEND VARIABLES
+                currentUser: Parse.User.current(),
+                host:  window.location.host,
             }
         },
         components:{
            /* Navbar,*/
         },
-        beforeMount(){
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-                this.loggedIn = true;
-            }
-            else{
-                this.loggedIn = false;
-            }
-        },
         methods:{
-            async signIn(){
-                let host = window.location.host
-                window.location.href ='http://' + host + '/AccountCreation';
+            //===========FRONTEND FUNCTIONS===============
+            currentTab: function (tabNumber) {
+                this.tab = tabNumber;
             },
 
-            async admin(){
-                let host = window.location.host;
-                window.location.href ='http://' + host + '/AdminPage';
-            },
-            async logInTeacher(){
-                let host = window.location.host;
-                window.location.href ='http://' + host + '/TeacherTest';
-            },
-            async logInStudent(){
-                let host = window.location.host;
-                window.location.href ='http://' + host + '/StudentTest';
-            },
-            async signInWithGoogle(){
-                window.location.href = await Parse.Cloud.run("GoogleSignIn");
-            },
-            async logOut(){
-                await Parse.User.logOut();
-                this.$router.go(0); //refresh the page
-            },
-            currentTab: function (tabNumber) {
-            this.tab = tabNumber;
-            },
             activeTab: function (tabName) {
                 this.openTab = tabName;
             },
-        }
+
+            //==========BACKEND FUNCTIONS=================
+            async admin(){
+                window.location.href ='http://' + this.host + '/AdminPage';
+            },
+            async logInUser(){
+                window.location.href = await Parse.Cloud.run("GoogleSignIn");
+            },
+        },
+        beforeMount(){
+            if (this.currentUser) {
+                //Redirect to StudentHomePage if logged in and has data
+                if(this.currentUser.get("AccountType") === "Student"){
+                    window.location.href ='http://' + this.host + '/StudentHomePage';
+                }
+                //If Account is logged in and does not have an account yet, redirect to sign up page
+                else if(this.currentUser.get("AccountID") === undefined){
+                    window.location.href ='http://' + this.host + '/SignUpPage';
+                }
+            }
+        },
     }
 </script>
