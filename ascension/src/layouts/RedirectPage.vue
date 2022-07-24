@@ -20,9 +20,9 @@
                     if(currentUser.get("AccountType") === "Student"){
                         window.location.href ='http://' + host + '/StudentHomePage';
                     }
-                }
-                else{
-                    window.location.href ='http://' + host + '/SignUpPage';
+                    else{
+                        window.location.href ='http://' + host + '/SignUpPage';
+                    }
                 }
             });   
         }

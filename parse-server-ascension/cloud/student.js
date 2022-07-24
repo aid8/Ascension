@@ -22,7 +22,8 @@ Parse.Cloud.define("AddStudent", async(request) => {
         var user = request.user;
         user.set("AccountID", res.id);
         user.set("AccountType", "Student");
-        Parse.Object.saveAll([user], { useMasterKey: true });
+        user.save(null,{ useMasterKey: true });
+        //Parse.Object.saveAll([user], { useMasterKey: true });
         console.log("Successfully added Student!");
     });
 });
