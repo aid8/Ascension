@@ -70,6 +70,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'SignUpPage',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/SignUpPage.vue')
   },
+  {
+    path: '/GiverNotifications',
+    name: 'GiverNotifications',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverNotifications.vue')
+  },
 ]
 
 const router = createRouter({
