@@ -96,3 +96,12 @@ Parse.Cloud.define("GetRewardData", async(request) => {
   res.set("RewardData", RewardData);
   return JSON.stringify(res);
 });
+
+
+Parse.Cloud.define("GetUpdatedUserData", async(request) => {
+  const argument = request.params;
+  var query = new Parse.Query(Parse.User);
+  query.equalTo("objectId", argument.UserID);
+  const res = await query.first();
+  return JSON.stringify(res); 
+});

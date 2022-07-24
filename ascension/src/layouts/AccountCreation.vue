@@ -171,6 +171,14 @@
                     await Parse.Cloud.run("AddNT_Distributor", params);
                 }
                 alert("Added " + this.userType);
+                
+                //Update user locally
+                var currentUser = Parse.User.current();
+                params = {"UserID" : currentUser.id};
+                var updatedData = JSON.parse(await Parse.Cloud.run("GetUpdatedUserData", params));
+                Parse.User.current().set("AccountType", updatedData.AccountType);
+                Parse.User.current().set("AccountID", updatedData.AccountID);
+                Parse.User.current().save();
             },
 
             async getUnits(type){
