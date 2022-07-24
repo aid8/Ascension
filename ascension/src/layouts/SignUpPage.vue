@@ -118,6 +118,10 @@
         data(){
             return{
                 selectedRole: 'student', //student, teacher, ntDistributor
+
+                //BACKEND VARIABLES
+                currentUser: Parse.User.current(),
+                host:  window.location.host,
             }
         },
 
@@ -125,7 +129,16 @@
             showRole: function (roleType) {
                 this.selectedRole = roleType
             },
-        }
+        },
+
+        beforeMount(){
+            if (this.currentUser) {
+                //Redirect to StudentHomePage if logged in and has data
+                if(this.currentUser.get("AccountType") === "Student"){
+                    window.location.href ='http://' + this.host + '/StudentHomePage';
+                }
+            }
+        },
 
     }
 </script>

@@ -137,19 +137,19 @@
             </div>
             <!--header navigation bar-->
             <nav class="sticky top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
-                <a class="absolute left-[10px]" href="#"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
+                <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
                 <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold"><a class="text-gold text-[13px] hover:text-gold" href="#">PROFILE</a></div>
                 <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">QUEST</a></div>
                 <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">LEADERBOARDS</a></div>
                 <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">NOTIFICATION</a></div>
                 <details class="absolute top-[10px] right-[10px] w-[170px]">
                     <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
-                        <span class="text-white text-[12px]">Username#123</span>
-                        <img class="border-[2px] border-white w-[30px] h-auto rounded-full" src="../assets/img/avatar/avatar.jpg" />
+                        <span class="text-white text-[12px]">{{StudentData.UserName}}</span>
+                        <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" alt="Avatar" />
                     </summary>
                     <div class="bg-black/20 border-[1px] mt-[15px] border-gray">
                         <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="">ACCOUNT SETTINGS</a></div>
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="">SIGN OUT</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><button @click="logOut()" class="text-white text-[12px] hover:text-gold">SIGN OUT</button></div>
                     </div>
                 </details>
             </nav>
@@ -167,21 +167,21 @@
                             <!--profile info-->
                             <div class="flex flex-row items-end gap-5 h-full overflow-y-scroll remove-scroll">
                                 <div class="relative flex items-center justify-center">
-                                    <img class="border-white w-[125px] h-[auto] rounded-full" src="../assets/img/avatar/avatar.jpg" />
+                                    <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-white w-[125px] h-[auto] rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" alt="Avatar" />
                                     <img class="absolute inset-0 m-auto border-white w-[125px] h-[auto] rounded-full" src="../assets/img/frames/frame_sample.png" />
                                 </div>
                                 <div class="flex flex-col items-start justify-center">
-                                    <span class="text-gold text-[20px]">Username#123</span>
-                                    <span class="text-white text-[15px]">Rondale Floyd M. Bufete</span>
+                                    <span class="text-gold text-[20px]">{{StudentData.UserName}}</span>
+                                    <span class="text-white text-[15px]">{{StudentData.FirstName}} {{StudentData.MiddleName}} {{StudentData.LastName}}</span>
                                     <span class="text-white text-[11px]">Official Knight of the Round Order (900/1020)</span>
                                     <progress class="bg-gray text-gold w-[250px] h-[5px]" value="900" max="1020"></progress>
                                     <div class="flex flex-row gap-5 mt-[10px]">
                                         <div class="text-gold flex flex-col items-center justify-center gap-1 cursor-default" title="Total trophies">
-                                            <span class="text-[12px]">10</span>
+                                            <span v-if="StudentData.TrophiesIDUnlocked !== undefined" class="text-[12px]">{{StudentData.TrophiesIDUnlocked.length}}</span>
                                             <i class="fa-solid fa-trophy"></i>
                                         </div>
                                         <div class="text-gold flex flex-col items-center justify-center gap-1 cursor-default" title="Total badges">
-                                            <span class="text-[12px]">10</span>
+                                            <span v-if="StudentData.BadgesIDEarned !== undefined" class="text-[12px]">{{StudentData.BadgesIDEarned.length}}</span>
                                             <i class="fa-solid fa-shield-halved"></i>
                                         </div>
                                         <div class="text-gold flex flex-col items-center justify-center gap-1 cursor-default" title="Leaderboard placement">
@@ -193,22 +193,17 @@
                             </div>
                             <!--other profile info-->
                             <div class="flex flex-row gap-5 items-end justify-center min-w-[500px] w-auto h-full overflow-hidden">
-                                <div class="flex items-center justify-center">
-                                    <img class="w-[100px] h-auto" src="../assets/img/logo/status-logo.png" />
-                                </div>
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="flex flex-row gap-3 items-center justify-center">
-                                        <img class="w-[60px] h-auto" src="../assets/img/trophies/trophy_1.png" />
-                                        <img class="w-[60px] h-auto" src="../assets/img/trophies/trophy_1.png" />
-                                        <img class="w-[60px] h-auto" src="../assets/img/trophies/trophy_1.png" />
+                                        <template v-for="trophy in this.StudentData.StudentChosenTrophies" :key="trophy">
+                                            <img v-if="trophy !== null" class="w-[60px] h-auto" v-bind:title="trophy.TrophyName" loading="lazy"  v-bind:alt="trophy.TrophyName" v-bind:src="trophy.TrophyImage" />
+                                        </template>
                                     </div>
                                     <span class="block border-gray border-b-[1px] my-[5px] mx-[auto] leading-[0.1px] w-full"></span> <!--separator-->
                                     <div class="flex flex-row gap-2 items-center justify-center">
-                                        <img class="w-[50px] h-auto" src="../assets/img/badges/badge_1.png" />
-                                        <img class="w-[50px] h-auto" src="../assets/img/badges/badge_2.png" />
-                                        <img class="w-[50px] h-auto" src="../assets/img/badges/badge_3.png" />
-                                        <img class="w-[50px] h-auto" src="../assets/img/badges/badge_4.png" />
-                                        <img class="w-[50px] h-auto" src="../assets/img/badges/badge_5.png" />
+                                        <template v-for="badge in this.StudentData.StudentAcquiredBadges" :key="badge">
+                                            <img v-if="badge !== null" class="w-[50px] h-auto" v-bind:title="badge.BadgeName" loading="lazy" v-bind:alt="badge.BadgeName" v-bind:src="badge.BadgeImage" />
+                                        </template>
                                     </div>
                                 </div>
 
@@ -216,7 +211,7 @@
                         </div>
                         <!--banner-->
                         <div class="w-[27%] h-full overflow-hidden flex items-start justify-center">
-                            <img class="w-auto h-auto" src="../assets/img/banner/liberalitas-banner.png" />
+                            <img v-if="StudentData.StudentHouse !== undefined" class="w-auto h-auto" v-bind:src="StudentData.StudentHouse.HouseBanner" alt="House Banner" />
                         </div>
 
                         <div class="absolute flex flex-row items-center justify-start text-[12px] right-[23%] gap-5 py-[10px] px-[20px]">
@@ -521,15 +516,23 @@
     export default {
         data(){
             return{
+                //FRONTEND VARIABLES
                 openTab: 'summary', //summary, collection
                 openCollectionTab: 'avatars', //avatars, backgrounds, trophies, badges
                 openPopUpTab: 'avatars', //avatars, frames, backgrounds, t3trophies
                 showPopUpMenu: false,
-                showItem: ''
+                showItem: '',
+
+                //BACKEND VARIABLES
+                currentUser: Parse.User.current(),
+                host:  window.location.host,
+
+                StudentData: [],
             }
         },
 
         methods: {
+            //===========FRONTEND FUNCTIONS===============
             activeTab: function (tabName) {
                 this.openTab = tabName
             },
@@ -545,8 +548,62 @@
             activeItem: function (item) {
                 this.showItem = item
             },
-            
-        }
 
+            //==========BACKEND FUNCTIONS=================
+            async logOut(){
+                await Parse.User.logOut();
+                window.location.href ='http://' + this.host;
+                //this.$router.go(0); refresh the page
+            },
+
+            async getAccountData(){
+                var param = {"StudentID" : this.currentUser.get("AccountID")};
+                this.StudentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
+
+                //Copied this since it will be edited
+                this.StudentData["StudentChosenTrophies"] = this.StudentData.ChosenTrophiesData;
+                this.StudentData["StudentAcquiredBadges"] = this.StudentData.BadgesEarned;
+
+                //Fix Chosen Trophies
+                for(let i = 0; i < 3; ++i){
+                    if(!this.StudentData.StudentChosenTrophies[i]){
+                        this.StudentData.StudentChosenTrophies[i] = null;
+                    }
+                }
+
+                //Fix Acquired Badges
+                this.StudentData.StudentAcquiredBadges.slice(0, 5);
+                for(let i = 0; i < 5; ++i){
+                    if(!this.StudentData.StudentAcquiredBadges[i]){
+                        this.StudentData.StudentAcquiredBadges[i] = null;
+                    }
+                }
+
+                //Sort data by date rewarded(not sure if comparison is correct)
+                this.StudentData.StudentAcquiredBadges.sort(function(first, second) {
+                    if(first == null || second == null) return false;
+                    return first.DateRewarded > second.DateRewarded;
+                });
+            },
+        },
+
+        beforeMount(){
+            if (this.currentUser) {
+                //If account is not student, go to homepage
+                if(this.currentUser.get("AccountType") !== "Student"){
+                    window.location.href ='http://' + this.host;
+                    return;
+                }
+                //If Account is logged in and does not have an account yet, redirect to sign up page
+                else if(this.currentUser.get("AccountID") === undefined){
+                    window.location.href ='http://' + this.host + '/SignUpPage';
+                    return;
+                }
+                this.getAccountData();
+            }
+            else{
+                window.location.href ='http://' + this.host;
+            }
+        },
     }
 </script>

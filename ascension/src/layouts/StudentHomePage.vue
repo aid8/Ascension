@@ -27,19 +27,19 @@
     <!-- Other home page contents in progress-->
     <header class="mb-3">
         <nav class="fixed top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
-            <a class="absolute left-[10px]" href="#"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a><!-- suggesstion logo to redirect to student home page -->
-            <div class="flex items-center justify-center w-[150px] h-[50px]"><button class="text-white text-[13px] hover:text-gold" @click="studentProfile()">PROFILE</button></div>
+            <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a><!-- suggesstion logo to redirect to student home page -->
+            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentProfilePage">PROFILE</a></div>
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">QUEST</a></div>
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">LEADERBOARDS</a></div>
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">NOTIFICATION</a></div>
             <details class="absolute top-[10px] right-[10px] w-[170px]">
                 <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
-                    <span class="text-white text-[12px]">Username#123</span>
-                    <img class="border-[2px] border-white w-[30px] h-auto rounded-full" src="../assets/img/avatar/avatar.jpg" />
+                    <span class="text-white text-[12px]">{{StudentData.UserName}}</span>
+                    <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" alt="Avatar"/>
                 </summary>
                 <div class="bg-black/20 border-[1px] mt-[15px] border-gray">
                     <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="">ACCOUNT SETTINGS</a></div>
-                    <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="/">SIGN OUT</a></div>
+                    <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><button @click="logOut()" class="text-white text-[12px] hover:text-gold">SIGN OUT</button></div>
                 </div>
             </details>
         </nav>
@@ -232,60 +232,61 @@
     export default{
         data(){
             return{
-                userType: '',
-                loggedIn: true,
+                //FRONTEND VARIABLES
                 toggleModal: false,
                 tab: 1,
                 openTab: 'overview',
+
+                //BACKEND VARIABLES
+                currentUser: Parse.User.current(),
+                host:  window.location.host,
+
+                StudentData: [],
             }
         },
         components:{
             /*Navbar,*/
         },
-        beforeMount(){
-            var currentUser = Parse.User.current();
-            if (currentUser) {
-                this.loggedIn = true;
-            }
-            else{
-                this.loggedIn = false;
-            }
-        },
         methods:{
-            async signIn(){
-                let host = window.location.host
-                window.location.href ='http://' + host + '/AccountCreation';
+            //===========FRONTEND FUNCTIONS===============
+            currentTab: function (tabNumber) {
+                this.tab = tabNumber;
             },
 
-            async admin(){
-                let host = window.location.host;
-                window.location.href ='http://' + host + '/AdminPage';
-            },
-            async logInTeacher(){
-                let host = window.location.host;
-                window.location.href ='http://' + host + '/TeacherTest';
-            },
-            async logInStudent(){
-                let host = window.location.host;
-                window.location.href ='http://' + host + '/StudentTest';
-            },
-            async studentProfile(){
-                let host = window.location.host;
-                window.location.href ='http://' + host + '/StudentProfilePage';
-            },
-            async signInWithGoogle(){
-                window.location.href = await Parse.Cloud.run("GoogleSignIn");
-            },
-            async logOut(){
-                await Parse.User.logOut();
-                this.$router.go(0); //refresh the page
-            },
-            currentTab: function (tabNumber) {
-            this.tab = tabNumber;
-            },
             activeTab: function (tabName) {
                 this.openTab = tabName
             },
-        }
+
+            //==========BACKEND FUNCTIONS=================
+            async logOut(){
+                await Parse.User.logOut();
+                window.location.href ='http://' + this.host;
+                //this.$router.go(0); refresh the page
+            },
+
+            async getAccountData(){
+                var param = {"StudentID" : this.currentUser.get("AccountID")};
+                this.StudentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
+            },
+
+        },
+        beforeMount(){
+            if (this.currentUser) {
+                //If account is not student, go to homepage
+                if(this.currentUser.get("AccountType") !== "Student"){
+                    window.location.href ='http://' + this.host;
+                    return;
+                }
+                //If Account is logged in and does not have an account yet, redirect to sign up page
+                else if(this.currentUser.get("AccountID") === undefined){
+                    window.location.href ='http://' + this.host + '/SignUpPage';
+                    return;
+                }
+                this.getAccountData();
+            }
+            else{
+                window.location.href ='http://' + this.host;
+            }
+        },
     }
 </script>
