@@ -12,7 +12,7 @@
 </template>
 
     <script>
-        import Navbar from '../components/StudentNavbar';
+        import Navbar from '../components/GiverNavbar';
 
         export default{
             components: {
@@ -34,10 +34,10 @@
 
         <div class="hidden w-full lg:inline-flex lg:flex-grow lg:w-auto py-4 pr-4 lg:py-0" id="navigation">
             <ul class="lg:inline-flex lg:flex-grow lg:justify-center z-50">
-                <li class="menu-item"><a href="/StudentProfile">PROFILE</a></li>
-                <li class="menu-item"><a href="/StudentQuestDaily">QUEST</a></li>
-                <li class="menu-item"><a href="/StudentLeaderboard">LEADERBOARD</a></li>
-                <li class="menu-item"><a href="#">NOTIFICATION</a></li>
+                <li class="menu-item"><a href="/GiverProfile">PROFILE</a></li>
+                <li class="menu-item"><a href="/GiverCommunity">COMMUNITY</a></li>
+                <li class="menu-item"><a href="/GiverLeaderboard">LEADERBOARD</a></li>
+                <li class="menu-item"><a href="/GiverNotification">NOTIFICATION</a></li>
             </ul>
         </div>
 
@@ -59,7 +59,7 @@ import Dropdown from './Dropdown';
 import './style.css';
 
 export default {
-    name: 'StudentNavbar',
+    name: 'GiverNavbar',
     components: {
         Dropdown
     },
