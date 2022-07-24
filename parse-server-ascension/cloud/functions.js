@@ -92,6 +92,7 @@ Parse.Cloud.define("GetRewardData", async(request) => {
       params = {"TrophyID" : res.get("RewardID")};
       RewardData = JSON.parse(await Parse.Cloud.run("GetTrophyData", params));
   }
+  RewardData["DateRewarded"] = res.get("DateRewarded");
   res.set("RewardData", RewardData);
   return JSON.stringify(res);
 });
