@@ -398,40 +398,37 @@
                                 <span class="block text-[12px] text-white">{{StudentEmail}}</span>
                             </div>
                         </div>
-                        <!--house logo-->
-                        <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-1 flex items-center justify-center">
-                            <img class="w-[90px] h-[auto]" loading="lazy" title="Liberalitas" alt="House Logo" src="../assets/img/logo/liberalitas-logo.png" />
-                        </div>
-                        <!--status logo-->
-                        <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-1 flex items-center justify-center">
-                            <img class="w-[70px] h-[auto]" loading="lazy" title="Duke" alt="Status Logo" src="../assets/img/logo/status-logo.png" />
-                        </div>
                         <!--house banner-->
                         <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-1 flex items-center justify-center">
-                            <img class="w-[60px] h-[auto]" loading="lazy" title="Liberalitas banner" alt="House Banner" src="../assets/img/banner/liberalitas-banner.png" />
+                            <img class="w-[60px] h-[auto]" loading="lazy" title="House Banner" alt="House Banner" v-bind:src="StudentHouseData.HouseBanner" />
                         </div>
-                        <!--top three badges and recently obtained badges-->
-                        <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-3 flex flex-col items-center justify-center">
+                        <!--top three trophies and recently obtained badges-->
+                        <div v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-3 flex flex-col items-center justify-center">
                                 <!--trophies-->
                                 <div class="grid grid-cols-3 items-center justify-center gap-3">
-                                    <img class="col-span-1 inline-block w-[50px] h-[auto]" title="Trophy Name" loading="lazy" alt="Trophy 1" src="../assets/img/trophies/trophy_1.png" />
-                                    <img class="col-span-1 inline-block w-[50px] h-[auto]" title="Trophy Name" loading="lazy" alt="Trophy 2" src="../assets/img/trophies/trophy_1.png" />
-                                    <img class="col-span-1 inline-block w-[50px] h-[auto]" title="Trophy Name" loading="lazy" alt="Trophy 3" src="../assets/img/trophies/trophy_1.png" />
+                                    <template v-for="trophy in StudentChosenTrophies" :key="trophy">
+                                        <img v-if="trophy !== null" class="col-span-1 inline-block w-[50px] h-[auto]" v-bind:title="trophy.TrophyName" loading="lazy"  v-bind:alt="trophy.TrophyName" v-bind:src="trophy.TrophyImage" />
+                                    </template>
                                 </div>
                                 <!--badges-->
                                 <span class="block border-gray border-b-[1px] my-[5px] mx-[auto] leading-[0.1px] w-[250px]"></span> <!--separator-->
                                 <div class="grid grid-cols-5 items-center justify-center gap-3">
-                                    <img class="col-span-1 inline-block w-[35px] h-[auto]" title="Badge Name" loading="lazy" alt="Badge 1" src="../assets/img/badges/badge_1.png" />
-                                    <img class="col-span-1 inline-block w-[35px] h-[auto]" title="Badge Name" loading="lazy" alt="Badge 2" src="../assets/img/badges/badge_2.png" />
-                                    <img class="col-span-1 inline-block w-[35px] h-[auto]" title="Badge Name" loading="lazy" alt="Badge 3" src="../assets/img/badges/badge_3.png" />
-                                    <img class="col-span-1 inline-block w-[35px] h-[auto]" title="Badge Name" loading="lazy" alt="Badge 4" src="../assets/img/badges/badge_4.png" />
-                                    <img class="col-span-1 inline-block w-[35px] h-[auto]" title="Badge Name" loading="lazy" alt="Badge 5" src="../assets/img/badges/badge_5.png" />
+                                    <template v-for="badge in StudentAcquiredBadges" :key="badge">
+                                        <img v-if="badge !== null" class="col-span-1 inline-block w-[35px] h-[auto]" v-bind:title="badge.BadgeName" loading="lazy" v-bind:alt="badge.BadgeName" v-bind:src="badge.BadgeImage" />
+                                    </template>
                                 </div>
                         </div>
                     </div>
                     <!--search bar-->
                     <form class="mb-[10px] mx-[auto] w-[100%]">
-                        <input class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[400px] px-[10px]" type="text" placeholder="Search student..." />
+                        <input v-model="StudentSearch" class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[400px] px-[10px]" type="text" placeholder="Search student..." />
+                        <span class="mb-[10px] mx-[10px] text-white text-[11px]">Search by:</span>
+                        <select v-model="StudentSearchType" class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[150px] px-[10px]">
+                            <option class="text-black" value="FirstName">First Name</option>
+                            <option class="text-black" value="LastName">Last Name</option>
+                            <option class="text-black" value="UserName">User Name</option>
+                            <option class="text-black" value="SchoolID">School ID</option>
+                        </select>
                     </form>
                     <!--student list-->
                     <table class="mx-[auto] border-gray w-[100%] border-[1px]">
@@ -447,7 +444,7 @@
                             </tr>
                         </thead>
                         <tbody class="bg-black/30 remove-scroll text-white overflow-y-scroll h-[50vh] flex flex-col">
-                            <tr v-for="student in Students" :key="student.objectId" v-bind:value="student.objectId" class="py-[5px] px-[10px]">
+                            <tr v-for="student in studentQuery" :key="student.objectId" v-bind:value="student.objectId" class="py-[5px] px-[10px]">                           
                                 <td class="w-[40px] text-center">
                                     <button @click="selectStudent(student)" class="text-[25px] hover:text-white/50 active:text-white/20"><i class="fa-solid fa-eye"></i></button>
                                 </td>
@@ -465,8 +462,8 @@
                                 <td class="w-[50px] text-[12px] text-center">{{student.YearLevel}}</td>
                                 <td class="w-[100px] text-[12px] text-center">{{student.StudentHouse.HouseName}}</td>
                                 <td class="w-[75px] text-[12px] text-center">
-                                    <button class="mr-[5px] bg-blue hover:bg-blue_hover active:bg-blue_active w-[30px] h-[30px] text-white" title="Edit this user" v-on:click="activePopUp('editStudent')"><i class="fa-solid fa-user-pen"></i></button>
-                                    <button class="ml-[5px] bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
+                                    <button @click="selectStudent(student, 'edit')" class="mr-[5px] bg-blue hover:bg-blue_hover active:bg-blue_active w-[30px] h-[30px] text-white" title="Edit this user" v-on:click="activePopUp('editStudent')"><i class="fa-solid fa-user-pen"></i></button>
+                                    <button @click="selectStudent(student, 'delete')" class="ml-[5px] bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -477,54 +474,54 @@
                             <!--header-->
                             <header class="flex flex-row gap-2 items-center sticky top-[0px] bg-black border-b-[1px] border-gray px-[10px]">
                                 <button class="text-white hover:text-gold my-[auto]" v-on:click="activePopUp('closePopUp')"><i class="fa-solid fa-angle-left"></i></button>
-                                <span class="w-[100%] text-[12px]">Rondale Floyd Magtibay Bufete</span>
+                                <span v-if="SelectedStudentID !== ''" class="w-[100%] text-[12px]">{{StudentFirstName}} {{StudentMiddleName}} {{StudentLastName}}</span>
                                 <div class="float-right flex flex-row">
-                                    <button class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-red_hover active:text-red_active" title="Delete this user"><i class="fa-solid fa-user-slash"></i>DELETE</button>
-                                    <button class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-blue_hover active:text-blue_active" title="Save changes"><i class="fa-solid fa-floppy-disk"></i>SAVE</button>
+                                    <button @click="deleteStudent()" class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-red_hover active:text-red_active" title="Delete this user"><i class="fa-solid fa-user-slash"></i>DELETE</button>
+                                    <button @click="editStudent()" class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-blue_hover active:text-blue_active" title="Save changes"><i class="fa-solid fa-floppy-disk"></i>SAVE</button>
                                 </div>
                             </header>
                             <!--student information-->
-                            <section class="flex flex-col gap-3 items-center justify-center py-[20px]">
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="First Name" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Middle Name" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Last Name" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Current Address" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="tel" placeholder="Contact Number" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Email" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="School ID" />
-                                <select class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">
-                                    <option class="text-black">Current Degree</option>
-                                    <option class="text-black">Degree Name</option>
+                            <section v-if="SelectedStudentID !== ''" class="flex flex-col gap-3 items-center justify-center py-[20px]">
+                                <input v-model="StudentFirstName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="First Name" />
+                                <input v-model="StudentMiddleName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Middle Name" />
+                                <input v-model="StudentLastName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Last Name" />
+                                <input v-model="StudentAddress" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Current Address" />
+                                <input v-model="StudentContactNum" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="tel" placeholder="Contact Number" />
+                                <input v-model="StudentEmail" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Email" />
+                                <input v-model="StudentSchoolID" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="School ID" />
+                                <select v-model="StudentDegreeIDPointer" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">
+                                    <option v-for="degree in Degrees" :key="degree.objectId" v-bind:value="degree.objectId">{{ degree.DegreeName }}</option>
                                 </select>
                                 <!--year level-->
-                                <select class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">
-                                    <option class="text-black">1</option>
-                                    <option class="text-black">2</option>
-                                    <option class="text-black">3</option>
-                                    <option class="text-black">4</option>
+                                <select v-model="StudentYearLevel" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">
+                                    <option class="text-black" value=1>1</option>
+                                    <option class="text-black" value=2>2</option>
+                                    <option class="text-black" value=3>3</option>
+                                    <option class="text-black" value=4>4</option>
                                 </select>
                                 <!--courses taken by student-->
                                 <details class="w-[28vw] cursor-pointer flex flex-col">
                                     <summary class="py-[5px] text-[12px]">COURSE LIST</summary>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <select v-model="StudentCoursesIDToDelete" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[28vw] px-[10px]">
+                                        <template v-for="course in Courses" :key="course.objectId">
+                                            <option v-if="StudentCoursesIDPointer.indexOf(course.objectId) !== -1" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                        </template>
+                                    </select>
                                     <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
-                                        <input required class="bg-red hover:bg-red_hover active:to-red_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
+                                        <input @click="deleteStudentCourses()" required class="bg-red hover:bg-red_hover active:to-red_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="button" value="DELETE" />
                                     </div>
                                 </details>
+
                                 <!--add courses-->
                                 <details class="w-[28vw] cursor-pointer flex flex-col">
                                     <summary class="py-[5px] text-[12px]">ADD COURSE</summary>
-                                    <select class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">
-                                        <option hidden>Choose Degree</option>
-                                        <option class="text-black">Degree Name</option>
+                                    <select v-model="StudentCoursesIDToAdd" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[28vw] px-[10px]">
+                                        <template v-for="course in Courses" :key="course.objectId">
+                                            <option v-if="(course.CourseDegreesIDPointers.indexOf(StudentDegreeIDPointer) !== -1 || course.CourseDegreesIDPointers.length === 0 ) && StudentCoursesIDPointer.indexOf(course.objectId) === -1" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                        </template>
                                     </select>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
                                     <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
-                                        <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                                        <input @click="addStudentCourses()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="button" value="ADD" />
                                     </div>
                                 </details>
                             </section>
@@ -538,14 +535,19 @@
                 <div class="col-span-1 px-[30px] py-[30px]">
                     <!--search bar-->
                     <form class="mb-[10px] mx-[auto] w-[100%]">
-                        <input class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[400px] px-[10px]" type="text" placeholder="Search giver..." />
+                        <input v-model="GiverSearch" class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[400px] px-[10px]" type="text" placeholder="Search giver..." />
+                        <span class="mb-[10px] mx-[10px] text-white text-[11px]">Search by:</span>
+                        <select v-model="GiverSearchType" class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[150px] px-[10px]">
+                            <option class="text-black" value="FirstName">First Name</option>
+                            <option class="text-black" value="LastName">Last Name</option>
+                        </select>
                     </form>
                     <!--giver list-->
                     <table class="mx-[auto] border-gray w-[100%] border-[1px]">
                         <thead class="bg-black/20 border-b-[1px] border-gray text-white flex flex-col">
                             <tr class="py-[5px] px-[10px]">
                                 <th class="sticky w-[320px] text-[13px] text-center font-normal">Name</th>
-                                <th class="sticky w-[120px] text-[13px] text-center font-normal">School ID</th>
+                                <th class="sticky w-[120px] text-[13px] text-center font-normal">Giver Type</th>
                                 <th class="sticky w-[170px] text-[13px] text-center font-normal">Job Title</th>
                                 <th class="sticky w-[120px] text-[13px] text-center font-normal">Contact Number</th>
                                 <th class="sticky w-[250px] text-[13px] text-center font-normal">Email</th>
@@ -553,18 +555,17 @@
                             </tr>
                         </thead>
                         <tbody class=" bg-black/30 remove-scroll text-white overflow-y-scroll flex flex-col h-[78vh]">
-                            <tr class="py-[5px] px-[10px]">
-                                <td class="w-[320px] text-[12px] text-left">What The Fritz</td>
-                                <td class="w-[120px] text-[12px] text-center">CO201912345</td>
-                                <td class="w-[170px] text-[12px] text-left">Professor</td>
-                                <td class="w-[120px] text-[12px] text-center">09123456789</td>
-                                <td class="w-[250px] text-[12px] text-left">wfritz@gbox.adnu.edu.ph</td>
+                            <tr v-for="giver in giverQuery" :key="giver.objectId" v-bind:value="giver.objectId" class="py-[5px] px-[10px]">
+                                <td class="w-[320px] text-[12px] text-left">{{giver.FirstName}} {{giver.MiddleName}} {{giver.LastName}}</td>
+                                <td class="w-[120px] text-[12px] text-center">{{giver.GiverType}}</td>
+                                <td class="w-[170px] text-[12px] text-center">{{giver.JobTitle}}</td>
+                                <td class="w-[120px] text-[12px] text-center">{{giver.ContactNumber}}</td>
+                                <td class="w-[250px] text-[12px] text-center">{{giver.Email}}</td>
                                 <td class="w-[75px] text-[12px] text-center">
-                                    <button class="mr-[5px] bg-blue hover:bg-blue_hover active:bg-blue_active w-[30px] h-[30px] text-white" title="Edit this user" v-on:click="activePopUp('editGiver')"><i class="fa-solid fa-user-pen"></i></button>
-                                    <button class="ml-[5px] bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
+                                    <button @click="selectGiver(giver, 'edit')" class="mr-[5px] bg-blue hover:bg-blue_hover active:bg-blue_active w-[30px] h-[30px] text-white" title="Edit this user" v-on:click="activePopUp('editGiver')"><i class="fa-solid fa-user-pen"></i></button>
+                                    <button @click="selectGiver(giver, 'delete')" class="ml-[5px] bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
                                 </td>
                             </tr>
-                            
                         </tbody>
                     </table>
 
@@ -574,43 +575,46 @@
                             <!--header-->
                             <header class="flex flex-row gap-2 items-center sticky top-[0px] bg-black border-b-[1px] border-gray px-[10px]">
                                 <button class="text-white hover:text-gold my-[auto]" v-on:click="activePopUp('closePopUp')"><i class="fa-solid fa-angle-left"></i></button>
-                                <span class="w-[100%] text-[12px]">What The Fritz</span>
+                                <span class="w-[100%] text-[12px]">{{GiverFirstName}} {{GiverMiddleName}} {{GiverLastName}}</span>
                                 <div class="float-right flex flex-row">
-                                    <button class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-red_hover active:text-red_active" title="Delete this user"><i class="fa-solid fa-user-slash"></i>DELETE</button>
-                                    <button class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-blue_hover active:text-blue_active" title="Save changes"><i class="fa-solid fa-floppy-disk"></i>SAVE</button>
+                                    <button @click="deleteGiver()" class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-red_hover active:text-red_active" title="Delete this user"><i class="fa-solid fa-user-slash"></i>DELETE</button>
+                                    <button @click="editGiver()" class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-blue_hover active:text-blue_active" title="Save changes"><i class="fa-solid fa-floppy-disk"></i>SAVE</button>
                                 </div>
                             </header>
                             <!--student information-->
                             <section class="flex flex-col gap-3 items-center justify-center py-[20px]">
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="First Name" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Middle Name" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Last Name" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="tel" placeholder="Contact Number" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Email" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="School ID" />
-                                <input class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Job Title" />
-                                <select class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">  
-                                    <option class="text-black">Current Unit</option>
-                                    <option class="text-black">Unit Name</option>
+                                <input v-model="GiverFirstName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="First Name" />
+                                <input v-model="GiverMiddleName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Middle Name" />
+                                <input v-model="GiverLastName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Last Name" />
+                                <input v-model="GiverContactNum" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="tel" placeholder="Contact Number" />
+                                <input v-model="GiverEmail" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Email" />
+                                <input v-model="GiverJobTitle" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Job Title" />
+                                <select v-model="GiverUnitIDPointer" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">  
+                                    <option hidden value="">Select Units</option>
+                                    <option v-for="unit in Units" :key="unit.objectId" v-bind:value="unit.objectId">{{ unit.UnitName }}</option>
                                 </select>
-                                <!--courses taken by student-->
-                                <details class="w-[28vw] cursor-pointer flex flex-col">
+                                <!--courses taken by giver-->
+                                <details v-if="GiverType === 'Teacher'" class="w-[28vw] cursor-pointer flex flex-col">
                                     <summary class="py-[5px] text-[12px]">COURSE LIST</summary>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <select v-model="GiverCoursesIDToDelete" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[28vw] px-[10px]">
+                                        <template v-for="course in Courses" :key="course.objectId">
+                                            <option v-if="GiverCoursesIDPointer.indexOf(course.objectId) !== -1" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                        </template>
+                                    </select>
                                     <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
-                                        <input required class="bg-red hover:bg-red_hover active:to-red_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="submit" value="DELETE" />
+                                        <input @click="deleteGiverCourses()" required class="bg-red hover:bg-red_hover active:to-red_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="button" value="DELETE" />
                                     </div>
                                 </details>
                                 <!--add courses-->
-                                <details class="w-[28vw] cursor-pointer flex flex-col">
+                                <details v-if="GiverType === 'Teacher'" class="w-[28vw] cursor-pointer flex flex-col">
                                     <summary class="py-[5px] text-[12px]">ADD COURSE</summary>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
-                                    <div class="w-[100%]"><input class="mr-[10px] align-middle" type="checkbox" /><label class="text-[12px] align-middle">Course Name</label></div>
+                                    <select v-model="GiverCoursesIDToAdd" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[28vw] px-[10px]">
+                                        <template v-for="course in Courses" :key="course.objectId">
+                                            <option v-if="GiverCoursesIDPointer.indexOf(course.objectId) === -1" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                        </template>
+                                    </select>
                                     <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
-                                        <input required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="submit" value="ADD" />
+                                        <input @click="addGiverCourses()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="button" value="ADD" />
                                     </div>
                                 </details>
                             </section>
@@ -651,6 +655,7 @@
                 Banners: [],
                 Houses: [],
                 Students: [],
+                Givers: [],
 
                 //Unit Variables
                 UnitName: '',
@@ -719,11 +724,33 @@
                 StudentUserName: '',
                 StudentAddress: '',
                 StudentSchoolID: '',
+                StudentYearLevel: 1,
                 StudentCoursesIDPointer: [],
+                StudentCoursesIDToDelete: [],
+                StudentCoursesIDToAdd: [],
                 StudentEquippedCosmeticsData: [],
                 SelectedStudentID: '',
+                StudentSearch: '',
+                StudentChosenTrophies: [],
+                StudentAcquiredBadges: [],
+                StudentHouseData: '',
+                StudentSearchType: "FirstName",
 
                 //Giver Variables
+                GiverFirstName: '',
+                GiverMiddleName: '',
+                GiverLastName: '',
+                GiverEmail: '',
+                GiverContactNum: '',
+                GiverJobTitle: '',
+                GiverUnitIDPointer: '',
+                GiverCoursesIDPointer: [],
+                GiverCoursesIDToAdd: [],
+                GiverCoursesIDToDelete: [],
+                GiverType: '',
+                SelectedGiverID: '',
+                GiverSearch: '',
+                GiverSearchType: "FirstName",
             }
         },
 
@@ -821,11 +848,42 @@
             },
 
             async getStudents(){
-                const res = JSON.parse(await Parse.Cloud.run("GetStudents"));
-                for(const student of res){
-                    var param = {"StudentID" : student.objectId};
-                    this.Students.push(JSON.parse(await Parse.Cloud.run("GetStudentData", param)));
+                this.Students = [];
+                var res = JSON.parse(await Parse.Cloud.run("GetStudents"));
+                for(var student of res){
+                    var param = {"DegreeID" : student.StudentDegreeIDPointer};
+                    student["StudentDegree"] = JSON.parse(await Parse.Cloud.run("GetDegreeData", param));
+                    param = {"HouseID" : student.StudentHouseIDPointer};
+                    student["StudentHouse"] = JSON.parse(await Parse.Cloud.run("GetHouseData", param));
+
+                    var EquippedCosmeticsData = [];
+                    for(const cosmeticID of student.EquippedCosmetics){
+                        param = {
+                            "CosmeticID" : cosmeticID,
+                        }
+                        EquippedCosmeticsData.push(JSON.parse(await Parse.Cloud.run("GetCosmeticData", param)));
+                    }
+                    student["EquippedCosmeticsData"] = EquippedCosmeticsData;
+                    this.Students.push(student);
+                    
+                    /*
+                        This is replaced since this is loading all data of the student, just do this upon selecting
+                        this.Students.push(JSON.parse(await Parse.Cloud.run("GetStudentData", param)));
+                    */
                 }
+            },
+
+            async getGivers(){
+                this.Givers = [];
+                var teachers = JSON.parse(await Parse.Cloud.run("GetTeachers"));
+                for(var teacher of teachers){
+                    teacher["GiverType"] = "Teacher";
+                }
+                var nt_distributors = JSON.parse(await Parse.Cloud.run("GetNT_Distributors"));
+                for(var nt_distributor of nt_distributors){
+                    nt_distributor["GiverType"] = "NT_Distributor";
+                }
+                this.Givers = this.Givers.concat(teachers, nt_distributors);
             },
             
             //Other Functions
@@ -865,7 +923,16 @@
                 else if(type === "House"){
                     return (this.HouseName === "" || this.HouseBannerIDPointer === "");
                 }
-
+                else if(type === "Student"){
+                    return (this.SelectedStudentID === "" || this.StudentFirstName === "" || this.StudentMiddleName === ""
+                    || this.StudentLastName === "" || this.StudentEmail === "" || this.StudentContactNum === ""
+                    || this.StudentUserName === "" || this.StudentSchoolID === "");
+                }
+                else if(type === "Giver"){
+                    return (this.SelectedGiverID === "" || this.GiverFirstName === "" || this.GiverMiddleName === ""
+                    || this.GiverLastName === "" || this.GiverEmail === "" || this.GiverContactNum === ""
+                    || this.GiverJobTitle === "" || this.GiverUnitIDPointer === "" || this.GiverType === "");
+                }
                 return false;
             },
 
@@ -1605,7 +1672,7 @@
             },
 
             //Student functions
-            selectStudent(student){
+            async selectStudent(student, method){
                 if(this.SelectedStudentID !== student.objectId){
                     this.SelectedStudentID = student.objectId;
                     this.StudentFirstName = student.FirstName;
@@ -1618,13 +1685,50 @@
                     this.StudentUserName = student.UserName;
                     this.StudentAddress = student.Address;
                     this.StudentSchoolID = student.SchoolID;
+                    this.StudentYearLevel = student.YearLevel;
                     this.StudentCoursesIDPointer = student.StudentCoursesIDPointer;
                     this.StudentEquippedCosmeticsData = student.EquippedCosmeticsData;
                     this.openStudent = 1;
+
+                    //GetSelected student other data (badges and trophies)
+                    var param = {"StudentID" : student.objectId};
+                    var studentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
+                    this.StudentAcquiredBadges = studentData.BadgesEarned;
+                    this.StudentChosenTrophies = studentData.ChosenTrophiesData;
+                    this.StudentHouseData = student.StudentHouse;
+
+                    //Fix Chosen Trophies
+                    for(let i = 0; i < 3; ++i){
+                        if(!this.StudentChosenTrophies[i]){
+                            this.StudentChosenTrophies[i] = null;
+                        }
+                    }
+
+                    //Fix Acquired Badges
+                    this.StudentAcquiredBadges.slice(0, 5);
+                    for(let i = 0; i < 5; ++i){
+                        if(!this.StudentAcquiredBadges[i]){
+                            this.StudentAcquiredBadges[i] = null;
+                        }
+                    }
+                    //Sort data by date rewarded(not sure)
+                    this.StudentAcquiredBadges.sort(function(first, second) {
+                        return first.DateRewarded > second.DateRewarded;
+                    });
                 }
                 else{
+                    if(method === "edit"){
+                        //Reselect student to clear changes
+                        this.SelectedStudentID = "";
+                        this.selectStudent(student);
+                        return;
+                    }
                     this.openStudent = 0;
                     this.resetSelectedStudent();
+                }
+                if(method === "delete"){
+                    this.openStudent = 0;
+                    this.deleteStudent();
                 }
             },
 
@@ -1640,8 +1744,209 @@
                 this.StudentUserName = "";
                 this.StudentAddress = "";
                 this.StudentSchoolID = "";
+                this.StudentYearLevel = 1;
                 this.StudentCoursesIDPointer = [];
+                this.StudentCoursesIDToAdd = [];
+                this.StudentCoursesIDToDelete = [];
                 this.StudentEquippedCosmeticsData = [];
+            },
+
+            addStudentCourses(){
+                this.StudentCoursesIDPointer = this.StudentCoursesIDPointer.concat(this.StudentCoursesIDToAdd);
+            },
+
+            deleteStudentCourses(){
+                for(const e of this.StudentCoursesIDToDelete){
+                    var index = this.StudentCoursesIDPointer.indexOf(e);
+                    if (index > -1){
+                        this.StudentCoursesIDPointer.splice(index, 1);
+                        break;
+                    }
+                }
+            },
+
+            async editStudent(){
+                if(this.checkIncompleteData("Student")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "StudentID" : this.SelectedStudentID,
+                    "FirstName" : this.StudentFirstName,
+                    "MiddleName" : this.StudentMiddleName,
+                    "LastName" : this.StudentLastName,
+                    "Email" : this.StudentEmail,
+                    "ContactNumber" : this.StudentContactNum,
+                    "UserName" : this.StudentUserName,
+                    "Address" : this.StudentAddress,
+                    "SchoolID" : this.StudentSchoolID,
+                    "YearLevel" : this.StudentYearLevel,
+                    "StudentUnitIDPointer" : this.StudentUnitIDPointer,
+                    "StudentDegreeIDPointer" : this.StudentDegreeIDPointer,
+                    "StudentCoursesIDPointer" : this.StudentCoursesIDPointer,
+                }
+                await Parse.Cloud.run("EditStudent", params);
+                alert("Edited Student");
+                
+                //Update students
+                this.getStudents();
+            },
+
+            async deleteStudent(){
+                if(this.SelectedStudentID === ""){
+                    alert("Please select a Student to Delete!");
+                    return;
+                }
+                var params = {
+                    "StudentID" : this.SelectedStudentID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteStudent", params);
+                    alert("Deleted Student!");
+                    this.resetSelectedStudent();
+
+                    //Update students
+                    this.getStudents();
+                    //Close student info
+                    this.openStudent = 0;
+                    //Close student popup
+                    this.activePopUp('closePopUp');
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Giver Functions
+            selectGiver(giver, method){
+                if(this.SelectedGiverID !== giver.objectId){
+                    this.SelectedGiverID = giver.objectId;
+                    this.GiverFirstName = giver.FirstName;
+                    this.GiverMiddleName = giver.MiddleName;
+                    this.GiverLastName = giver.LastName;
+                    this.GiverContactNum = giver.ContactNumber;
+                    this.GiverEmail = giver.Email;
+                    this.GiverJobTitle = giver.JobTitle;
+                    this.GiverType = giver.GiverType;
+                    if(this.GiverType === "Teacher"){
+                        this.GiverUnitIDPointer = giver.TeacherUnitIDPointer;
+                        this.GiverCoursesIDPointer = giver.TeacherCoursesIDPointer;
+                    }
+                    else{
+                        this.GiverUnitIDPointer = giver.NT_DistributorUnitIDPointer;
+                    }
+                }
+                if(method === "edit"){
+                    //Reselect giver to clear changes
+                    this.SelectedGiverID = "";
+                    this.selectGiver(giver);
+                    return;
+                }
+                if(method === "delete"){
+                    //Close popup
+                    this.activePopUp('closePopUp');
+                    this.deleteGiver();
+                }
+            },
+
+            resetSelectedGiver(){
+                this.SelectedGiverID = "";
+                this.GiverFirstName = "";
+                this.GiverMiddleName = "";
+                this.GiverLastName = "";
+                this.GiverContactNum = "";
+                this.GiverEmail = "";
+                this.GiverJobTitle = "";
+                this.GiverType = "";
+                
+                this.GiverUnitIDPointer =  "";
+                this.GiverCoursesIDPointer = [];
+                this.GiverCoursesIDToAdd = [];
+                this.GiverCoursesIDToDelete = [];
+            },
+
+            addGiverCourses(){
+                this.GiverCoursesIDPointer = this.GiverCoursesIDPointer.concat(this.GiverCoursesIDToAdd);
+            },
+
+            deleteGiverCourses(){
+                for(const e of this.GiverCoursesIDToDelete){
+                    var index = this.GiverCoursesIDPointer.indexOf(e);
+                    if (index > -1){
+                        this.GiverCoursesIDPointer.splice(index, 1);
+                        break;
+                    }
+                }
+            },
+
+            async editGiver(){
+                if(this.checkIncompleteData("Giver")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var functionName = "";
+                var params = {
+                    "FirstName" : this.GiverFirstName,
+                    "MiddleName" : this.GiverMiddleName,
+                    "LastName" : this.GiverLastName,
+                    "ContactNumber" : this.GiverContactNum,
+                    "Email" : this.GiverEmail,
+                    "JobTitle" : this.GiverJobTitle,
+                }
+                if(this.GiverType === "Teacher"){
+                    params["TeacherID"] = this.SelectedGiverID;
+                    params["TeacherUnitIDPointer"] = this.GiverUnitIDPointer;
+                    params["TeacherCoursesIDPointer"] = this.GiverCoursesIDPointer;
+                    functionName = "EditTeacher";
+                }
+                else{
+                    params["NT_DistributorID"] = this.SelectedGiverID;
+                    params["NT_DistributorUnitIDPointer"] = this.GiverUnitIDPointer;
+                    functionName = "EditNT_Distributor";
+                }
+                await Parse.Cloud.run(functionName, params);
+                alert("Edited Giver");
+                
+                //Update Givers
+                this.getGivers();
+            },
+
+            async deleteGiver(){
+                if(this.SelectedGiverID === ""){
+                    alert("Please select a Giver to Delete!");
+                    return;
+                }
+                var params;
+                var functionName;
+
+                if(this.GiverType === "Teacher"){
+                    params = {
+                        "TeacherID" : this.SelectedGiverID,
+                    };
+                    functionName = "EditTeacher";
+                }
+                else{
+                    params = {
+                        "NT_DistributorID" : this.SelectedGiverID,
+                    };
+                    functionName = "EditNT_Distributor";
+                }
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run(functionName, params);
+                    alert("Deleted Giver!");
+                    this.resetSelectedGiver();
+
+                    //Update givers
+                    this.getGivers();
+                    //Close popup
+                    this.activePopUp('closePopUp');
+                }
+                catch(error){
+                    alert(error.message);
+                }
             },
         },
 
@@ -1656,12 +1961,64 @@
             this.getCosmetics();
             this.getHouses();
             this.getStudents();
+            this.getGivers();
         },
 
         computed: {
             isDisabled() {
                 return this.categoryName.length > 0;
-            }
+            },
+
+            studentQuery(){
+                if(this.StudentSearch !== ""){
+                    return this.Students.filter((student)=>{
+                        var value;
+                        switch(this.StudentSearchType) {
+                            case "FirstName":
+                                value = student.FirstName;
+                                break;
+                            case "LastName":
+                                value = student.LastName;
+                                break;
+                            case "UserName":
+                                value = student.UserName;
+                                break;
+                            case "SchoolID":
+                                value = student.SchoolID;
+                                break;
+                            default:
+                                // code block
+                        }
+                        return this.StudentSearch.toLowerCase().split(' ').every(v => value.toLowerCase().includes(v))
+                    });
+                }
+                else{
+                    return this.Students;
+                }
+            },
+
+            giverQuery(){
+                if(this.GiverSearch !== ""){
+                    return this.Givers.filter((giver)=>{
+                        var value;
+                        switch(this.GiverSearchType) {
+                            case "FirstName":
+                                value = giver.FirstName;
+                                break;
+                            case "LastName":
+                                value = giver.LastName;
+                                break;
+                            default:
+                                // code block
+                        }
+                        return this.GiverSearch.toLowerCase().split(' ').every(v => value.toLowerCase().includes(v))
+                    });
+                }
+                else{
+                    return this.Givers;
+                }
+            },
+
         },
     }
 </script>
