@@ -43,7 +43,7 @@
                 <!--middle section-->
                 <div class="py-[30px] remove-scroll col-span-1 h-[100vh] overflow-y-scroll">
                     <!--units-->
-                    <form class="mb-[20px] grid justify-center">
+                    <form class="grid justify-center py-[30px]" id="units">
                         <legend class="mb-[10px] text-white text-[13px]">UNIT</legend>
                         <input v-model="UnitName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Unit Name" />
                         <input v-model="UnitContactNumber" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="tel" placeholder="Contact Number" />
@@ -60,7 +60,7 @@
                         </div>
                     </form>
                     <!--degrees-->
-                    <form class="mb-[20px] grid justify-center">
+                    <form class="grid justify-center py-[30px]" id="degrees">
                         <legend class="mb-[10px] text-white text-[13px]">DEGREE</legend>
                         <input v-model="DegreeName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Degree Name" />
                         <select v-model="DegreeUnitIDPointer" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
@@ -74,7 +74,7 @@
                         </div>
                     </form>
                     <!--courses-->
-                    <form class="mb-[20px] grid justify-center">
+                    <form class="grid justify-center py-[30px]" id="courses">
                         <legend class="mb-[10px] text-white text-[13px]">COURSE</legend>
                         <input v-model="CourseName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Course Name" />
                         <input v-model="CourseCode" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Course Code" />
@@ -89,7 +89,7 @@
                         </div>
                     </form>
                     <!--badges-->
-                    <form class="mb-[20px] grid justify-center">
+                    <form class="grid justify-center py-[30px]" id="badges">
                         <legend class="mb-[10px] text-white text-[13px]">BADGE</legend>
                         <input v-model="BadgeName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Badge Name" />
                         <input v-model="BadgeDescription" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Description" />
@@ -109,7 +109,7 @@
                         </div>
                     </form>
                     <!--trophies-->
-                    <form class="mb-[20px] grid justify-center">
+                    <form class="grid justify-center py-[30px]" id="trophies">
                         <legend class="mb-[10px] text-white text-[13px]">TROPHY</legend>
                         <input v-model="TrophyName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Trophy Name" />
                         <input v-model="TrophyDescription" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Description" />
@@ -140,7 +140,7 @@
                         </div>
                     </form>
                     <!--title-->
-                    <form class="mb-[20px] grid justify-center">
+                    <form class="grid justify-center py-[30px]" id="title">
                         <legend class="mb-[10px] text-white text-[13px]">ASCENSION TITLE</legend>
                         <input v-model="AscensionName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Ascension Title" />
                         <input v-model="AscensionXpRangeStart" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" min="0" max="940" type="number" placeholder="Starting XP Value" />
@@ -152,7 +152,7 @@
                         </div>
                     </form>
                     <!--cosmetics-->
-                    <form class="mb-[20px] grid justify-center">
+                    <form class="grid justify-center py-[30px] " id="cosmetics">
                         <legend class="mb-[10px] text-white text-[13px]">COSMETICS</legend>
                         <input v-model="CosmeticName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Cosmetic Name" />
                         <select v-model="CosmeticType" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
@@ -163,7 +163,7 @@
                             <option class="text-black" value="CoverPhoto" >Background</option>
                         </select>
                         <input @change="onCosmeticImageSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="CosmeticFileUpload"/>
-                        <div class="w-[400px] grid grid-cols-4 grid-rows-2 gap-2">
+                        <div class="w-[400px] grid grid-cols-4 grid-rows-1 gap-2">
                             <input @click="deleteCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
                             <input @click="setDefaultCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="SET DEFAULT" title="Set default for user's cosmetic" />
                             <input @click="editCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
@@ -171,7 +171,7 @@
                         </div>
                     </form>
                     <!--house-->
-                    <form class="mb-[20px] grid justify-center">
+                    <form class="grid justify-center py-[30px]" id="house">
                         <legend class="mb-[10px] text-white text-[13px]">HOUSE</legend>
                         <input v-model="HouseName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="House Name" />
                         <select v-model="HouseBannerIDPointer" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
@@ -189,14 +189,14 @@
                 <div class="col-span-1">
                     <!--sub navigation bar-->
                     <nav class="grid grid-cols-8 col-span-1">
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('units')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'units', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'units'}" title="List of Units, Degrees, and Courses">UNITS</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('degrees')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'degrees', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'degrees'}" title="List of Units, Degrees, and Courses">DEGREES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('courses')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'courses', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'courses'}" title="List of Units, Degrees, and Courses">COURSES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('badges')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'houses', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'houses'}" title="List of Badges and Trophies">BADGES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('trophies')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'trophies', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'trophies'}" title="List of Badges and Trophies">TROPHIES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('titles')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'titles', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'titles'}" title="List of Ascension Titles">TITLES</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('cosmetics')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'cosmetics', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'cosmetics'}" title="List of Houses">COSMETICS</button>
-                        <button class="text-white text-[10px] py-[10px]" v-on:click="activeModifyTab('houses')" v-bind:class="{'text-white border-b-[1px] border-gray hover:text-gold cursor-pointer': openModifyTab !== 'houses', 'text-gold border-b-[1px] border-gold cursor-default': openModifyTab === 'houses'}" title="List of Houses">HOUSES</button>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'units', 'text-gold border-b-[1px] border-gold': openModifyTab === 'units'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('units')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'units', 'text-gold cursor-default': openModifyTab === 'units'}" href="#units" title="List of Units">UNITS</a></div>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'degrees', 'text-gold border-b-[1px] border-gold': openModifyTab === 'degrees'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('degrees')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'degrees', 'text-gold cursor-default': openModifyTab === 'degrees'}" href="#degrees" title="List of Degrees">DEGREES</a></div>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'courses', 'text-gold border-b-[1px] border-gold': openModifyTab === 'courses'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('courses')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'courses', 'text-gold cursor-default': openModifyTab === 'courses'}" href="#courses" title="List of Courses">COURSES</a></div>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'badges', 'text-gold border-b-[1px] border-gold': openModifyTab === 'badges'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('badges')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'badges', 'text-gold cursor-default': openModifyTab === 'badges'}" href="#badges" title="List of Badges">BADGES</a></div>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'trophies', 'text-gold border-b-[1px] border-gold': openModifyTab === 'trophies'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('trophies')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'trophies', 'text-gold cursor-default': openModifyTab === 'trophies'}" href="#trophies" title="List of Trophies">TROPHIES</a></div>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'titles', 'text-gold border-b-[1px] border-gold': openModifyTab === 'titles'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('titles')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'titles', 'text-gold cursor-default': openModifyTab === 'titles'}" href="#title" title="List of Ascension Titles">TITLES</a></div>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'cosmetics', 'text-gold border-b-[1px] border-gold': openModifyTab === 'cosmetics'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('cosmetics')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'cosmetics', 'text-gold cursor-default': openModifyTab === 'cosmetics'}" href="#cosmetics" title="List of Cosmetics">COSMETICS</a></div>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'houses', 'text-gold border-b-[1px] border-gold': openModifyTab === 'houses'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('houses')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'houses', 'text-gold cursor-default': openModifyTab === 'houses'}" href="#house" title="List of Houses">HOUSES</a></div>
                     </nav>
                     <!--units tab-->
                     <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'units', 'block': openModifyTab === 'units'}">
@@ -264,8 +264,8 @@
                                     </div>
                                     <!--image and text-->
                                     <div class="flex col-span-7 cursor-default">
-                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px]">
-                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="Badge" v-bind:src="badge.BadgeImage" />
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="Badge" v-bind:src="badge.BadgeImage" />
                                         </div>
                                         <div class="flex justify-center items-center w-[auto]">{{badge.BadgeName}}</div>
                                     </div>
@@ -289,8 +289,8 @@
                                     </div>
                                     <!--image and text-->
                                     <div class="flex col-span-7 cursor-default">
-                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px]">
-                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="Trophy" v-bind:src="trophy.TrophyImage" />
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="Trophy" v-bind:src="trophy.TrophyImage" />
                                         </div>
                                         <div class="flex justify-center items-center w-[auto]">{{trophy.TrophyName}}</div>
                                     </div>
@@ -339,8 +339,8 @@
                                     </div>
                                     <!--image and text-->
                                     <div class="flex col-span-7 cursor-default">
-                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px]">
-                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="Avatar" v-bind:src="cosmetic.CosmeticImage" />
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="Avatar" v-bind:src="cosmetic.CosmeticImage" />
                                         </div>
                                         <div class="flex justify-center items-center w-[auto]">{{cosmetic.CosmeticName}}</div>
                                     </div>
@@ -365,8 +365,8 @@
                                     </div>
                                     <!--image and text-->
                                     <div class="flex col-span-7 cursor-default">
-                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px]">
-                                            <img class="w-[20px] h-[auto]" loading="lazy" alt="House Logo" v-bind:src="house.HouseBanner" />
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="House Logo" v-bind:src="house.HouseBanner" />
                                         </div>
                                         <div class="flex justify-center items-center w-[auto]">{{house.HouseName}}</div>
                                     </div>
@@ -388,7 +388,7 @@
                         <!--user image-->
                         <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-5 flex items-center justify-start">
                             <div class="relative flex items-center justify-center w-[150px] h-[150px] mr-[5px]">
-                                <img v-if="SelectedStudentID !== ''" class="border-[5px] border-white absolute h-[120px] w-[120px] rounded-full" loading="lazy" alt="Avatar" v-bind:src="StudentEquippedCosmeticsData[0].CosmeticImage"/>
+                                <img v-if="SelectedStudentID !== ''" class="border-[5px] border-white absolute h-[120px] w-[120px] rounded-full" alt="Avatar" v-bind:src="StudentEquippedCosmeticsData[0].CosmeticImage"/>
                             </div>
                             <div>
                                 <span class="block text-[22px] text-gold">{{StudentUserName}}</span>
@@ -400,21 +400,21 @@
                         </div>
                         <!--house banner-->
                         <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-1 flex items-center justify-center">
-                            <img class="w-[60px] h-[auto]" loading="lazy" title="House Banner" alt="House Banner" v-bind:src="StudentHouseData.HouseBanner" />
+                            <img class="w-[60px] h-[auto]" title="House Banner" alt="House Banner" v-bind:src="StudentHouseData.HouseBanner" />
                         </div>
                         <!--top three trophies and recently obtained badges-->
                         <div v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-3 flex flex-col items-center justify-center">
                                 <!--trophies-->
                                 <div class="flex flex-row gap-3 items-center justify-center">
                                     <template v-for="trophy in StudentChosenTrophies" :key="trophy">
-                                        <img v-if="trophy !== null" class="col-span-1 inline-block w-[50px] h-[auto]" v-bind:title="trophy.TrophyName" loading="lazy"  v-bind:alt="trophy.TrophyName" v-bind:src="trophy.TrophyImage" />
+                                        <img v-if="trophy !== null" class="col-span-1 inline-block w-[50px] h-[auto]" v-bind:title="trophy.TrophyName"  v-bind:alt="trophy.TrophyName" v-bind:src="trophy.TrophyImage" />
                                     </template>
                                 </div>
                                 <!--badges-->
                                 <span class="block border-gray border-b-[1px] my-[5px] mx-[auto] leading-[0.1px] w-[250px]"></span> <!--separator-->
                                 <div class="flex flex-row gap-2 items-center justify-center">
                                     <template v-for="badge in StudentAcquiredBadges" :key="badge">
-                                        <img v-if="badge !== null" class="col-span-1 inline-block w-[35px] h-[auto]" v-bind:title="badge.BadgeName" loading="lazy" v-bind:alt="badge.BadgeName" v-bind:src="badge.BadgeImage" />
+                                        <img v-if="badge !== null" class="col-span-1 inline-block w-[35px] h-[auto]" v-bind:title="badge.BadgeName" v-bind:alt="badge.BadgeName" v-bind:src="badge.BadgeImage" />
                                     </template>
                                 </div>
                         </div>
@@ -450,7 +450,7 @@
                                 </td>
                                 <td class="w-[320px] text-[12px] text-left">
                                     <div class="flex items-center justify-start">
-                                        <img class="border-[2px] h-[40px] w-[40px] mr-[10px] rounded-full" loading="lazy" alt="Avatar" v-bind:src="student.EquippedCosmeticsData[0].CosmeticImage">
+                                        <img class="border-[2px] h-[40px] w-[40px] mr-[10px] rounded-full" alt="Avatar" v-bind:src="student.EquippedCosmeticsData[0].CosmeticImage">
                                         <div>
                                             <span class="block my-[-3px] text-[13px]">{{student.UserName}}</span>
                                             <span class="block my-[-3px] text-[12px]">{{student.FirstName}} {{student.MiddleName}} {{student.LastName}}</span>    
@@ -634,7 +634,7 @@
         data(){
             return{
                 //Frontend Variables
-                openTab: 'student', //modify, student, giver
+                openTab: 'modify', //modify, student, giver
                 openModifyTab: 'units', //units, degrees, courses, trophies, badges, titles, cosmetics, houses
                 popUp: '', //editStudent, closePopUp
                 openStudent: 0,
