@@ -434,8 +434,8 @@
         Purpose: automatically gives details about the trophy/badge stored in "RewardData"
 
         Function: GetStaffEmails()
-        Parameters: Directory leading to the txt file (e.g "C:\\Dev_Projects\\teaching.txt")
-        Purpose: Gets the content of the text file, splits it, and puts the emails in an array, and returns the array
+        Parameters: Directory leading to the JSON file (e.g "C:\\Dev_Projects\\teaching.json")
+        Purpose: Gets the content of the JSON file and returns an object
 
         Function: IdentifyUserType()
         Parameters: teacherEmails, nt_DistributorEmails, email  (third parameter is the current user's email)
