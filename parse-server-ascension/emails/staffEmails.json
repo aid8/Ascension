@@ -1,0 +1,13 @@
+{
+    "teacherEmails": [
+        "teacher1@gbox.adnu.edu.ph",
+        "teacher2@gbox.adnu.edu.ph",
+        "teacher3@gbox.adnu.edu.ph"
+    ],
+
+    "nt_DistributorEmails": [
+        "nt1@gbox.adnu.edu.ph",
+        "nt2@gbox.adnu.edu.ph",
+        "nt3@gbox.adnu.edu.ph"
+    ]
+}

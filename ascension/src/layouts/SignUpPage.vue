@@ -24,11 +24,11 @@
             <section class="flex items-center justify-center pt-[50px]">
                 <form class="flex flex-col items-center justify-center gap-2 bg-black/20 w-[400px] border-[1px] border-gray px-[30px] py-[20px]">
                     <img class="w-[180px] py-[20px] h-auto" src="../assets/img/logo/text-logo-default.png" />
-                    <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="First Name" />
-                    <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Middle Name" />
-                    <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Last Name" />
-                    <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="email" placeholder="Email" />
-                    <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="tel" placeholder="Contact Number" />
+                    <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="First Name" v-model="FirstName" readonly/>
+                    <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Middle Name" v-model="MiddleName"/>
+                    <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Last Name" v-model="LastName" readonly/>
+                    <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="email" placeholder="Email" v-model="Email" readonly/>
+                    <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="tel" placeholder="Contact Number" v-model="ContactNumber" />
                     <div class="flex flex-row gap-3 items-center justify-center">
                         <input checked type="radio" id="student" v-on:click="showRole('student')" name='UserType' /><label for="student" class="text-[10px] text-white">STUDENT</label>
                         <input type="radio" id="teacher" v-on:click="showRole('teacher')" name='UserType' /><label  for="teacher" class="text-[10px] text-white">TEACHER</label>
@@ -39,8 +39,8 @@
                     <div class="flex flex-col items-center justify-center gap-2 w-full" v-bind:class="{'hidden': selectedRole !== 'student', 'flex': selectedRole === 'student'}">
                         <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Address" />
                         <div class="flex flex-row gap-2 items-center justify-center">
-                            <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Username" />
-                            <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="School ID" />
+                            <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Username" v-model="UserName"/>
+                            <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="School ID" v-model="SchoolID" />
                             <select class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full">
                                 <option hidden>Year Level</option>
                                 <option class="text-black" value="1">1</option>
@@ -117,7 +117,22 @@
     export default {
         data(){
             return{
+                //VARIABLES USED IN FRONT-END
                 selectedRole: 'student', //student, teacher, ntDistributor
+                userType: '',
+                FirstName: Parse.User.current().get("firstname"),
+                MiddleName: '',
+                LastName: Parse.User.current().get("lastname"),
+                Email: Parse.User.current().get("email"),
+                ContactNumber: '',
+                UserName: '',
+                Address: '',
+                SchoolID: '',
+                YearLevel: '',
+
+                //OTHER VARIABLES
+                StaffEmails: [],
+                
 
                 //BACKEND VARIABLES
                 currentUser: Parse.User.current(),
@@ -131,8 +146,21 @@
             },
         },
 
-        beforeMount(){
+        async beforeMount(){
             if (this.currentUser) {
+                console.log("THERE IS A USER")
+                //Preparing values of Teaching and NonTeaching Arrays (line 129 and 130)
+                //For getting staff emails for User Type assignment
+                //Change directory if needed
+                var param = {"FilePath": "emails/staffEmails.json"};
+                this.StaffEmails = await Parse.Cloud.run("GetStaffEmails", param)
+                param = {
+                    "teacherEmails": this.StaffEmails.teacherEmails,
+                    "nt_DistributorEmails": this.StaffEmails.nt_DistributorEmails,
+                    "email": this.Email,
+                }
+                this.selectedRole = await Parse.Cloud.run("IdentifyUserType", param)
+                console.log(this.selectedRole)
                 //Redirect to StudentHomePage if logged in and has data
                 if(this.currentUser.get("AccountType") === "Student"){
                     window.location.href ='http://' + this.host + '/StudentHomePage';

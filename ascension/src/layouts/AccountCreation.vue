@@ -12,11 +12,11 @@
     <br>
 
     <p> What are you? </p>
-    <input type="radio" id="student" value="Student" v-model="userType" />
+    <input type="radio" id="student" value="Student" v-model="userType"/>
     <label for="student">Student</label>
     <input type="radio" id="teacher" value="Teacher" v-model="userType" />
     <label for="teacher">Teacher</label>
-    <input type="radio" id="nt_distributor" value="NT_Distributor" v-model="userType" />
+    <input type="radio" id="nt_distributor" value="NT_Distributor" v-model="userType"/>
     <label for="nt_distributor">Non-teaching Distributor</label>
     
     <div v-if="userType === 'Student'">
@@ -100,6 +100,7 @@
 
 <script>
     import Parse from 'parse';
+
     export default{
         data(){
             return{
@@ -124,6 +125,8 @@
                 Units: [],
                 Degrees: [],
                 Courses: [],
+
+                StaffEmails: [],
             }
         },
         components:{
@@ -134,6 +137,19 @@
             if (currentUser) {
                 console.log("Logged in");
                 console.log(currentUser);
+
+                //Preparing values of Teaching and NonTeaching Arrays (line 129 and 130)
+                //For getting staff emails for User Type assignment
+                //Change directory if needed
+
+                var param = {"FilePath": "emails/staffEmails.json"};
+                this.StaffEmails = await Parse.Cloud.run("GetStaffEmails", param)
+                param = {
+                    "teacherEmails": this.StaffEmails.teacherEmails,
+                    "nt_DistributorEmails": this.StaffEmails.nt_DistributorEmails,
+                    "email": this.Email,
+                }
+                this.userType = await Parse.Cloud.run("IdentifyUserType", param)
             }
             else{
                 console.log("User is not logged in");

@@ -1,3 +1,5 @@
+const { request } = require("http");
+
 Parse.Cloud.define("GoogleSignIn", async (request) => {
     const google = require("googleapis").google;
     // Google's OAuth2 client
@@ -105,3 +107,24 @@ Parse.Cloud.define("GetUpdatedUserData", async(request) => {
   const res = await query.first();
   return JSON.stringify(res); 
 });
+
+//Input must be a path(string) of a txt file (e.g. "/example.txt")
+Parse.Cloud.define("GetStaffEmails", (request) =>{
+  const {readFileSync} = require('fs');
+  const argument = request.params
+
+  const staffEmails = JSON.parse(readFileSync(argument.FilePath, "utf-8"))
+  return staffEmails; //an object
+});
+
+//takes an array of teacher emails (teacher and NonTeacher)
+Parse.Cloud.define("IdentifyUserType", (request) =>{
+  const argument = request.params
+  const userEmail = argument.email
+  if(argument.teacherEmails.indexOf(userEmail) == -1){
+    return (argument.nt_DistributorEmails.indexOf(userEmail) == -1) ? "Student" : "NT_Distributor"
+  }
+  else{
+    return "Teacher"
+  }
+})
