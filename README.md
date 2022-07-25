@@ -432,3 +432,11 @@
         Function: GetRewardData()
         Parameters: RewardID
         Purpose: automatically gives details about the trophy/badge stored in "RewardData"
+
+        Function: GetStaffEmails()
+        Parameters: Directory leading to the txt file (e.g "C:\\Dev_Projects\\teaching.txt")
+        Purpose: Gets the content of the text file, splits it, and puts the emails in an array, and returns the array
+
+        Function: IdentifyUserType()
+        Parameters: teacherEmails, nt_DistributorEmails, email  (third parameter is the current user's email)
+        Purpose: Checks if the current user is a teacher, NT_Distributor or a student. Returns "Teacher", "Student", or "NT_Distributor"
