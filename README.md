@@ -301,6 +301,11 @@
         Function: SetDefaultCosmetic()
         Parameters: CosmeticType, CosmeticID
         Purpose: Set a cosmetic of type CosmeticType as the default cosmetic
+        
+        Function: GetUnacquiredCosmetic()
+        Parameters: CosmeticType, StudentID
+        Purpose: Returns cosmetics with CosmeticType that are still not unlocked by student.
+
 
     ASCENSION TITLE ENTITY
         Function: AddAscensionTitle()

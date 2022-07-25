@@ -187,3 +187,35 @@ Parse.Cloud.define("SetDefaultCosmetic", async(request) => {
     await Parse.Cloud.run("EditGlobal", param);
     console.log("Successfully Changed Default Cosmetic!");
 });
+
+//StudentID, CosmeticType
+Parse.Cloud.define("GetUnacquiredCosmetics", async(request) => {
+    //Get Cosmetics
+    const Cosmetic = Parse.Object.extend("Cosmetic");
+    const query = new Parse.Query(Cosmetic);
+    const argument = request.params;
+    query.equalTo("CosmeticType", argument.CosmeticType);
+    const res = await query.find();
+
+    //Gets the Student
+    const Student = Parse.Object.extend("Student");
+    const query1 = new Parse.Query(Student);
+    query1.equalTo("objectId", argument.StudentID);
+    const res1 = await query1.first();
+
+    var cosmeticName = {
+        "Avatar" : "AvatarsIDUnlocked",
+        "Frame" : "FrameIDUnlocked",
+        "CoverPhoto" : "CoverPhotoIDUnlocked",
+    };
+
+    const studentCosmetics = res1.get(cosmeticName[argument.CosmeticType]);
+    
+    var unacquiredCosmetics = [];
+    for(const cosmetic of res){
+        if(!(studentCosmetics.includes(cosmetic.id))){
+            unacquiredCosmetics.push(cosmetic);
+        }
+    }
+    return JSON.stringify(unacquiredCosmetics);
+});

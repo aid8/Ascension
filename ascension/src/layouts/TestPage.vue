@@ -1329,6 +1329,7 @@
                     this.TrophyPoints = trophy.TrophyPoints;
                     this.TrophyType = trophy.TrophyType;
                     this.TrophyImage = trophy.TrophyImage;
+                    this.BadgesIDNeeded = trophy.BadgesIDNeeded;
                     this.TrophyDesignInspiration = trophy.TrophyDesignInspiration;
                 }
                 else{
@@ -1345,6 +1346,7 @@
                 this.TrophyImage = "";
                 this.TrophyImageName = "";
                 this.TrophyDesignInspiration = "";
+                this.BadgesIDNeeded = [];
                 this.$refs.TrophyFileUpload.value = null;
             },
 

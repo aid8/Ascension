@@ -24,7 +24,7 @@
         <div class="absolute h-[100vh] w-[100vw]">
             <div class="absolute shadow-profile h-[100vh] w-[100vw]">
             </div>
-            <img class="h-[100vh] w-[100vw]" src="../assets/img/background/bg-profile-2.jpg" />
+            <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="h-[100vh] w-[100vw]" v-bind:src="StudentData.EquippedCosmeticsData[2].CosmeticImage" />
         </div>
         <main class="min-w-[1000px]">
             <!--pop up tab-->
@@ -32,11 +32,11 @@
                 <div class="relative flex flex-col justify-center items-center h-[500px] w-[1000px] bg-black/20 border-[1px] border-gray">
                     <!--header navigation bar-->
                     <div class="absolute py-[10px] flex flex-row gap-3 top-0 left-[10px] z-20">
-                        <a class="text-white hover:text-gold text-[13px]" v-on:click="activePopUpMenu(false)" href="#"><i class="fa-solid fa-angle-left"></i></a>
+                        <button @click="resetChanges()" class="text-white hover:text-gold text-[13px]" v-on:click="activePopUpMenu(false)" href="#"><i class="fa-solid fa-angle-left"></i></button>
                         <span class="text-white text-[13px]">EDIT PROFILE</span>
                     </div>
                     <div class="absolute py-[10px] flex top-0 right-[10px] z-20">
-                        <a class="text-white hover:text-gold text-[13px]" href="#"><i class="fa-solid fa-floppy-disk"></i> SAVE</a>
+                        <button @click="saveChanges()" class="text-white hover:text-gold text-[13px]"><i class="fa-solid fa-floppy-disk"></i> SAVE</button>
                     </div>
 
                     <div class="relative flex flex-row gap-5 justify-center items-center h-full w-full z-10">
@@ -51,85 +51,84 @@
                         <div class="block h-[80%] w-[48%] border-[1px] border-gray bg-black/20 text-center p-[10px] remove-scroll overflow-y-scroll">
                             <!--avatar inventory-->
                             <div class="text-left w-auto" v-bind:class="{'hidden': openPopUpTab !== 'avatars', 'block': openPopUpTab === 'avatars'}">
-                                <div class="inline-flex items-center justify-center h-[70px] w-[70px] m-[10px] border-[1px] border-gray"><img class="w-auto h-auto" src="../assets/img/avatar/avatar.jpg" /></div>
+                                <div v-for="avatar in StudentData.AvatarsUnlocked" :key="avatar" class="inline-flex items-center justify-center h-[70px] w-[70px] m-[10px] border-[1px] border-gray"><img @click="selectItem('Avatar', avatar)" class="w-auto h-auto" v-bind:src="avatar.CosmeticImage" /></div>
                             </div>
                             <!--frame inventory-->
                             <div class="text-left w-auto" v-bind:class="{'hidden': openPopUpTab !== 'frames', 'block': openPopUpTab === 'frames'}">
-                                <div class="inline-flex items-center justify-center h-[70px] w-[70px] m-[10px] border-[1px] border-gray"><img class="w-auto h-auto" src="../assets/img/frames/frame_sample.png" /></div>
+                                <div v-for="frame in StudentData.FrameUnlocked" :key="frame" class="inline-flex items-center justify-center h-[70px] w-[70px] m-[10px] border-[1px] border-gray"><img @click="selectItem('Frame', frame)" class="w-auto h-auto" v-bind:src="frame.CosmeticImage" /></div>
                             </div>
                             <!--background inventory-->
                             <div class="text-left w-auto" v-bind:class="{'hidden': openPopUpTab !== 'backgrounds', 'block': openPopUpTab === 'backgrounds'}">
-                                <div class="inline-flex items-center justify-center h-[70px] w-[70px] m-[10px] border-[1px] border-gray"><img class="w-auto h-auto" src="../assets/img/background/bg-profile.jpg" /></div>
+                                <div v-for="coverPhoto in StudentData.CoverPhotoUnlocked" :key="coverPhoto" class="inline-flex items-center justify-center h-[70px] w-[70px] m-[10px] border-[1px] border-gray"><img @click="selectItem('CoverPhoto', coverPhoto)" class="w-auto h-auto" v-bind:src="coverPhoto.CosmeticImage" /></div>
                             </div>
                             <!--t3trophies inventory-->
                             <div class="text-left w-auto" v-bind:class="{'hidden': openPopUpTab !== 't3trophies', 'block': openPopUpTab === 't3trophies'}">
-                                <div class="inline-flex items-center justify-center h-[70px] w-[70px] m-[10px] border-[1px] border-gray"><img class="w-auto h-auto" src="../assets/img/trophies/trophy_1.png" /></div>
+                                <div v-for="trophy in StudentData.TrophiesUnlocked" :key="trophy" class="inline-flex items-center justify-center h-[70px] w-[70px] m-[10px] border-[1px] border-gray"><img @click="selectItem('Trophy', trophy)" class="w-auto h-auto" v-bind:src="trophy.TrophyImage" /></div>
                             </div>
                         </div>
                         <!--selected-->
                         <div class="flex items-center justify-center h-[80%] w-[25%]">
                             <!--selected avatar-->
-                            <div class="flex flex-col gap-5 items-center justify-center h-full w-full"  v-bind:class="{'hidden': openPopUpTab !== 'avatars', 'inline-flex': openPopUpTab === 'avatars'}">
+                            <div v-if="SelectedAvatarID !== ''" class="flex flex-col gap-5 items-center justify-center h-full w-full"  v-bind:class="{'hidden': openPopUpTab !== 'avatars', 'inline-flex': openPopUpTab === 'avatars'}">
                                 <div class="flex items-center justify-center bg-black/20 h-[220px] w-[220px] border-[1px] border-gray">
-                                    <img class="h-auto w-auto" src="../assets/img/avatar/avatar.jpg" />
+                                    <img class="h-auto w-auto" v-bind:src="SelectedAvatarData.CosmeticImage" />
                                 </div>
-                                <button class="bg-blue text-white text-[10px] p-[10px] w-[220px]">CHANGE</button>
+                                <button v-if="SelectedAvatarID !== EquippedCosmeticChange[0]" @click="changeItem('Avatar')" class="bg-blue text-white text-[10px] p-[10px] w-[220px]">CHANGE</button>
                                 <div class="flex flex-col w-[220px] text-center">
-                                    <span class="text-gold text-[13px]">Date Acquision</span>
-                                    <p class="text-white text-[12px]">July 22, 2022</p>
+                                    <span class="text-gold text-[13px]">Avatar Name</span>
+                                    <p class="text-white text-[12px]">{{SelectedAvatarData.CosmeticName}}</p>
                                 </div>
                             </div>
                             <!--selected frames-->
-                            <div class="flex flex-col gap-5 items-center justify-center h-full w-full"  v-bind:class="{'hidden': openPopUpTab !== 'frames', 'inline-flex': openPopUpTab === 'frames'}">
+                            <div v-if="SelectedFrameID !== ''" class="flex flex-col gap-5 items-center justify-center h-full w-full"  v-bind:class="{'hidden': openPopUpTab !== 'frames', 'inline-flex': openPopUpTab === 'frames'}">
                                 <div class="flex items-center justify-center bg-black/20 h-[220px] w-[220px] border-[1px] border-gray">
-                                    <img class="h-auto w-auto" src="../assets/img/frames/frame_sample.png" />
+                                    <img class="h-auto w-auto" v-bind:src="SelectedFrameData.CosmeticImage" />
                                 </div>
-                                <button class="bg-blue text-white text-[10px] p-[10px] w-[220px]">CHANGE</button>
+                                <button v-if="SelectedFrameID !== EquippedCosmeticChange[1]" @click="changeItem('Frame')" class="bg-blue text-white text-[10px] p-[10px] w-[220px]">CHANGE</button>
                                 <div class="flex flex-col w-[220px] text-center">
-                                    <span class="text-gold text-[13px]">Date Acquision</span>
-                                    <p class="text-white text-[12px]">July 22, 2022</p>
+                                    <span class="text-gold text-[13px]">Frame Name</span>
+                                    <p class="text-white text-[12px]">{{SelectedFrameData.CosmeticName}}</p>
                                 </div>
                             </div>
                             <!--selected background-->
-                            <div class="flex flex-col gap-5 items-center justify-center h-full w-full"  v-bind:class="{'hidden': openPopUpTab !== 'backgrounds', 'inline-flex': openPopUpTab === 'backgrounds'}">
+                            <div v-if="SelectedCoverPhotoID !== ''" class="flex flex-col gap-5 items-center justify-center h-full w-full"  v-bind:class="{'hidden': openPopUpTab !== 'backgrounds', 'inline-flex': openPopUpTab === 'backgrounds'}">
                                 <div class="flex items-center justify-center bg-black/20 h-[220px] w-[220px] border-[1px] border-gray">
-                                    <img class="h-auto w-auto" src="../assets/img/background/bg-profile.jpg" />
+                                    <img class="h-auto w-auto" v-bind:src="SelectedCoverPhotoData.CosmeticImage" />
                                 </div>
-                                <button class="bg-blue text-white text-[10px] p-[10px] w-[220px]">CHANGE</button>
+                                <button v-if="SelectedCoverPhotoID !== EquippedCosmeticChange[2]" @click="changeItem('CoverPhoto')" class="bg-blue text-white text-[10px] p-[10px] w-[220px]">CHANGE</button>
                                 <div class="flex flex-col w-[220px] text-center">
-                                    <span class="text-gold text-[13px]">Date Acquision</span>
-                                    <p class="text-white text-[12px]">July 22, 2022</p>
+                                    <span class="text-gold text-[13px]">Background Name</span>
+                                    <p class="text-white text-[12px]">{{SelectedCoverPhotoData.CosmeticName}}</p>
                                 </div>
                             </div>
                             <!--selected t3trophies-->
                             <div class="flex flex-col gap-5 items-center justify-center h-full w-full"  v-bind:class="{'hidden': openPopUpTab !== 't3trophies', 'inline-flex': openPopUpTab === 't3trophies'}">
+                                <div v-if="SelectedTrophyID !== ''"  class="flex items-center justify-center bg-black/20 h-[65px] w-[65px] border-[1px] border-gray">
+                                    <img class="h-auto w-auto" v-bind:src="SelectedTrophyData.TrophyImage" />
+                                </div>
+                                <div v-if="SelectedTrophyID !== ''" class="flex flex-col w-[220px] text-center">
+                                    <span class="text-gold text-[13px]">Date Acquisition</span>
+                                    <p class="text-white text-[12px]">{{SelectedTrophyData.DateRewarded}}</p>
+                                </div>
                                 <div class="flex flex-row gap-3 items-center justify-center">
                                     <div class="flex flex-row gap-3 items-center justify-center">
-                                        <div class="flex flex-col items-center justify-center gap-2">
+                                        <div v-for="(trophy, i) in ChosenTrophiesDataChange" :key="trophy" class="flex flex-col items-center justify-center gap-2">
                                             <div class="flex items-center justify-center bg-black/20 h-[65px] w-[65px] border-[1px] border-gray">
-                                                <a href="#"><img class="h-auto w-auto" src="../assets/img/trophies/trophy_1.png" /></a>
+                                                <button v-if="trophy !== null"><img class="h-auto w-auto" v-bind:src="trophy.TrophyImage" /></button>
                                             </div>
-                                            <span class="text-white text-[13px]">T1</span>
+                                            <span class="text-white text-[13px]">T{{i+1}}</span>
                                         </div>
-                                        <div class="flex flex-col items-center justify-center gap-2">
-                                            <div class="flex items-center justify-center bg-black/20 h-[65px] w-[65px] border-[1px] border-gray">
-                                                <a href="#"><img class="h-auto w-auto" src="../assets/img/trophies/trophy_1.png" /></a>
-                                            </div>
-                                            <span class="text-white text-[13px]">T2</span>
-                                        </div>
-                                        <div class="flex flex-col items-center justify-center gap-2">
-                                            <div class="flex items-center justify-center bg-black/20 h-[65px] w-[65px] border-[1px] border-gray">
-                                                <a href="#"><img class="h-auto w-auto" src="../assets/img/trophies/trophy_1.png" /></a>
-                                            </div>
-                                            <span class="text-white text-[13px]">T3</span>
-                                        </div>
+
                                     </div>
                                 </div>
-                                <button class="bg-blue text-white text-[10px] p-[10px] w-[220px]">CHANGE</button>
-                                <div class="flex flex-col w-[220px] text-center">
-                                    <span class="text-gold text-[13px]">Date Acquision</span>
-                                    <p class="text-white text-[12px]">July 22, 2022</p>
-                                </div>
+                                <select v-model="SelectedTrophySlot" class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[150px] px-[10px]">
+                                    <option hidden value=-1>Select Slot</option>
+                                    <option class="text-black" value=0>T1</option>
+                                    <option class="text-black" value=1>T2</option>
+                                    <option class="text-black" value=2>T3</option>
+                                </select>
+                                <button @click="changeItem('TrophyChange')" class="bg-blue text-white text-[10px] p-[10px] w-[110px]">CHANGE</button>
+                                <button @click="changeItem('TrophyRemove')" class="bg-blue text-white text-[10px] p-[10px] w-[110px]">REMOVE</button>
                             </div>
                         </div>
                     </div>
@@ -155,8 +154,8 @@
             </nav>
             <!--profile tab-->
             <nav class="absolute flex flex-row items-center justify-start text-[12px] left-0 gap-5 py-[10px] px-[20px] z-10">
-                <a class="text-white text-[12px] hover:text-gold" v-on:click="activeTab('summary')" v-bind:class="{'text-gold': openTab === 'summary'}" href="#">SUMMARY</a>
-                <a class="text-white text-[12px] hover:text-gold" v-on:click="activeTab('collection')" v-bind:class="{'text-gold': openTab === 'collection'}" href="#">COLLECTION</a>
+                <a @click="resetChanges()" class="text-white text-[12px] hover:text-gold" v-on:click="activeTab('summary')" v-bind:class="{'text-gold': openTab === 'summary'}" href="#">SUMMARY</a>
+                <a @click="resetChanges()" class="text-white text-[12px] hover:text-gold" v-on:click="activeTab('collection')" v-bind:class="{'text-gold': openTab === 'collection'}" href="#">COLLECTION</a>
             </nav>
             <!--summary-->
             <div class="absolute top-0 min-w-[1000px] w-[100%] h-[100%] z-0" v-bind:class="{'hidden': openTab !== 'summary', 'flex': openTab === 'summary'}">
@@ -168,13 +167,13 @@
                             <div class="flex flex-row items-end gap-5 h-full overflow-y-scroll remove-scroll">
                                 <div class="relative flex items-center justify-center">
                                     <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-white w-[125px] h-[auto] rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" alt="Avatar" />
-                                    <img class="absolute inset-0 m-auto border-white w-[125px] h-[auto] rounded-full" src="../assets/img/frames/frame_sample.png" />
+                                    <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto border-white w-[125px] h-[auto] rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[1].CosmeticImage" />
                                 </div>
                                 <div class="flex flex-col items-start justify-center">
                                     <span class="text-gold text-[20px]">{{StudentData.UserName}}</span>
                                     <span class="text-white text-[15px]">{{StudentData.FirstName}} {{StudentData.MiddleName}} {{StudentData.LastName}}</span>
-                                    <span class="text-white text-[11px]">Official Knight of the Round Order (900/1020)</span>
-                                    <progress class="bg-gray text-gold w-[250px] h-[5px]" value="900" max="1020"></progress>
+                                    <span class="text-white text-[11px]">{{StudentData.AscensionTitle}} ({{StudentData.XP}}/{{AscensionTitleData.AscensionXpRangeCap}})</span>
+                                    <progress class="bg-gray text-gold w-[250px] h-[5px]" v-bind:value="StudentData.XP" v-bind:max="AscensionTitleData.AscensionXpRangeCap"></progress>
                                     <div class="flex flex-row gap-5 mt-[10px]">
                                         <div class="text-gold flex flex-col items-center justify-center gap-1 cursor-default" title="Total trophies">
                                             <span v-if="StudentData.TrophiesIDUnlocked !== undefined" class="text-[12px]">{{StudentData.TrophiesIDUnlocked.length}}</span>
@@ -195,14 +194,14 @@
                             <div class="flex flex-row gap-5 items-end justify-center min-w-[500px] w-auto h-full overflow-hidden">
                                 <div class="flex flex-col items-center justify-center">
                                     <div class="flex flex-row gap-3 items-center justify-center">
-                                        <template v-for="trophy in this.StudentData.StudentChosenTrophies" :key="trophy">
+                                        <template v-for="trophy in this.StudentData.ChosenTrophiesData" :key="trophy">
                                             <img v-if="trophy !== null" class="w-[60px] h-auto" v-bind:title="trophy.TrophyName" loading="lazy"  v-bind:alt="trophy.TrophyName" v-bind:src="trophy.TrophyImage" />
                                         </template>
                                     </div>
                                     <span class="block border-gray border-b-[1px] my-[5px] mx-[auto] leading-[0.1px] w-full"></span> <!--separator-->
                                     <div class="flex flex-row gap-2 items-center justify-center">
-                                        <template v-for="badge in this.StudentData.StudentAcquiredBadges" :key="badge">
-                                            <img v-if="badge !== null" class="w-[50px] h-auto" v-bind:title="badge.BadgeName" loading="lazy" v-bind:alt="badge.BadgeName" v-bind:src="badge.BadgeImage" />
+                                        <template v-for="(badge, i) in this.StudentData.BadgesEarned" :key="badge">
+                                            <img v-if="badge !== null && i < 3" class="w-[50px] h-auto" v-bind:title="badge.BadgeName" loading="lazy" v-bind:alt="badge.BadgeName" v-bind:src="badge.BadgeImage" />
                                         </template>
                                     </div>
                                 </div>
@@ -238,11 +237,11 @@
                             <!--item list-->
                             <div class="flex items-center justify-center bg-black/70 border-gray border-[1px] w-[68%] h-full remove-scroll overflow-y-scroll">
                                 <div class="block w-full h-full p-[10px]">
-                                    <div class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('unlockedAvatar')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'unlockedAvatar'}">
-                                        <img class="h-[auto] w-[auto]" src="../assets/img/avatar/avatar.jpg" />
+                                    <div v-for="avatar in StudentData.AvatarsUnlocked" :key="avatar" class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="selectItem('Avatar', avatar); activeItem('unlockedAvatar')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': avatar.objectId === SelectedAvatarID}">
+                                        <img class="h-[auto] w-[auto]" v-bind:src="avatar.CosmeticImage" />
                                     </div>
-                                    <div class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('lockedAvatar')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'lockedAvatar'}">
-                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" src="../assets/img/avatar/avatar.jpg" />
+                                    <div v-for="avatar in StudentData.UnacquiredAvatars" :key="avatar" class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="selectItem('Avatar', avatar); activeItem('lockedAvatar')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': avatar.objectId === SelectedAvatarID}">
+                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" v-bind:src="avatar.CosmeticImage" />
                                         <span class="absolute text-[30px] text-white"><i class="fa-solid fa-lock"></i></span>
                                     </div>
                                 </div>
@@ -253,22 +252,14 @@
                                     <!--full image of selected item with item name-->
                                     <div class="float-right flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
-                                            <img class="w-auto h-auto" src="../assets/img/avatar/avatar.jpg" />
+                                            <img class="w-auto h-auto" v-bind:src="SelectedAvatarData.CosmeticImage" />
                                         </div>
-                                        <span class="text-white text-[18px]">Item Name</span>
+                                        <span class="text-white text-[18px]">{{SelectedAvatarData.CosmeticName}}</span>
                                     </div>
                                     <!--other information of selected item-->
                                     <div class="w-full">
-                                        <span class="text-gold text-[13px]">Date Acquisition:</span>
-                                        <p class="text-white text-[12px]">July 22, 2022</p>
-                                    </div>
-                                    <div class="w-full">
                                         <span class="text-gold text-[13px] h-full">Type:</span>
-                                        <p class="text-white text-[12px]">Badge Type Name</p>
-                                    </div>
-                                    <div class="w-full">
-                                        <span class="text-gold text-[13px] h-full">Description:</span>
-                                        <p class="text-white text-[12px]">Description description  description  description description description description</p>
+                                        <p class="text-white text-[12px]">{{SelectedAvatarData.CosmeticType}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -278,10 +269,10 @@
                                     <!--full image of selected item with item name-->
                                     <div class="float-right relative flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
-                                            <img class="w-auto h-auto brightness-[0.30] grayscale" src="../assets/img/avatar/avatar.jpg" />
+                                            <img class="w-auto h-auto brightness-[0.30] grayscale" v-bind:src="SelectedAvatarData.CosmeticImage" />
                                             <span class="absolute text-[70px] text-white"><i class="fa-solid fa-lock"></i></span>
                                         </div>
-                                        <span class="text-white text-[18px]">Item Name</span>
+                                        <span class="text-white text-[18px]">{{SelectedAvatarData.CosmeticName}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -291,11 +282,11 @@
                             <!--item list-->
                             <div class="flex items-center justify-center bg-black/70 border-gray border-[1px] w-[68%] h-full remove-scroll overflow-y-scroll">
                                 <div class="block w-full h-full p-[10px]">
-                                    <div class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('unlockedFrames')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'unlockedFrames'}">
-                                        <img class="h-[auto] w-[auto]" src="../assets/img/frames/frame_sample.png" />
+                                    <div v-for="frame in StudentData.FrameUnlocked" :key="frame" class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="selectItem('Frame', frame); activeItem('unlockedFrames')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': frame.objectId === SelectedFrameID}">
+                                        <img class="h-[auto] w-[auto]" v-bind:src="frame.CosmeticImage" />
                                     </div>
-                                    <div class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('lockedFrames')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'lockedFrames'}">
-                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" src="../assets/img/frames/frame_sample.png" />
+                                    <div v-for="frame in StudentData.UnacquiredFrames" :key="frame" class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="selectItem('Frame', frame); activeItem('lockedFrames')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': frame.objectId === SelectedFrameID}">
+                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" v-bind:src="frame.CosmeticImage" />
                                         <span class="absolute text-[30px] text-white"><i class="fa-solid fa-lock"></i></span>
                                     </div>
                                 </div>
@@ -306,22 +297,14 @@
                                     <!--full image of selected item with item name-->
                                     <div class="float-right flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
-                                            <img class="w-auto h-auto" src="../assets/img/frames/frame_sample.png" />
+                                            <img class="w-auto h-auto" v-bind:src="SelectedFrameData.CosmeticImage" />
                                         </div>
-                                        <span class="text-white text-[18px]">Item Name</span>
+                                        <span class="text-white text-[18px]">{{SelectedFrameData.CosmeticName}}</span>
                                     </div>
                                     <!--other information of selected item-->
                                     <div class="w-full">
-                                        <span class="text-gold text-[13px]">Date Acquisition:</span>
-                                        <p class="text-white text-[12px]">July 22, 2022</p>
-                                    </div>
-                                    <div class="w-full">
                                         <span class="text-gold text-[13px] h-full">Type:</span>
-                                        <p class="text-white text-[12px]">Badge Type Name</p>
-                                    </div>
-                                    <div class="w-full">
-                                        <span class="text-gold text-[13px] h-full">Description:</span>
-                                        <p class="text-white text-[12px]">Description description  description  description description description description</p>
+                                        <p class="text-white text-[12px]">{{SelectedFrameData.CosmeticType}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -331,10 +314,10 @@
                                     <!--full image of selected item with item name-->
                                     <div class="float-right relative flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
-                                            <img class="w-auto h-auto brightness-[0.30] grayscale" src="../assets/img/frames/frame_sample.png" />
+                                            <img class="w-auto h-auto brightness-[0.30] grayscale" v-bind:src="SelectedFrameData.CosmeticImage" />
                                             <span class="absolute text-[70px] text-white"><i class="fa-solid fa-lock"></i></span>
                                         </div>
-                                        <span class="text-white text-[18px]">Item Name</span>
+                                        <span class="text-white text-[18px]">{{SelectedFrameData.CosmeticName}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -344,11 +327,11 @@
                             <!--item list-->
                             <div class="flex items-center justify-center bg-black/70 border-gray border-[1px] w-[68%] h-full remove-scroll overflow-y-scroll">
                                 <div class="block w-full h-full p-[10px]">
-                                    <div class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('unlockedBackground')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'unlockedBackground'}">
-                                        <img class="h-[auto] w-[auto]" src="../assets/img/background/bg-profile.jpg" />
+                                    <div v-for="coverPhoto in StudentData.CoverPhotoUnlocked" :key="coverPhoto" class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="selectItem('CoverPhoto', coverPhoto); activeItem('unlockedBackground')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': coverPhoto.objectId === SelectedCoverPhotoID}">
+                                        <img class="h-[auto] w-[auto]" v-bind:src="coverPhoto.CosmeticImage" />
                                     </div>
-                                    <div class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('lockedBackground')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'lockedBackground'}">
-                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" src="../assets/img/background/bg-profile.jpg" />
+                                    <div v-for="coverPhoto in StudentData.UnacquiredCoverPhotos" :key="coverPhoto" class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="selectItem('CoverPhoto', coverPhoto); activeItem('lockedBackground')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': coverPhoto.objectId === SelectedCoverPhotoID}">
+                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" v-bind:src="coverPhoto.CosmeticImage" />
                                         <span class="absolute text-[30px] text-white"><i class="fa-solid fa-lock"></i></span>
                                     </div>
                                 </div>
@@ -359,22 +342,14 @@
                                     <!--full image of selected item with item name-->
                                     <div class="float-right flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
-                                            <img class="w-auto h-auto" src="../assets/img/background/bg-profile.jpg" />
+                                            <img class="w-auto h-auto" v-bind:src="SelectedCoverPhotoData.CosmeticImage" />
                                         </div>
-                                        <span class="text-white text-[18px]">Item Name</span>
+                                        <span class="text-white text-[18px]">{{SelectedCoverPhotoData.CosmeticName}}</span>
                                     </div>
                                     <!--other information of selected item-->
                                     <div class="w-full">
-                                        <span class="text-gold text-[13px]">Date Acquisition:</span>
-                                        <p class="text-white text-[12px]">July 22, 2022</p>
-                                    </div>
-                                    <div class="w-full">
                                         <span class="text-gold text-[13px] h-full">Type:</span>
-                                        <p class="text-white text-[12px]">Badge Type Name</p>
-                                    </div>
-                                    <div class="w-full">
-                                        <span class="text-gold text-[13px] h-full">Description:</span>
-                                        <p class="text-white text-[12px]">Description description  description  description description description description</p>
+                                        <p class="text-white text-[12px]">{{SelectedCoverPhotoData.CosmeticType}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -384,10 +359,10 @@
                                     <!--full image of selected item with item name-->
                                     <div class="float-right relative flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
-                                            <img class="w-auto h-auto brightness-[0.30] grayscale" src="../assets/img/background/bg-profile.jpg" />
+                                            <img class="w-auto h-auto brightness-[0.30] grayscale" v-bind:src="SelectedCoverPhotoData.CosmeticImage" />
                                             <span class="absolute text-[70px] text-white"><i class="fa-solid fa-lock"></i></span>
                                         </div>
-                                        <span class="text-white text-[18px]">Item Name</span>
+                                        <span class="text-white text-[18px]">{{SelectedCoverPhotoData.CosmeticName}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -397,11 +372,11 @@
                             <!--item list-->
                             <div class="flex items-center justify-center bg-black/70 border-gray border-[1px] w-[68%] h-full remove-scroll overflow-y-scroll">
                                 <div class="block w-full h-full p-[10px]">
-                                    <div class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('unlockedTrophy')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'unlockedTrophy'}">
-                                        <img class="h-[auto] w-[auto]" src="../assets/img/trophies/trophy_1.png" />
+                                    <div v-for="trophy in StudentData.TrophiesUnlocked" :key="trophy" class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="selectItem('Trophy', trophy); activeItem('unlockedTrophy')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': trophy.objectId === SelectedTrophyID}">
+                                        <img class="h-[auto] w-[auto]" v-bind:src="trophy.TrophyImage" />
                                     </div>
-                                    <div class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('lockedTrophy')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'lockedTrophy'}">
-                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" src="../assets/img/trophies/trophy_1.png" />
+                                    <div v-for="trophy in StudentData.UnacquiredTrophies" :key="trophy" class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="selectItem('Trophy', trophy); activeItem('lockedTrophy')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': trophy.objectId === SelectedTrophyID}">
+                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" v-bind:src="trophy.TrophyImage" />
                                         <span class="absolute text-[30px] text-white"><i class="fa-solid fa-lock"></i></span>
                                     </div>
                                 </div>
@@ -412,22 +387,26 @@
                                     <!--full image of selected item with item name-->
                                     <div class="float-right flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
-                                            <img class="w-auto h-auto" src="../assets/img/trophies/trophy_1.png" />
+                                            <img class="w-auto h-auto" v-bind:src="SelectedTrophyData.TrophyImage" />
                                         </div>
-                                        <span class="text-white text-[18px]">Item Name</span>
+                                        <span class="text-white text-[18px]">{{SelectedTrophyData.TrophyName}}</span>
                                     </div>
                                     <!--other information of selected item-->
                                     <div class="w-full">
                                         <span class="text-gold text-[13px]">Date Acquisition:</span>
-                                        <p class="text-white text-[12px]">July 22, 2022</p>
+                                        <p class="text-white text-[12px]">{{SelectedTrophyData.DateRewarded}}</p>
                                     </div>
                                     <div class="w-full">
                                         <span class="text-gold text-[13px] h-full">Type:</span>
-                                        <p class="text-white text-[12px]">Badge Type Name</p>
+                                        <p class="text-white text-[12px]">{{SelectedTrophyData.TrophyType}}</p>
                                     </div>
                                     <div class="w-full">
                                         <span class="text-gold text-[13px] h-full">Description:</span>
-                                        <p class="text-white text-[12px]">Description description  description  description description description description</p>
+                                        <p class="text-white text-[12px]">{{SelectedTrophyData.TrophyDescription}}</p>
+                                    </div>
+                                    <div class="w-full">
+                                        <span class="text-gold text-[13px] h-full">Design Inspiration:</span>
+                                        <p class="text-white text-[12px]">{{SelectedTrophyData.TrophyDesignInspiration}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -437,10 +416,10 @@
                                     <!--full image of selected item with item name-->
                                     <div class="float-right relative flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
-                                            <img class="w-auto h-auto brightness-[0.30] grayscale" src="../assets/img/trophies/trophy_1.png" />
+                                            <img class="w-auto h-auto brightness-[0.30] grayscale" v-bind:src="SelectedTrophyData.TrophyImage" />
                                             <span class="absolute text-[70px] text-white"><i class="fa-solid fa-lock"></i></span>
                                         </div>
-                                        <span class="text-white text-[18px]">Item Name</span>
+                                        <span class="text-white text-[18px]">{{SelectedTrophyData.TrophyName}}</span>
                                     </div>
                                 </div>
                             </div>
@@ -450,11 +429,11 @@
                             <!--item list-->
                             <div class="flex items-center justify-center bg-black/70 border-gray border-[1px] w-[68%] h-full remove-scroll overflow-y-scroll">
                                 <div class="block w-full h-full p-[10px]">
-                                    <div class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('unlockedBadges')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'unlockedBadges'}">
-                                        <img class="h-[auto] w-[auto]" src="../assets/img/badges/badge_1.png" />
+                                    <div v-for="badge in StudentData.BadgesEarned" :key="badge" class="inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="selectItem('Badge', badge); activeItem('unlockedBadges')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': badge.objectId === SelectedBadgeID}">
+                                        <img class="h-[auto] w-[auto]" v-bind:src="badge.BadgeImage" />
                                     </div>
-                                    <div class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="activeItem('lockedBadges')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': showItem === 'lockedBadges'}">
-                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" src="../assets/img/badges/badge_2.png" />
+                                    <div v-for="badge in StudentData.UnacquiredBadges" :key="badge" class="relative inline-flex items-center justify-center bg-black/30 border-[1px] border-gray m-[10px] w-[70px] h-[70px] cursor-pointer" v-on:click="selectItem('Badge', badge); activeItem('lockedBadges')" v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': badge.objectId === SelectedBadgeID}">
+                                        <img class="h-[auto] w-[auto] brightness-[0.30] grayscale" v-bind:src="badge.BadgeImage" />
                                         <span class="absolute text-[30px] text-white"><i class="fa-solid fa-lock"></i></span>
                                     </div>
                                 </div>
@@ -465,22 +444,26 @@
                                     <!--full image of selected item with item name-->
                                     <div class="float-right flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
-                                            <img class="w-auto h-auto" src="../assets/img/badges/badge_1.png" />
+                                            <img class="w-auto h-auto" v-bind:src="SelectedBadgeData.BadgeImage" />
                                         </div>
-                                        <span class="text-white text-[18px]">Item Name</span>
+                                        <span class="text-white text-[18px]">{{SelectedBadgeData.BadgeName}}</span>
                                     </div>
                                     <!--other information of selected item-->
                                     <div class="w-full">
                                         <span class="text-gold text-[13px]">Date Acquisition:</span>
-                                        <p class="text-white text-[12px]">July 22, 2022</p>
+                                        <p class="text-white text-[12px]">{{SelectedBadgeData.DateRewarded}}</p>
                                     </div>
                                     <div class="w-full">
                                         <span class="text-gold text-[13px] h-full">Type:</span>
-                                        <p class="text-white text-[12px]">Badge Type Name</p>
+                                        <p class="text-white text-[12px]">{{SelectedBadgeData.BadgeType}}</p>
                                     </div>
                                     <div class="w-full">
                                         <span class="text-gold text-[13px] h-full">Description:</span>
-                                        <p class="text-white text-[12px]">Description description  description  description description description description</p>
+                                        <p class="text-white text-[12px]">{{SelectedBadgeData.BadgeDescription}}</p>
+                                    </div>
+                                    <div class="w-full">
+                                        <span class="text-gold text-[13px] h-full">Design Inspiration:</span>
+                                        <p class="text-white text-[12px]">{{SelectedBadgeData.BadgeDesignInspiration}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -490,15 +473,18 @@
                                     <!--full image of selected item with item name-->
                                     <div class="float-right relative flex flex-col items-center justify-center gap-3 w-full">
                                         <div class="flex items-center justify-center border-black mx-auto w-auto h-auto">
-                                            <img class="w-auto h-auto brightness-[0.30] grayscale" src="../assets/img/badges/badge_2.png" />
+                                            <img class="w-auto h-auto brightness-[0.30] grayscale" v-bind:src="SelectedBadgeData.BadgeImage" />
                                             <span class="absolute text-[70px] text-white"><i class="fa-solid fa-lock"></i></span>
                                         </div>
-                                        <span class="text-white text-[18px]">Item Name</span>
+                                        <span class="text-white text-[18px]">{{SelectedBadgeData.BadgeName}}</span>
                                     </div>
                                     <!--other information of selected item-->
+                                    <!--
+                                    Request badge tab will be just uploading a proof
                                     <div class="w-full">
                                         <button class="bg-blue text-white text-[13px] w-full py-[10px]">REQUEST THIS BADGE</button>
                                     </div>
+                                    -->
                                 </div>
                             </div>
                         </div>
@@ -528,6 +514,20 @@
                 host:  window.location.host,
 
                 StudentData: [],
+                AscensionTitleData : {},
+                SelectedAvatarID: '',
+                SelectedAvatarData: {},
+                SelectedFrameID: '',
+                SelectedFrameData: {},
+                SelectedCoverPhotoID: '',
+                SelectedCoverPhotoData: {},
+                SelectedTrophyID: '',
+                SelectedTrophyData: {},
+                SelectedBadgeID: '',
+                SelectedBadgeData: {},
+                SelectedTrophySlot: -1,
+                EquippedCosmeticChange: [],
+                ChosenTrophiesDataChange: [],
             }
         },
 
@@ -560,30 +560,125 @@
                 var param = {"StudentID" : this.currentUser.get("AccountID")};
                 this.StudentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
 
-                //Copied this since it will be edited
-                this.StudentData["StudentChosenTrophies"] = this.StudentData.ChosenTrophiesData;
-                this.StudentData["StudentAcquiredBadges"] = this.StudentData.BadgesEarned;
+                //Get unacquired cosmetics
+                param["CosmeticType"] = "Avatar";
+                this.StudentData["UnacquiredAvatars"] = JSON.parse(await Parse.Cloud.run("GetUnacquiredCosmetics", param));
+                param["CosmeticType"] = "Frame";
+                this.StudentData["UnacquiredFrames"] = JSON.parse(await Parse.Cloud.run("GetUnacquiredCosmetics", param));
+                param["CosmeticType"] = "CoverPhoto";
+                this.StudentData["UnacquiredCoverPhotos"] = JSON.parse(await Parse.Cloud.run("GetUnacquiredCosmetics", param));
 
-                //Fix Chosen Trophies
-                for(let i = 0; i < 3; ++i){
-                    if(!this.StudentData.StudentChosenTrophies[i]){
-                        this.StudentData.StudentChosenTrophies[i] = null;
-                    }
-                }
+                //Get unacquired badges and trophies
+                this.StudentData["UnacquiredBadges"] = JSON.parse(await Parse.Cloud.run("GetUnacquiredBadges", param));
+                this.StudentData["UnacquiredTrophies"] = JSON.parse(await Parse.Cloud.run("GetUnacquiredTrophies", param));
 
-                //Fix Acquired Badges
-                this.StudentData.StudentAcquiredBadges.slice(0, 5);
-                for(let i = 0; i < 5; ++i){
-                    if(!this.StudentData.StudentAcquiredBadges[i]){
-                        this.StudentData.StudentAcquiredBadges[i] = null;
-                    }
-                }
-
-                //Sort data by date rewarded(not sure if comparison is correct)
-                this.StudentData.StudentAcquiredBadges.sort(function(first, second) {
+                //Sort badges by date rewarded(not sure if comparison is correct)
+                this.StudentData.BadgesEarned.sort(function(first, second) {
                     if(first == null || second == null) return false;
                     return first.DateRewarded > second.DateRewarded;
                 });
+
+                //Set Necessary variables
+                param = {"XpInput" : this.StudentData.XP};
+                this.AscensionTitleData = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", param));
+                this.EquippedCosmeticChange = this.StudentData.EquippedCosmetics.slice();
+                this.ChosenTrophiesDataChange = this.StudentData.ChosenTrophiesData.slice();
+
+                for(let i = this.ChosenTrophiesDataChange.length; i < 3; ++i){
+                    this.ChosenTrophiesDataChange.push(null);
+                }
+            },
+
+            selectItem(type, item){
+                switch(type){
+                    case "Avatar":
+                        this.SelectedAvatarID = item.objectId;
+                        this.SelectedAvatarData = item;
+                        break;
+                    case "Frame":
+                        this.SelectedFrameID = item.objectId;
+                        this.SelectedFrameData = item;
+                        break;
+                    case "CoverPhoto":
+                        this.SelectedCoverPhotoID = item.objectId;
+                        this.SelectedCoverPhotoData = item;
+                        break;
+                    case "Trophy":
+                        this.SelectedTrophyID = item.objectId;
+                        this.SelectedTrophyData = item;
+                        break;
+                    case "Badge":
+                        this.SelectedBadgeID = item.objectId;
+                        this.SelectedBadgeData = item;
+                        break;
+                    default:
+                }
+            },
+
+            changeItem(type){
+                switch(type){
+                    case "Avatar":
+                        this.EquippedCosmeticChange[0] = this.SelectedAvatarID;
+                        break;
+                    case "Frame":
+                        this.EquippedCosmeticChange[1] = this.SelectedFrameID;
+                        break;
+                    case "CoverPhoto":
+                        this.EquippedCosmeticChange[2] = this.SelectedCoverPhotoID;
+                        break;
+                    case "TrophyChange":
+                        for(const trophy of this.ChosenTrophiesDataChange){
+                            if(trophy === null) continue;
+                            if(this.SelectedTrophyData.objectId === trophy.objectId){
+                                return;
+                            }
+                        }
+                        this.ChosenTrophiesDataChange[this.SelectedTrophySlot] = this.SelectedTrophyData;
+                        break;
+                    case "TrophyRemove":
+                        this.ChosenTrophiesDataChange[this.SelectedTrophySlot] = null;
+                        break
+                    default:
+                }
+            },
+
+            resetChanges(){
+                this.SelectedAvatarID = "";
+                this.SelectedAvatarData = {};
+                this.SelectedFrameID = "";
+                this.SelectedFrameData = {};
+                this.SelectedCoverPhotoID = "";
+                this.SelectedCoverPhotoData = {};
+                this.SelectedTrophyID = "";
+                this.SelectedTrophyData = {};
+                this.SelectedBadgeID = "";
+                this.SelectedBadgeData = {};
+                this.SelectedTrophySlot = -1;
+                this.EquippedCosmeticChange = this.StudentData.EquippedCosmetics.slice();
+                this.ChosenTrophiesDataChange = this.StudentData.ChosenTrophiesData.slice();
+                for(let i = this.ChosenTrophiesDataChange.length; i < 3; ++i){
+                    this.ChosenTrophiesDataChange.push(null);
+                }
+            },
+
+            async saveChanges(){
+                //Fixed ChosenTrophies to make it an array of RewardID
+                var ChosenTrophiesChange = [];
+                for(const trophy of this.ChosenTrophiesDataChange){
+                    if(trophy !== null){
+                        ChosenTrophiesChange.push(trophy.RewardID);
+                    }
+                }
+
+                var param = {
+                    "StudentID" : Parse.User.current().get("AccountID"),
+                    "EquippedCosmetics" : this.EquippedCosmeticChange, 
+                    "ChosenTrophies" : ChosenTrophiesChange,
+                }
+                await Parse.Cloud.run("EditStudent", param);
+                alert("Changes saved!");
+                //refresh page
+                this.$router.go(0); 
             },
         },
 
