@@ -126,8 +126,7 @@
                 Degrees: [],
                 Courses: [],
 
-                TeachingEmails: [],
-                NonTeachingEmails: [],
+                StaffEmails: [],
             }
         },
         components:{
@@ -142,13 +141,12 @@
                 //Preparing values of Teaching and NonTeaching Arrays (line 129 and 130)
                 //For getting staff emails for User Type assignment
                 //Change directory if needed
-                var param = {"FilePath": "C:\\Dev_Projects\\teaching.txt",}
-                this.TeachingEmails = await Parse.Cloud.run("GetStaffEmails", param);
-                param = {"FilePath": "C:\\Dev_Projects\\nonteaching.txt",}
-                this.NonTeachingEmails = await Parse.Cloud.run("GetStaffEmails", param);
+
+                var param = {"FilePath": "emails/staffEmails.json"};
+                this.StaffEmails = await Parse.Cloud.run("GetStaffEmails", param)
                 param = {
-                    "teacherEmails": this.TeachingEmails,
-                    "nt_DistributorEmails": this.NonTeachingEmails,
+                    "teacherEmails": this.StaffEmails.teacherEmails,
+                    "nt_DistributorEmails": this.StaffEmails.nt_DistributorEmails,
                     "email": this.Email,
                 }
                 this.userType = await Parse.Cloud.run("IdentifyUserType", param)

@@ -113,11 +113,8 @@ Parse.Cloud.define("GetStaffEmails", (request) =>{
   const {readFileSync} = require('fs');
   const argument = request.params
 
-  const txtContents = readFileSync(argument.FilePath, 'utf-8');
-  const staffEmails = txtContents.split(/\r?\n/); //splits if newline or space has been detected
-
-  // console.log(staffEmails); 
-  return staffEmails;
+  const staffEmails = JSON.parse(readFileSync(argument.FilePath, "utf-8"))
+  return staffEmails; //an object
 });
 
 //takes an array of teacher emails (teacher and NonTeacher)
