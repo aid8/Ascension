@@ -56,6 +56,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "about" */ '../layouts/StudentQuestPage.vue')
   },
   {
+    path: '/StudentLeaderboardPage',
+    name: 'StudentLeaderboardPage',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/StudentLeaderboardPage.vue')
+  },
+  {
     path: '/TestPage',
     name: 'TestPage',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/TestPage.vue')
