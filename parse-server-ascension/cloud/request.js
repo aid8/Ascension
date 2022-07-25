@@ -4,27 +4,35 @@ Parse.Cloud.define("AddRequest", async(request) => {
     const Request = Parse.Object.extend("Request");
     const requestobj = new Request();
     const argument = request.params;
-    requestobj.save({
-        "Proof" : argument.Proof,
-        "StudentIDPointer" : argument.StudentIDPointer,
-        "DateRequested" : Global.getDateToday(),
-    }).then(async (res)=>{
-        var params = {};
-        var torequest;
-        if(argument.ToRequestType === "Teacher"){
-            params["TeacherID"] = argument.ToRequestID;
-            torequest = JSON.parse(await Parse.Cloud.run("GetTeacherData", params));
-            torequest.PendingApprovalRewarding.push(res.id);
-            params["PendingApprovalRewarding"] = torequest.PendingApprovalRewarding;
-            await Parse.Cloud.run("EditTeacher", params);
-        }
-        else if(argument.ToRequestType === "NT_Distributor"){
-            params["NT_DistributorID"] = argument.ToRequestID;
-            torequest = JSON.parse(await Parse.Cloud.run("GetNT_DistributorData", params));
-            torequest.PendingApprovalRewarding.push(res.id);
-            params["PendingApprovalRewarding"] = torequest.PendingApprovalRewarding;
-            await Parse.Cloud.run("EditNT_Distributor", params);
-        }
+
+    var convertedFile = {base64: argument.ProofFile};
+    var parseFile = new Parse.File(argument.ProofName, convertedFile);
+
+    parseFile.save({ useMasterKey: true }).then(function(result) {
+        var link = result.url();
+        requestobj.save({
+            "ProofFile" : link,
+            "StudentIDPointer" : argument.StudentIDPointer,
+            "DateRequested" : Global.getDateToday(),
+        }, { useMasterKey: true }).then(async (res) =>{
+            var params = {};
+            var torequest;
+            if(argument.ToRequestType === "Teacher"){
+                params["TeacherID"] = argument.ToRequestID;
+                torequest = JSON.parse(await Parse.Cloud.run("GetTeacherData", params));
+                torequest.PendingApprovalRewarding.push(res.id);
+                params["PendingApprovalRewarding"] = torequest.PendingApprovalRewarding;
+                await Parse.Cloud.run("EditTeacher", params);
+            }
+            else if(argument.ToRequestType === "NT_Distributor"){
+                params["NT_DistributorID"] = argument.ToRequestID;
+                torequest = JSON.parse(await Parse.Cloud.run("GetNT_DistributorData", params));
+                torequest.PendingApprovalRewarding.push(res.id);
+                params["PendingApprovalRewarding"] = torequest.PendingApprovalRewarding;
+                await Parse.Cloud.run("EditNT_Distributor", params);
+            }
+            console.log("Successfully added Request!");
+        });
     });
 });
 

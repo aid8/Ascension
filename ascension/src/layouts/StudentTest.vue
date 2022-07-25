@@ -10,7 +10,7 @@
     <hr>
     <h3>Request Badge</h3>
     <span>Proof: </span>
-    <input v-model="Proof" type="text"><br>
+    <input @change="onProofFileSelected" type="file" accept=".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf"/><br>
     <button @click="getTeachers()">Show Teachers to Request</button>
     <ul>
         <li v-for="teacher in Teachers" :key="teacher">{{teacher.LastName}} <button @click="selectTeacher(teacher.objectId)">Select</button></li>
@@ -45,7 +45,8 @@
                 Teachers : [],
                 SelectedStudent : '',
                 SelectedTeacher : '',
-                Proof: '',
+                ProofFile: '',
+                ProofName: '',
 
                 //Student Details
                 Badges : [],
@@ -76,7 +77,8 @@
                     "ToRequestID" : this.SelectedTeacher,
                     "ToRequestType" : "Teacher",
                     "StudentIDPointer" : this.SelectedStudent,
-                    "Proof" : this.Proof,
+                    "ProofFile" : this.ProofFile,
+                    "ProofName" : this.ProofName,
                 }
                 await Parse.Cloud.run("AddRequest", params);
                 alert("SUBMITTED REQUEST!");
@@ -89,7 +91,25 @@
                 this.Badges = res.BadgesEarned;
                 this.Trophies = res.TrophiesUnlocked;
                 this.TopThreeTrophies = res.ChosenTrophiesData;
-            }
+            },
+
+            getBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            },
+            
+            //Proof File
+            async onProofFileSelected(e){
+                var file = e.target.files[0];
+                this.ProofName = file.name;
+                this.getBase64(file).then(
+                    data => this.ProofFile = data
+                );
+            },
         },
     }
 </script>
