@@ -14,6 +14,8 @@ Parse.Cloud.define("AddRequest", async(request) => {
             "ProofFile" : link,
             "StudentIDPointer" : argument.StudentIDPointer,
             "DateRequested" : Global.getDateToday(),
+            "ToRequestIDPointer": argument.ToRequestID,
+            "ToRequestType" : argument.ToRequestType,
         }, { useMasterKey: true }).then(async (res) =>{
             var params = {};
             var torequest;
@@ -36,6 +38,18 @@ Parse.Cloud.define("AddRequest", async(request) => {
     });
 });
 
+Parse.Cloud.afterSave("Request", async(request)=>{
+    const req = request.object;
+    const original = request.original;
+    //If object is newly created
+    if (!original){
+        return req.save({
+            "RequestStatus" : "Pending",
+            "RequestFeedback" : "",
+        });
+    }
+});
+
 //Must specify id of request with name of "ToRequestID" then the attribute name along with the new value
 Parse.Cloud.define("EditRequest", async(request) =>{
     const argument = request.params
@@ -45,8 +59,12 @@ Parse.Cloud.define("EditRequest", async(request) =>{
     }
     const res = await Parse.Cloud.run("GetRequestData", dataParams)
     
-    var list_of_attr = ["Proof", "StudentIDPointer", "DateRequested"];
-    var list_of_arguments = [argument.Proof, argument.StudentIDPointer, argument.DateRequested];
+    var list_of_attr = ["Proof", "StudentIDPointer", "DateRequested", "ToRequestIDPointer", 
+                        "ToRequestType", "RequestStatus", "RequestFeedback",
+    ];
+    var list_of_arguments = [argument.Proof, argument.StudentIDPointer, argument.DateRequested, argument.ToRequestIDPointer,
+                             argument.ToRequestType, argument.RequestStatus, argument.RequestFeedback,
+    ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
         if(list_of_arguments[i] != null){
@@ -99,9 +117,8 @@ Parse.Cloud.define("DeleteRequest", async(request) =>{
     });
 });
 
-//ApproveRequest(Provide RequestID and BadgeID)
-//Basically calls DeleteRequest and RewardBadge
-Parse.Cloud.define("ApproveRequest", async(request) =>{
+//Provide RequestID, BadgeID, and RequestStatus (Approved or Declined) and RequestFeeback if declined
+Parse.Cloud.define("SetRequest", async(request) =>{
     const argument = request.params
     const dataParams = {
         "RequestID": argument.RequestID,
@@ -109,18 +126,31 @@ Parse.Cloud.define("ApproveRequest", async(request) =>{
     }
     const res = await Parse.Cloud.run("GetRequestData", dataParams)
 
-    var params = {
-        "BadgeID" : argument.BadgeID,
-        "StudentID" : res.get("StudentIDPointer"),
-    };
-    await Parse.Cloud.run("RewardBadge", params);
+    var params = {};
+    if(argument.RequestStatus === "Approved"){
+        params = {
+            "BadgeID" : argument.BadgeID,
+            "StudentID" : res.get("StudentIDPointer"),
+        };
+        await Parse.Cloud.run("RewardBadge", params);
+    }
     
-    params = {"RequestID" : argument.RequestID};
-    await Parse.Cloud.run("DeleteRequest", params);
+    params = {
+        "RequestID" : argument.RequestID,
+        "RequestStatus" : argument.RequestStatus,
+    };
+    if(argument.RequestStatus === "Approved"){
+        params["RequestFeedback"] = argument.BadgeID;
+    }
+    else if(argument.RequestStatus === "Declined"){
+        params["RequestFeedback"] = argument.RequestFeeback;
+    }
+    await Parse.Cloud.run("EditRequest", params);
 });
 
 //Must specify id of request with name of "RequestID"; Specify Type to 1 only if you need the query's result (object)
 //Returns the data of a request or the query's result based on the value of Type
+//Added more options (DataOfRequestor: boolean, DataOfGrantor: boolean)
 Parse.Cloud.define("GetRequestData", async(request) => {
     const Request = Parse.Object.extend("Request");
     const query = new Parse.Query(Request);
@@ -130,6 +160,34 @@ Parse.Cloud.define("GetRequestData", async(request) => {
     if(argument.Type == 1){
         return res
     }
+
+    //Get ToRequestData
+    var params = {};
+    var data;
+    if(argument.DataOfGrantor){
+        if(res.get("ToRequestType") === "Teacher"){
+            params["TeacherID"] = res.get("ToRequestIDPointer");
+            data = JSON.parse(await Parse.Cloud.run("GetTeacherData", params));
+        }
+        else if(res.get("ToRequestType") === "NT_Distributor"){
+            params["NT_DistributorID"] = res.get("ToRequestIDPointer");
+            data = JSON.parse(await Parse.Cloud.run("GetNT_DistributorData", params));
+        }
+        res.set("GrantorData", data);
+    }
+    //Get StudentData
+    else if(argument.DataOfRequestor){
+        params["StudentID"] = res.get("StudentIDPointer");
+        data = JSON.parse(await Parse.Cloud.run("GetStudentData", params));
+        res.set("RequestorData", data);
+    }
+
+    //If Request is approved, get badge data
+    if(res.get("RequestStatus") === "Approved"){
+        params = {"BadgeID" : res.get("RequestFeedback")};
+        res.set("RewardData", JSON.parse(await Parse.Cloud.run("GetBadgeData", params)));
+    }
+
     return JSON.stringify(res);
 });
 
@@ -138,4 +196,22 @@ Parse.Cloud.define("GetRequests", async(_request) =>{
     const query = new Parse.Query(Request);
     const res = await query.find();
     return JSON.stringify(res);
+});
+
+//StudentID
+Parse.Cloud.define("GetStudentRequests", async(request) =>{
+    const argument = request.params;
+    //Get Requests
+    const Request = Parse.Object.extend("Request");
+    const query = new Parse.Query(Request);
+    const res = await query.find();
+
+    var AccountRequests = [];
+    for(var req of res){
+        if(req.get("StudentIDPointer") === argument.StudentID){
+            AccountRequests.push(req);
+        }
+    }
+
+    return JSON.stringify(AccountRequests);
 });
