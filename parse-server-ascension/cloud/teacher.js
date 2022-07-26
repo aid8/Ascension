@@ -98,6 +98,11 @@ Parse.Cloud.define("GetTeacherData", async(request) => {
         PendingApprovalRewardingData.push(JSON.parse(await Parse.Cloud.run("GetRequestData", params)));
     }
     res.set("PendingApprovalRewardingData", PendingApprovalRewardingData);
+
+    //Pass UnitData
+    params = {"UnitID" : res.get("TeacherUnitIDPointer")};
+    res.set("UnitData", JSON.parse(await Parse.Cloud.run("GetUnitData", params)));
+
     return JSON.stringify(res);
 });
 

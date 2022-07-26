@@ -388,6 +388,10 @@
         Parameters: ToRequestID, ToRequestType, Proof, StudentIDPointer 
         Purpose: Save the Request object into the database
 
+        Function: afterSave(Request)
+        Parameters:  RequestStatus = "Pending", RequestFeedback,
+        Purpose: Add the remaining attributes only after the request object is saved
+
         Function: EditRequest()
         Parameters: RequestID, Attribute/s to be edited, New value 
         Purpose: Edit the attribute/s of the house
@@ -397,16 +401,20 @@
         Purpose: Delete the Request from the database
 
         Function: GetRequestData()
-        Parameters: RequestID, Type
-        Purpose: Retrieve the data stored in Request object, or returns query's result if Type is equal to 1
+        Parameters: RequestID, Type, DataOfRequestor: boolean, DataOfGrantor: boolean
+        Purpose: Retrieve the data stored in Request object, or returns query'sresult if Type is equal to 1. Gives DataOfRequestor/DataOfGrantor if given boolean value of True.
 
         Function: GetRequests()
         Parameters: 
         Purpose: Get all the Requests saved in the database.
 
-        Function: ApproveRequest()
-        Parameters: RequestID, BadgeID
-        Purpose: Deletes the requests and rewards the badge
+        Function: SetRequest()
+        Parameters: RequestID, BadgeID, RequestStatus(Approved, Declined) and RequestFeedback if declined.
+        Purpose: Sets the request to approved/declined and rewards student a badge if approved.
+
+        Function: GetStudentRequests()
+        Parameters: StudentID
+        Purpose: Get all the Requests related to the student.
 
     ANNOUNCEMENT ENTITY
         Function: AddAnnouncement()

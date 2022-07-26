@@ -142,8 +142,10 @@
                 var params = {
                     "RequestID" : this.SelectedRequest,
                     "BadgeID" : this.SelectedBadge,
+                    "RequestFeedback": this.SelectedBadge,
+                    "RequestStatus" : "Approved",
                 };
-                await Parse.Cloud.run("ApproveRequest", params);
+                await Parse.Cloud.run("SetRequest", params);
                 alert('Request Approved!');
                 //Reset
                 this.getTeacherRequests();
