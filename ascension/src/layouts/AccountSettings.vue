@@ -43,62 +43,18 @@
                     </div>
                     <ul class="ml-10 text-white font-Lexend font-medium">
                         <li class="my-3">
-                            <a href="#1" class="text-blue"> ACCOUNT SIGN-IN </a>
+                            <a href="#1" class="hover:text-gold"> PERSONAL INFORMATION </a>
                         </li>
                         <li class="my-3">
-                            <a href="#2"> PERSONAL INFORMATION </a>
-                        </li>
-                        <li class="my-3">
-                            <a href="#3"> USER SUPPORT </a>
+                            <a href="#2" class="hover:text-gold"> USER SUPPORT </a>
                         </li>
                     </ul>
                 </nav>
             </div>
-            <div class="col-span-2 overflow-y-hidden right-0 w-[980px] absolute">
-                <!--account sign in-->
-                <div id="1" class="pt-14 ">
-                    <div class="grid md:grid-cols-2 mx-24 my-12 border-[1px] border-white">
-                        <div class="col-span-1 bg-white h-[500px]">
-                            <div class="font-Lexend text-black mx-7">
-                                <h1 class="font-bold mt-7 mb-2">Ascension Account Sign-In</h1>
-                                <p class="font-normal"> It is recommended 
-                                    for the user to update their password 
-                                    periodically to help prevent unauthorized 
-                                    access to their account.</p>
-                            </div>
-                        </div>
-                        <div class="col-span-1">
-                            <form class="backdrop-blur bg-white/10 h-[500px]">
-                                <div class="ml-12 mr-9 pt-9">
-                                    <input required class="border-[1px] border-white  bg-white/10 w-full py-3 px-5 text-black leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" 
-                                    placeholder="USERNAME">
-                                </div>
-                                <h1 class="font-Lexend font-bold text-black ml-12 text-3xl pt-8">Account Settings</h1>
-                                <div class="ml-12 mr-9 pt-4">
-                                    <input required class="border-[1px] border-white  bg-white/10 w-full py-3 px-5 text-black leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" 
-                                    placeholder="CURRENT PASSWORD
-                                    ">
-                                </div>
-                                <div class="ml-12 mr-9 pt-4">
-                                    <input required class="border-[1px] border-white  bg-white/10 w-full py-3 px-5 text-black leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" 
-                                    placeholder="NEW PASSWORD
-                                    ">
-                                </div>
-                                <div class="ml-12 mr-9 pt-4 pb-12">
-                                    <input required class="border-[1px] border-white  bg-white/10 w-full py-3 px-5 text-black leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" 
-                                    placeholder="CONFIRM PASSWORD
-                                    ">
-                                </div>
-                                <div class="ml-48 mr-9 text-center focus:shadow-none">
-                                    <input class="font-Lexend bg-blue text-white text-[12px] h-[45px] w-[160px]" type="submit" value="SAVE AND VERIFY" />
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-span-2 overflow-y-hidden right-0 w-[980px] absolute">                
                 <!--personal info -->
                 <div class="col-span-2 py-1">
-                    <div id="2" class="pt-14">
+                    <div id="1" class="pt-14">
                         <div class="grid md:grid-cols-2 mx-24 my-12">
                             <div class="col-span-1 bg-white h-[550px]">
                                 <div class="font-Lexend text-black mx-7">
@@ -147,7 +103,7 @@
                     </div>
                     <!--user support-->
                     <div class="col-span-2 py-1">
-                        <div id="3" class="pt-14">
+                        <div id="2" class="pt-14">
                             <div class="grid md:grid-cols-2 mx-24 my-12 border-[1px] border-white">
                                 <div class="col-span-1 bg-white h-[550px]">
                                     <div class="font-Lexend text-black mx-7">
