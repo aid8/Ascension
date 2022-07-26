@@ -61,11 +61,6 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "about" */ '../layouts/StudentLeaderboardPage.vue')
   },
   {
-    path: '/StudentRequestPage',
-    name: 'StudentRequestPage',
-    component: () => import(/* webpackChunkName: "about" */ '../layouts/StudentRequestPage.vue')
-  },
-  {
     path: '/TestPage',
     name: 'TestPage',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/TestPage.vue')
@@ -79,6 +74,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/SignUpPage',
     name: 'SignUpPage',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/SignUpPage.vue')
+  },
+  {
+    path: '/StudentGiverPage',
+    name: 'StudentGiverPage',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/StudentGiverPage.vue')
   },
   {
     path: '/GiverNotifications',
