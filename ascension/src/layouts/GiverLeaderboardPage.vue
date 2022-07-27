@@ -1,6 +1,6 @@
 <style>
     body{
-        background-image: theme('backgroundImage.bg1');
+        background-image: theme('backgroundImage.default');
         background-repeat: no-repeat;
         background-size: cover;
         background-attachment: fixed;
