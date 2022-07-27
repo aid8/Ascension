@@ -260,7 +260,8 @@ Parse.Cloud.define("RewardTrophy", async(request) => {
     studentQuery.equalTo("objectId", argument.StudentID);
     const res1 = await studentQuery.first();
     var trophiesIDUnlocked = res1.get("TrophiesIDUnlocked");
-    var studentXP = res1.get("XP");
+    //Add XP for student
+    await Parse.Cloud.run("ModifyStudentXP", {"StudentID" : res1.id, "XP" : trophyXP});
 
     //Gibo ning reward object, set si trophyID as rewardID
     const Reward = Parse.Object.extend("Reward");
@@ -271,9 +272,7 @@ Parse.Cloud.define("RewardTrophy", async(request) => {
         "DateRewarded" : Global.getDateToday(),
     }).then(async(obj)=>{
         trophiesIDUnlocked.push(obj.id);
-        studentXP += trophyXP;
         res1.set("TrophiesIDUnlocked", trophiesIDUnlocked);
-        res1.set("XP", studentXP);
         res1.save();
 
         //Call VerifyUltimateTrophy
@@ -330,16 +329,16 @@ Parse.Cloud.define("RemoveTrophy", async(request) =>{
     //GetRewardData
     const rewardData = JSON.parse(await Parse.Cloud.run("GetRewardData", argument));
     var trophyXP = rewardData.RewardData.TrophyPoints;
+    //SubtractXP for student
+    await Parse.Cloud.run("ModifyStudentXP", {"StudentID" : res.id, "XP" : -trophyXP});
 
     //UpdateStudent
     let rewards = res.get("TrophiesIDUnlocked");
-    let studentXP = res.get("XP");
     const index = rewards.indexOf(argument.RewardID);
     if(index > -1){
         rewards.splice(index, 1);
     }
     res.set("TrophiesIDUnlocked", rewards);
-    res.set("XP", studentXP - trophyXP);
 
     //Check if trophy is in ChosenTrophies
 

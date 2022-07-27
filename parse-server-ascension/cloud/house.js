@@ -216,18 +216,61 @@ Parse.Cloud.define("DeleteHouseMember", async(request) => {
     });
 });
 
+Parse.Cloud.define("GetHousesLeaderboard", async(_request) => {
+    const House = Parse.Object.extend("House");
+    const query = new Parse.Query(House);
+    query.descending("HouseXP");
+    const res = await query.find();
+    
+    //Add ranking
+    let rank = 1;
+    let lastXP = null;
+    for(var house of res){
+        let houseXP = house.get("HouseXP");
+        if(lastXP === null){
+            house.set("Ranking", rank);
+            lastXP = houseXP;
+            continue;
+        }
+        if(lastXP != houseXP){
+            rank += 1;
+        }
+        house.set("Ranking", rank);
+        lastXP = houseXP;
+    }
+    return JSON.stringify(res);
+});
+
 //Must specify id of House with name of "HouseID" and "Count" for max students
 //Returns list of students sorted by xp and firstname, with limit of "Count"
-Parse.Cloud.define("GetHouseLeaderboard", async(request) => {
+Parse.Cloud.define("GetHouseStudentLeaderboard", async(request) => {
     const Student = Parse.Object.extend("Student");
     const query = new Parse.Query(Student);
     const argument = request.params;
     query.equalTo("StudentHouseIDPointer", argument.HouseID);
+    query.addDescending("XP");
+    query.addAscending("FirstName");
     if(argument.Count != null){
         query.limit = argument.Count;
     }
-    query.addAscending("XP");
-    query.addAscending("FirstName");
     const res = await query.find();
+
+    //Add ranking
+    let rank = 1;
+    let lastXP = null;
+    for(var student of res){
+        let studentXP = student.get("XP");
+        if(lastXP === null){
+            student.set("Ranking", rank);
+            lastXP = studentXP;
+            continue;
+        }
+        if(lastXP != studentXP){
+            rank += 1;
+        }
+        student.set("Ranking", rank);
+        lastXP = studentXP;
+    }
+
     return JSON.stringify(res);
 });
