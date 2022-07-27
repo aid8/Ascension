@@ -138,8 +138,8 @@
             <nav class="sticky top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
                 <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
                 <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold"><a class="text-gold text-[13px] hover:text-gold" href="#">PROFILE</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">QUEST</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentQuestPage">QUEST</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentLeaderboardPage">LEADERBOARDS</a></div>
                 <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentRequestPage">REQUEST</a></div>
                 <details class="absolute top-[10px] right-[10px] w-[170px]">
                     <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
@@ -147,7 +147,7 @@
                         <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" alt="Avatar" />
                     </summary>
                     <div class="bg-black/20 border-[1px] mt-[15px] border-gray">
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="">ACCOUNT SETTINGS</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
                         <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><button @click="logOut()" class="text-white text-[12px] hover:text-gold">SIGN OUT</button></div>
                     </div>
                 </details>
@@ -184,7 +184,7 @@
                                             <i class="fa-solid fa-shield-halved"></i>
                                         </div>
                                         <div class="text-gold flex flex-col items-center justify-center gap-1 cursor-default" title="Leaderboard placement">
-                                            <span class="text-[12px]">10</span>
+                                            <span class="text-[12px]">{{StudentData.Ranking}}</span>
                                             <i class="fa-solid fa-chart-simple"></i>
                                         </div>
                                     </div>
@@ -559,6 +559,8 @@
             async getAccountData(){
                 var param = {"StudentID" : this.currentUser.get("AccountID")};
                 this.StudentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
+                //Get Ranking
+                this.StudentData["Ranking"] = JSON.parse(await Parse.Cloud.run("GetStudentLeaderboardRanking", param)).Ranking;
 
                 //Get unacquired cosmetics
                 param["CosmeticType"] = "Avatar";

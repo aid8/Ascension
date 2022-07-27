@@ -248,7 +248,9 @@ Parse.Cloud.define("RewardBadge", async(request) => {
     studentQuery.equalTo("objectId", argument.StudentID);
     const res1 = await studentQuery.first();
     var badgesIDEarned = res1.get("BadgesIDEarned");
-    var studentXP = res1.get("XP");
+
+    //Add XP for student
+    await Parse.Cloud.run("ModifyStudentXP", {"StudentID" : res1.id, "XP" : badgeXP});
 
     //Create a reward object, set rewardID as badgeID
     const Reward = Parse.Object.extend("Reward");
@@ -259,9 +261,7 @@ Parse.Cloud.define("RewardBadge", async(request) => {
         "DateRewarded" : Global.getDateToday(),
     }).then(async(obj)=>{
         badgesIDEarned.push(obj.id);
-        studentXP += badgeXP;
         res1.set("BadgesIDEarned", badgesIDEarned);
-        res1.set("XP", studentXP);
         res1.save();
 
         //Then run trophy eligibility
@@ -327,14 +327,14 @@ Parse.Cloud.define("RemoveBadge", async(request) =>{
     var badgeXP = badgeData.RewardData.BadgePoints;
 
     //UpdateStudent
+    //Subtract XP for student
+    await Parse.Cloud.run("ModifyStudentXP", {"StudentID" : res.id, "XP" : -badgeXP});
     let rewards = res.get("BadgesIDEarned");
-    let studentXP = res.get("XP");
     const index = rewards.indexOf(argument.RewardID);
     if(index > -1){
         rewards.splice(index, 1);
     }
     res.set("BadgesIDEarned", rewards);
-    res.set("XP", studentXP - badgeXP);
     res.save().then(async()=>{
         //Then Run VerifyRemoval
         await Parse.Cloud.run("VerifyTrophyRemoval", argument);

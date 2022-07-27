@@ -378,3 +378,64 @@ Parse.Cloud.define("DisplayStudentXPTitle", async(request) => {
         console.log("Successfully Displayed/Hidden StudentXPTitle!");
     });
 });
+
+//If LeaderboardLimit is passed, then limit that query to that number
+Parse.Cloud.define("GetStudentsLeaderboard", async(request) => {
+    const Student = Parse.Object.extend("Student");
+    const query = new Parse.Query(Student);
+    const argument = request.params;
+    query.descending("XP");
+    if(argument.LeaderboardLimit !== undefined){
+        query.limit(argument.LeaderboardLimit);
+    }
+    var res = await query.find();
+    //Add ranking
+    let rank = 1;
+    let lastXP = null;
+    for(var student of res){
+        let studentXP = student.get("XP");
+        if(lastXP === null){
+            student.set("Ranking", rank);
+            lastXP = studentXP;
+            continue;
+        }
+        if(lastXP != studentXP){
+            rank += 1;
+        }
+        student.set("Ranking", rank);
+        lastXP = studentXP;
+    }
+    return JSON.stringify(res);
+});
+
+//StudentID
+Parse.Cloud.define("GetStudentLeaderboardRanking", async(request) =>{
+    const argument = request.params;
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type" : 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams);
+    var leaderboard = JSON.parse(await Parse.Cloud.run("GetStudentsLeaderboard"));
+    for(const student of leaderboard){
+        if(student.objectId === res.id){
+            return JSON.stringify(student);
+        }
+    }
+    return Promise.reject("Student Not Found");
+});
+
+//StudentID, XP
+Parse.Cloud.define("ModifyStudentXP", async(request) =>{
+    const argument = request.params
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams);
+    var newXP = res.get("XP") + argument.XP;
+    var ascensionTitleData = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", {"XpInput" : newXP}));
+    res.set("XP", newXP);
+    res.set("AscensionTitle", ascensionTitleData.AscensionName);
+    res.save();
+});
