@@ -81,19 +81,19 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "about" */ '../layouts/SignUpPage.vue')
   },
   {
-    path: '/StudentGiverPage',
-    name: 'StudentGiverPage',
-    component: () => import(/* webpackChunkName: "about" */ '../layouts/StudentGiverPage.vue')
-  },
-  {
     path: '/GiverNotifications',
     name: 'GiverNotifications',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverNotifications.vue')
   },
   {
-    path: '/GiverLeaderboardPage',
-    name: 'GiverLeaderboardPage',
-    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverLeaderboardPage.vue')
+    path: '/GiverStudentPage',
+    name: 'GiverStudentPage',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverNotifications.vue')
+  },
+  {
+    path: '/GiverHousePage',
+    name: 'GiverHousePage',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverHousePage.vue')
   },
 ]
 
