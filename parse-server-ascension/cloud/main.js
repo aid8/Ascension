@@ -12,6 +12,7 @@ require('./trophy.js');
 require('./cosmetic.js');
 require('./house.js');
 require('./request.js');
+require('./quest.js');
 require('./global.js');
 
 //Run this code to initialize global

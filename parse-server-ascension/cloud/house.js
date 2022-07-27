@@ -6,12 +6,19 @@ Parse.Cloud.define("AddHouse", async(request) => {
     const House = Parse.Object.extend("House");
     const house = new House();
     const argument = request.params;
+    
+    var convertedImage = {base64: argument.HouseLogo};
+    var parseFile = new Parse.File(argument.HouseLogoName, convertedImage);
 
-    house.save({
-        "HouseName" : argument.HouseName,
-        "HouseBannerIDPointer" : argument.HouseBannerIDPointer,
-    }).then(()=>{
-        console.log("Successfully added House!");
+    parseFile.save({ useMasterKey: true }).then(function(result) {
+        var link = result.url();
+        house.save({
+            "HouseName" : argument.HouseName,
+            "HouseLogo" : link,
+            "HouseBannerIDPointer" : argument.HouseBannerIDPointer,
+        }, { useMasterKey: true }).then(()=>{
+            console.log("Successfully added House!");
+        });
     });
 });
 
@@ -38,10 +45,10 @@ Parse.Cloud.define("EditHouse", async(request) => {
     }
     const res = await Parse.Cloud.run("GetHouseData", dataParams)
 
-    var list_of_attr = ["HouseName", "HouseBannerIDPointer", "HousePopulation", "HouseXP",
+    var list_of_attr = ["HouseName", "HouseLogo", "HouseBannerIDPointer", "HouseBadgesIDEarned", "HouseTrophiesIDUnlocked", "HousePopulation", "HouseXP",
     ];
     
-    var list_of_arguments =[argument.HouseName, argument.HouseBannerIDPointer, argument.HousePopulation, argument.HouseXP,
+    var list_of_arguments =[argument.HouseName, argument.HouseLogo, argument.HouseBannerIDPointer, argument.HouseBadgesIDEarned, argument.HouseTrophiesIDUnlocked, argument.HousePopulation, argument.HouseXP,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){

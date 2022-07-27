@@ -178,17 +178,36 @@
                             <option hidden value="">Select Banner</option>
                             <option v-for="banner in Banners" :key="banner.objectId" v-bind:value="banner.objectId">{{ banner.CosmeticName }}</option>
                         </select>
+                        <input @change="onHouseLogoSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="HouseFileUpload"/>
                         <div class="w-[400px] grid grid-cols-3 gap-2">
                             <input @click="deleteHouse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
                             <input @click="editHouse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
                             <input @click="addHouse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
+                    <!--quest-->
+                    <form class="grid justify-center py-[30px]" id="quests">
+                        <legend class="mb-[10px] text-white text-[13px]">QUEST</legend>
+                        <input v-model="QuestName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Quest Name" />
+                        <input v-model="QuestDescription" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Quest Description" />
+                        <input v-model="QuestPoints" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Quest Points" />
+                        <div class="mb-[10px]">
+                            <input v-model="QuestType" required class="align-middle mr-[5px]" type="radio" id="daily" value="Daily" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="daily">Daily Quest</label>
+                            <input v-model="QuestType" required class="align-middle mr-[5px]" type="radio" id="weekly" value="Weekly" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="weekly">Weekly Quest</label>
+                        </div>
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteQuest()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editQuest()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addQuest()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
                 </div>
                 <!--right section-->
                 <div class="col-span-1">
                     <!--sub navigation bar-->
-                    <nav class="grid grid-cols-8 col-span-1">
+                    <nav class="grid grid-cols-9 col-span-1">
                         <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'units', 'text-gold border-b-[1px] border-gold': openModifyTab === 'units'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('units')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'units', 'text-gold cursor-default': openModifyTab === 'units'}" href="#units" title="List of Units">UNITS</a></div>
                         <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'degrees', 'text-gold border-b-[1px] border-gold': openModifyTab === 'degrees'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('degrees')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'degrees', 'text-gold cursor-default': openModifyTab === 'degrees'}" href="#degrees" title="List of Degrees">DEGREES</a></div>
                         <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'courses', 'text-gold border-b-[1px] border-gold': openModifyTab === 'courses'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('courses')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'courses', 'text-gold cursor-default': openModifyTab === 'courses'}" href="#courses" title="List of Courses">COURSES</a></div>
@@ -197,6 +216,7 @@
                         <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'titles', 'text-gold border-b-[1px] border-gold': openModifyTab === 'titles'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('titles')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'titles', 'text-gold cursor-default': openModifyTab === 'titles'}" href="#title" title="List of Ascension Titles">TITLES</a></div>
                         <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'cosmetics', 'text-gold border-b-[1px] border-gold': openModifyTab === 'cosmetics'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('cosmetics')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'cosmetics', 'text-gold cursor-default': openModifyTab === 'cosmetics'}" href="#cosmetics" title="List of Cosmetics">COSMETICS</a></div>
                         <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'houses', 'text-gold border-b-[1px] border-gold': openModifyTab === 'houses'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('houses')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'houses', 'text-gold cursor-default': openModifyTab === 'houses'}" href="#house" title="List of Houses">HOUSES</a></div>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'quests', 'text-gold border-b-[1px] border-gold': openModifyTab === 'quests'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('quests')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'quests', 'text-gold cursor-default': openModifyTab === 'quests'}" href="#quest" title="List of Quests">QUESTS</a></div>
                     </nav>
                     <!--units tab-->
                     <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'units', 'block': openModifyTab === 'units'}">
@@ -373,6 +393,34 @@
                                     <!--number of population--> 
                                     <div class="flex justify-end items-center col-span-2 cursor-default">
                                         <span class="text-right mr-[10px] w-[auto]"><i class="mr-[5px] fa-solid fa-circle-user"></i>{{house.HousePopulation}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--quest tab-->
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'quests', 'block': openModifyTab === 'quests'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="quest in Quests" :key="quest.objectId" v-bind:value="quest.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectQuest(quest)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedQuestID === quest.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--text-->
+                                    <div class="flex col-span-2 cursor-default">
+                                        <div class="flex justify-center items-center w-[auto]">{{quest.QuestName}}</div>
+                                    </div>
+                                    <div class="flex col-span-2 cursor-default">
+                                        <div class="flex justify-center items-center w-[auto]">{{quest.QuestType}}</div>
+                                    </div>
+                                    <div class="flex col-span-2 cursor-default">
+                                        <div class="flex justify-center items-center w-[auto]">{{quest.QuestDescription}}</div>
+                                    </div>
+                                    <!--quest points--> 
+                                    <div class="flex justify-end items-center col-span-2 cursor-default">
+                                        <span class="text-right mr-[10px] w-[auto]"><i class="mr-[5px] fa-solid fa-circle-user"></i>{{quest.QuestPoints}}</span>
                                     </div>
                                 </div>
                             </li>
@@ -656,6 +704,7 @@
                 Houses: [],
                 Students: [],
                 Givers: [],
+                Quests: [],
 
                 //Unit Variables
                 UnitName: '',
@@ -710,6 +759,8 @@
 
                 //House Variables,
                 HouseName: '',
+                HouseLogo: '',
+                HouseLogoName: '',
                 HouseBannerIDPointer: '',
                 SelectedHouseID: '',
 
@@ -751,6 +802,13 @@
                 SelectedGiverID: '',
                 GiverSearch: '',
                 GiverSearchType: "FirstName",
+
+                //Quest Variables
+                QuestName: '',
+                QuestType: '',
+                QuestDescription: '',
+                QuestPoints: '',
+                SelectedQuestID: '',
             }
         },
 
@@ -847,6 +905,11 @@
                 }
             },
 
+            async getQuests(){
+                const res = JSON.parse(await Parse.Cloud.run("GetQuests"));
+                this.Quests = res;
+            },
+
             async getStudents(){
                 this.Students = [];
                 var res = JSON.parse(await Parse.Cloud.run("GetStudents"));
@@ -898,7 +961,7 @@
 
             checkIncompleteData(type){
                 if(type === "Unit"){
-                    return (this.UnitName === "" || this.UnitContactNumber === "" || this.UnitTpe === "");
+                    return (this.UnitName === "" || this.UnitContactNumber === "" || this.UnitType === "");
                 }
                 else if(type === "Degree"){
                     return (this.DegreeName === "" || this.DegreeUnitIDPointer === "");
@@ -932,6 +995,9 @@
                     return (this.SelectedGiverID === "" || this.GiverFirstName === "" || this.GiverMiddleName === ""
                     || this.GiverLastName === "" || this.GiverEmail === "" || this.GiverContactNum === ""
                     || this.GiverJobTitle === "" || this.GiverUnitIDPointer === "" || this.GiverType === "");
+                }
+                else if(type === "Quest"){
+                    return (this.QuestName === "" ||  this.QuestType === "" || this.QuestDescription === "" || this.QuestPoints === "");
                 }
                 return false;
             },
@@ -1598,12 +1664,14 @@
 
             //House Functions
             async addHouse(){
-                if(this.checkIncompleteData("House")){
+                if(this.checkIncompleteData("House") || this.HouseLogo === ""){
                     alert("Please completely fill out the form!");
                     return;
                 }
                 var params = {
                     "HouseName" : this.HouseName,
+                    "HouseLogo" : this.HouseLogo,
+                    "HouseLogoName" : this.HouseLogoName,
                     "HouseBannerIDPointer" : this.HouseBannerIDPointer,
                 }
                 await Parse.Cloud.run("AddHouse", params);
@@ -1614,10 +1682,19 @@
                 this.getHouses();
             },
 
+            async onHouseLogoSelected(e){
+                var file = e.target.files[0];
+                this.HouseLogoName = file.name;
+                this.getBase64(file).then(
+                    data => this.HouseLogo = data
+                );
+            },
+
             selectHouse(house){
                 if(this.SelectedHouseID !== house.objectId){
                     this.SelectedHouseID = house.objectId;
                     this.HouseName = house.HouseName;
+                    this.HouseLogo = house.HouseLogo;
                     this.HouseBannerIDPointer = house.HouseBannerIDPointer;
                 }
                 else{
@@ -1628,7 +1705,10 @@
             resetSelectedHouse(){
                 this.SelectedHouseID = "";
                 this.HouseName = "";
+                this.HouseLogo = "";
+                this.HouseLogoName = "";
                 this.HouseBannerIDPointer = "";
+                this.$refs.HouseFileUpload.value = null;
             },
 
             async editHouse(){
@@ -1640,6 +1720,11 @@
                     "HouseID" : this.SelectedHouseID,
                     "HouseName" : this.HouseName,
                     "HouseBannerIDPointer" : this.HouseBannerIDPointer,
+                }
+                //If image is provided to change
+                if(this.HouseLogoName != ""){
+                    params["HouseLogo"] = this.HouseLogo;
+                    params["HouseLogoName"] = this.HouseLogoName;
                 }
                 
                 await Parse.Cloud.run("EditHouse", params);
@@ -1667,6 +1752,90 @@
 
                     //Update houses
                     this.getHouses();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Quest Functions
+            async addQuest(){
+                if(this.checkIncompleteData("Quest")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "QuestName" : this.QuestName,
+                    "QuestType" : this.QuestType,
+                    "QuestDescription" : this.QuestDescription,
+                    "QuestPoints" : this.QuestPoints,
+                }
+                await Parse.Cloud.run("AddQuest", params);
+                alert("Added Quest");
+                this.resetSelectedQuest();
+
+                //Update quests
+                this.getQuests();
+            },
+
+            selectQuest(quest){
+                if(this.SelectedQuestID !== quest.objectId){
+                    this.SelectedQuestID = quest.objectId;
+                    this.QuestName = quest.QuestName;
+                    this.QuestType = quest.QuestType;
+                    this.QuestDescription = quest.QuestDescription;
+                    this.QuestPoints = quest.QuestPoints;
+                }
+                else{
+                    this.resetSelectedQuest();
+                }
+            },
+
+            resetSelectedQuest(){
+                this.SelectedQuestID = "";
+                this.QuestName = "";
+                this.QuestType = "";
+                this.QuestDescription = "";
+                this.QuestPoints = "";
+            },
+
+            async editQuest(){
+                if(this.checkIncompleteData("Quest")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "QuestID" : this.SelectedQuestID,
+                    "QuestName" : this.QuestName,
+                    "QuestType" : this.QuestType,
+                    "QuestDescription" : this.QuestDescription,
+                    "QuestPoints" : this.QuestPoints,
+                }
+                await Parse.Cloud.run("EditQuest", params);
+                alert("Edited Quest");
+                this.resetSelectedQuest();
+
+                //Update quests
+                this.getQuests();
+            },
+
+            async deleteQuest(){
+                if(this.SelectedQuestID === ""){
+                    alert("Please select a Quest to Delete!");
+                    return;
+                }
+                var params = {
+                    "QuestID" : this.SelectedQuestID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteQuest", params);
+                    alert("Deleted Quest!");
+                    this.resetSelectedQuest();
+
+                    //Update Quests
+                    this.getQuests();
                 }
                 catch(error){
                     alert(error.message);
@@ -1965,6 +2134,7 @@
             this.getHouses();
             this.getStudents();
             this.getGivers();
+            this.getQuests();
         },
 
         computed: {
