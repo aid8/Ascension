@@ -37,12 +37,16 @@ Parse.Cloud.afterSave("Student", async(request)=>{
         var params = {"XpInput" : 0};
         var xptitle = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", params));
         var defaultCosmetics = JSON.parse(await Parse.Cloud.run("GetGlobal"));
+        var StatusTitleIDPointer = await Parse.Cloud.run("AssignStatusTitle", student.YearLevel);   //To be tested
         return student.save({
             "RegisterDate" : Global.getDateToday(),
             "XP" : 0,
             "AscensionPoints" : 0,
             "BadgesIDEarned" : [],
             "TrophiesIDUnlocked" : [],
+            "StudentStatusTitleIDPointer" : StatusTitleIDPointer,
+            "StudentDailyQuestsID" : [],
+            "StudentWeeklyQuestsID": [],
             "ChosenTrophies" : [undefined, undefined, undefined],
             "AvatarsIDUnlocked" : [defaultCosmetics.DefaultAvatarID],
             "FrameIDUnlocked" : [defaultCosmetics.DefaultFrameID],
@@ -73,14 +77,14 @@ Parse.Cloud.define("EditStudent", async(request) =>{
                         "YearLevel", "StudentUnitIDPointer", "StudentDegreeIDPointer", "StudentCoursesIDPointer",
                         "XP", "AscensionPoints", "BadgesIDEarned", "TrophiesIDUnlocked", "ChosenTrophies",
                         "AvatarsIDUnlocked", "FrameIDUnlocked", "BannerID", "CoverPhotoIDUnlocked","AscensionTitle",
-                        "StudentHouseIDPointer", "EquippedCosmetics",
+                        "StudentStatusTitleIDPointer","StudentHouseIDPointer", "EquippedCosmetics",
     ];
     var list_of_arguments = [argument.FirstName, argument.MiddleName, argument.LastName, argument.Email, argument.ContactNumber,
                             argument.RegisterDate, argument.UserName, argument.Address, argument.SchoolID,
                             argument.YearLevel, argument.StudentUnitIDPointer, argument.StudentDegreeIDPointer, argument.StudentCoursesIDPointer,
                             argument.XP, argument.AscensionPoints, argument.BadgesIDEarned, argument.TrophiesIDUnlocked, argument.ChosenTrophies,
                             argument.AvatarsIDUnlocked, argument.FrameIDUnlocked, argument.BannerID, argument.CoverPhotoIDUnlocked, argument.AscensionTitle,
-                            argument.StudentHouseIDPointer, argument.EquippedCosmetics,
+                            argument.StatusTitleIDPointer, argument.StudentHouseIDPointer, argument.EquippedCosmetics,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){

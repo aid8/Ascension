@@ -271,6 +271,34 @@
     <button @click="test()">Delete Cosmetic</button><br>
     <hr>
 
+    <!-- ====== ADD STATUS TITLE BEGINS HERE ====== -->
+    <h3>Add Status Title</h3>
+    <span>Status Title Name: </span>
+    <input v-model="StatusTitleName" type="text"><br>
+    <span>Status Title Year Level: </span>
+    <input v-model="StatusTitleLevel" type="number"><br>
+    <span>Status Title Image: </span>
+    <input @change="onStatusTitleImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
+    <button @click="addStatusTitle()">Add Status Title</button><br>
+
+    <h3>Edit / Delete Status Title</h3>
+    <span>Status Title Name: </span>
+    <input v-model="NewStatusTitleName" type="text"><br>
+    <span>Status Title Year Level: </span>
+    <input v-model="NewStatusTitleLevel" type="number"><br>
+    <span>Status Title Image: </span>
+    <input @change="onNewStatusTitleImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
+    <button @click="editStatusTitle()">Edit Status Title</button><br>
+
+    <button @click="getStatusTitles()">Load Status Titles</button><br>
+    <ul v-if="ShowStatusTitles">
+        <li v-for="title in StatusTitles" :key="title.objectId">{{title.StatusTitleName}}
+        <button @click="getStatusTitle(title)">Edit</button>
+        <button @click="deleteStatusTitle(title.objectId)">Delete</button>
+        </li>
+    </ul>
+
+
     <h3>Others</h3>
     <button @click="homepage()">Go to hompeage</button><br>
 </template>
@@ -372,6 +400,17 @@
                 SelectedCoverPhoto : '',
                 SelectedBanner : '',
 
+                //Status Title Variables
+                StatusTitleName : '',
+                StatusTitleLevel : 0,
+                StatusTitleImage : '',
+                StatusTitleImageName : '',
+                NewStatusTitleName : '',
+                NewStatusTitleLevel : 0,
+                NewStatusTitleImage : '',
+                NewStatusTitleImageName : '',
+                StatusTitles : '',
+                
                 //Other Variables
                 Degrees: [],
                 ShowRelevantDegrees: false,
@@ -380,6 +419,8 @@
                 ShowBadgesForTrophy: false,
                 NewShowBadgesForTrophy: false,
                 ShowTrophies: false,
+                ShowStatusTitles: false,
+                ShowStatusTitlesForStudent: false,
             }
         },
         components:{
@@ -398,6 +439,70 @@
                     console.log(error.message);
                 }
                 console.log("B");
+            },
+
+            //StatusTitle Functions
+            async addStatusTitle(){
+                var params = {
+                    "StatusTitleName": this.StatusTitleName,
+                    "StatusTitleLevel" : this.StatusTitleLevel,
+                    "StatusTitleImage": this.StatusTitleImage,
+                }
+                await Parse.Cloud.run("AddStatusTitle", params).then(alert("Added StatusTitle"));
+            },
+
+            async onStatusTitleImageSelected(e){
+                var file = e.target.files[0];
+                this.StatusTitleImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.StatusTitleImage = data
+                );
+            },
+
+            async onNewStatusTitleImageSelected(e){
+                var file = e.target.files[0];
+                this.NewStatusTitleImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.NewStatusTitleImage = data
+                );
+            },
+
+            async editStatusTitle(){
+                this.ShowTrophies = false
+                var params = {
+                    "StatusTitleID" : this.NewStatusTitleID,
+                    "StatusTitleName": this.NewStatusTitleName,
+                    "StatusTitleLevel" : this.NewStatusTitleLevel,
+                    "StatusTitleImage": this.NewStatusTitleImage,
+                }
+                if(this.NewStatusTitleImageName != ""){
+                    params["StatusTitleImageName"] = this.NewStatusTitleImageName;
+                }
+                await Parse.Cloud.run("EditStatusTitle", params).then(alert("Edited StatusTitle"));
+            },
+            
+            async deleteStatusTitle(id){
+                var params = {
+                    "StatusTitleID": id
+                }
+                try{
+                    await Parse.Cloud.run("DeleteStatusTitle", params).then(alert("Deleted StatusTitle"));
+                }
+                catch(e){
+                    alert(e.message);
+                }
+            },
+
+            async getStatusTitle(StatusTitle){
+                this.NewStatusTitleID = StatusTitle.objectId;
+                this.NewStatusTitleName = StatusTitle.StatusTitleName
+                this.NewStatusTitleLevel = StatusTitle.StatusTitleLevel,
+                this.NewStatusTitleImage = StatusTitle.StatusTitleImage
+            },
+
+            async getStatusTitles(){
+                this.ShowStatusTitles = true
+                this.StatusTitles = JSON.parse(await Parse.Cloud.run("GetStatusTitles"))
             },
 
             //Unit Functions

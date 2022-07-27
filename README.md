@@ -457,6 +457,31 @@
         Parameters: 
         Purpose: Get all the Announcements saved in the database.
 
+    STATUS TITLE ENTITY
+        Function: AddStatusTitle()
+        Parameters: StatusTitleName, StatusTitleLevel, StatusTitleImage, StatusTitleImageName
+        Purpose: Saves a status title object to the database
+
+        Function: EditStatusTitle()
+        Parameters: StatusTitleID,  StatusTitleName, StatusTitleLevel, StatusTitleImage, StatusTitleImageName
+        Purpose: Edit the attribute/s of the announcement
+
+        Function: DeleteStatusTitle()
+        Parameters: StatusTitleID
+        Purpose: Deletes the status title object from the database
+
+        Function: GetStatusTitleData()
+        Parameters: StatusTitleID, Type
+        Purpose: Retrieve the data stored in StatusTitle object, or returns query's result if Type is equal to 1
+
+        Function: GetStatusTitles()
+        Parameters: 
+        Purpose: Get all the status titles saved in the database.
+
+        Function: AssignStatusTitle()
+        Parameters: StudentID
+        Purpose: Assigns a student object with a status title
+
     OTHER FUNCTIONS
         Function: GetRewardData()
         Parameters: RewardID

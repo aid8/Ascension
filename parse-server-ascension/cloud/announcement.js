@@ -78,7 +78,6 @@ Parse.Cloud.define("GetAnnouncementData", async(request) => {
 Parse.Cloud.define("GetAnnouncements", async(request) =>{
     const Announcement = Parse.Object.extend("Announcement");
     const query = new Parse.Query(Degree);
-    const argument = request.params;
     const res = await query.find();
     return JSON.stringify(res);
 });
