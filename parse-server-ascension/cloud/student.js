@@ -55,7 +55,7 @@ Parse.Cloud.afterSave("Student", async(request)=>{
             "AscensionTitle" : xptitle.AscensionName,
             "StudentHouseIDPointer" : "",
             "EquippedCosmetics" : [defaultCosmetics.DefaultAvatarID, defaultCosmetics.DefaultFrameID, defaultCosmetics.DefaultCoverPhotoID], //set to default id [Avatar, Frame, CoverPhoto]
-            "StatusTitleID" : "",
+            "StudentStatusTitleIDPointer" : StatusTitleIDPointer,
             "StudentDailyQuestsID" : [],
             "StudentWeeklyQuestsID" : [],
         }).then(async(res)=>{
@@ -80,14 +80,14 @@ Parse.Cloud.define("EditStudent", async(request) =>{
                         "YearLevel", "StudentUnitIDPointer", "StudentDegreeIDPointer", "StudentCoursesIDPointer",
                         "XP", "AscensionPoints", "BadgesIDEarned", "TrophiesIDUnlocked", "ChosenTrophies",
                         "AvatarsIDUnlocked", "FrameIDUnlocked", "BannerID", "CoverPhotoIDUnlocked","AscensionTitle",
-                        "StudentHouseIDPointer", "EquippedCosmetics", "StatusTitleIDPointer", "StudentDailyQuestsID", "StudentWeeklyQuestsID",
+                        "StudentHouseIDPointer", "EquippedCosmetics", "StudentStatusTitleIDPointer", "StudentDailyQuestsID", "StudentWeeklyQuestsID",
     ];
     var list_of_arguments = [argument.FirstName, argument.MiddleName, argument.LastName, argument.Email, argument.ContactNumber,
                             argument.RegisterDate, argument.UserName, argument.Address, argument.SchoolID,
                             argument.YearLevel, argument.StudentUnitIDPointer, argument.StudentDegreeIDPointer, argument.StudentCoursesIDPointer,
                             argument.XP, argument.AscensionPoints, argument.BadgesIDEarned, argument.TrophiesIDUnlocked, argument.ChosenTrophies,
                             argument.AvatarsIDUnlocked, argument.FrameIDUnlocked, argument.BannerID, argument.CoverPhotoIDUnlocked, argument.AscensionTitle,
-                            argument.StudentHouseIDPointer, argument.EquippedCosmetics, argument.StatusTitleIDPointer, argument.StudentDailyQuestsID, argument.StudentWeeklyQuestsID,
+                            argument.StudentHouseIDPointer, argument.EquippedCosmetics, argument.StudentStatusTitleIDPointer, argument.StudentDailyQuestsID, argument.StudentWeeklyQuestsID,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
