@@ -4,7 +4,7 @@
         Function: AddStudent()
         Parameters: FirstName, MiddleName, LastName, Email, ContactNumber, 
                     UserName, Address, SchoolID, YearLevel, StudentUnitIDPointer, 
-                    StudentDegreeIDPointer, StudentCoursesIDPointer,
+                    StudentDegreeIDPointer, StudentCoursesIDPointer
         Purpose: Save the student object into the database
 
         Function: afterSave(Student)
@@ -13,7 +13,7 @@
                     TrophiesIDUnlocked(Check RewardTrophy() function: Array of RewardIDs where Reward consists of TrophyID, RewardType:Trophy, DateRewarded), 
                     ChosenTrophies, AvatarsIDUnlocked, FrameIDUnlocked, 
                     BannerID, CoverPhotoIDUnlocked, AscensionTitle,
-                    StudentHouseIDPointer, EquippedCosmetics
+                    StudentHouseIDPointer, EquippedCosmetics, , StatusTitleID, StudentDailyQuestsID, StudentWeeklyQuestsID
         Purpose: Add the other attributes only 'after' the student object is saved
 
         Function: EditStudent()
@@ -352,7 +352,7 @@
 
     HOUSE ENTITY
         Function: AddHouse()
-        Parameters:  HouseName, HouseBannerIDPointer
+        Parameters:  HouseName, HouseBannerIDPointer, HouseLogo, HouseLogoName
         Purpose: Save the house object into the database
 
         Function: afterSave(House)
@@ -456,6 +456,31 @@
         Function: GetAnnouncements()
         Parameters: 
         Purpose: Get all the Announcements saved in the database.
+    
+    QUEST ENTITY
+        Function: AddQuest()
+        Parameters: QuestName, QuestType, QuestDescription, QuestPoints
+        Purpose: Saves a quest object to the database
+
+        Function: EditQuest()
+        Parameters: QuestID, Attribute/s to be edited, New value/s
+        Purpose: Edit the attribute/s of the quest
+
+        Function: DeleteQuest()
+        Parameters: QuestID
+        Purpose: Delete the Quest from the database
+
+        Function: GetQuestData()
+        Parameters: QuestID
+        Purpose: Retrieve the data stored in Quest object, or returns query's result if Type is equal to 1
+
+        Function: GetQuests()
+        Parameters: 
+        Purpose: Get all the Quests saved in the database.
+
+        Function: GetRandomQuests()
+        Parameters: QuestType, NumOfQuests
+        Purpose: Returns random set of quests based on Type and Number of quests
 
     STATUS TITLE ENTITY
         Function: AddStatusTitle()
