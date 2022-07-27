@@ -15,7 +15,6 @@ Parse.Cloud.define("AddStudent", async(request) => {
         "Address" : argument.Address,
         "SchoolID" : argument.SchoolID,
         "YearLevel" : argument.YearLevel,
-        "StudentStatusTitleIDPointer" : argument.StatusTitleIDPointer,
         "StudentUnitIDPointer" : argument.StudentUnitIDPointer,
         "StudentDegreeIDPointer" : argument.StudentDegreeIDPointer,
         "StudentCoursesIDPointer" : argument.StudentCoursesIDPointer,
@@ -38,12 +37,16 @@ Parse.Cloud.afterSave("Student", async(request)=>{
         var params = {"XpInput" : 0};
         var xptitle = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", params));
         var defaultCosmetics = JSON.parse(await Parse.Cloud.run("GetGlobal"));
+        var StatusTitleIDPointer = await Parse.Cloud.run("AssignStatusTitle", student.YearLevel);   //To be tested
         return student.save({
             "RegisterDate" : Global.getDateToday(),
             "XP" : 0,
             "AscensionPoints" : 0,
             "BadgesIDEarned" : [],
             "TrophiesIDUnlocked" : [],
+            "StudentStatusTitleIDPointer" : StatusTitleIDPointer,
+            "StudentDailyQuestsID" : [],
+            "StudentWeeklyQuestsID": [],
             "ChosenTrophies" : [undefined, undefined, undefined],
             "AvatarsIDUnlocked" : [defaultCosmetics.DefaultAvatarID],
             "FrameIDUnlocked" : [defaultCosmetics.DefaultFrameID],

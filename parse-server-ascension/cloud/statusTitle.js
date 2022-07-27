@@ -1,4 +1,6 @@
-//Must test all functions (create a section in a AdminPage for testing)
+//TO DO:
+//Must add logic to avoid having titles with the same (year) level
+//Test AssignStatusTitle()
 
 Parse.Cloud.define("AddStatusTitle", async(request) => {
     const argument = request.params;
@@ -12,6 +14,7 @@ Parse.Cloud.define("AddStatusTitle", async(request) => {
         var link = result.url();
         statusTitle.save({
             "StatusTitleName" : argument.StatusTitleName,
+            "StatusTitleLevel" : argument.StatusTitleLevel,
             "StatusTitleImage" : link,
         }, { useMasterKey: true }).then(()=>{
             console.log("Successfully added Status Title!");
@@ -28,6 +31,7 @@ Parse.Cloud.define("EditStatusTitle", async(request) =>{
     const res = await Parse.Cloud.run("GetStatusTitleData", dataParams)
 
     res.set("StatusTitleName", argument.StatusTitleName)
+    res.set("StatusTitleLevel", argument.StatusTitleLevel);
 
     if(argument.StatusTitleImage != null && argument.StatusTitleImageName != null){
         //Delete old image
@@ -95,3 +99,22 @@ Parse.Cloud.define("GetStatusTitles", async(request) =>{
     const res = await query.find();
     return JSON.stringify(res);
 });
+
+//StudentID must be passed
+Parse.Cloud.define("AssignStatusTitle", async(request) =>{
+    const argument = request.params;
+    var params = {
+        "StudentID": argument.StudentID,
+        "Type" : 1,
+    }
+    const student = await Parse.Cloud.run("GetStudentData", params);
+
+    const statusTitles = await Parse.Cloud.run("GetStatusTitles", params);
+
+    for(const title of statusTitles){
+        if(title.StatusTitleLevel == student.YearLevel){
+            return title.objectId;
+        }
+    }
+    
+})
