@@ -61,6 +61,18 @@
         Parameters: 
         Purpose: Get all the students saved in the database. Useful when in need of removing non-existing objects the students have relationship with, editing the attributes of students, or just checking the list of students
 
+        Function: GetStudentsLeaderboard()
+        Parameters: LeaderboardLimit
+        Purpose: Gets the Overall student leaderboard list which can be limited by LeaderboardLimit
+
+        Function: GetStudentLeaderboardRanking()
+        Parameters: StudentID
+        Purpose: Gets the ranking of the student
+
+        Function: ModifyStudentXP()
+        Parameters: StudentID, XP
+        Purpose: Modifies the XP of the student and Automatically sets the AscensionTitle of the student
+
     TEACHER ENTITY  (Almost same with NT_DISTRIBUTOR entity)
         Function: AddTeacher()
         Parameters: FirstName, MiddleName, LastName, Email, ContactNumber, 
@@ -379,7 +391,11 @@
         Parameters: HouseID, StudentID
         Purpose: Remove the student as a member of the house. Minus 1 to the total population of the house
 
-        Function: GetHouseLeaderboard()
+        Function: GetHousesLeaderboard
+        Parameters: 
+        Purpose: Returns list of houses sorted by XP and HouseName
+
+        Function: GetHouseStudentLeaderboard()
         Parameters: HouseID, Count (max number of students)
         Purpose: Returns list of students sorted by xp and firstname, with limit of "Count"
 
@@ -465,6 +481,31 @@
         Function: GetRandomQuests()
         Parameters: QuestType, NumOfQuests
         Purpose: Returns random set of quests based on Type and Number of quests
+
+    STATUS TITLE ENTITY
+        Function: AddStatusTitle()
+        Parameters: StatusTitleName, StatusTitleLevel, StatusTitleImage, StatusTitleImageName
+        Purpose: Saves a status title object to the database
+
+        Function: EditStatusTitle()
+        Parameters: StatusTitleID,  StatusTitleName, StatusTitleLevel, StatusTitleImage, StatusTitleImageName
+        Purpose: Edit the attribute/s of the announcement
+
+        Function: DeleteStatusTitle()
+        Parameters: StatusTitleID
+        Purpose: Deletes the status title object from the database
+
+        Function: GetStatusTitleData()
+        Parameters: StatusTitleID, Type
+        Purpose: Retrieve the data stored in StatusTitle object, or returns query's result if Type is equal to 1
+
+        Function: GetStatusTitles()
+        Parameters: 
+        Purpose: Get all the status titles saved in the database.
+
+        Function: AssignStatusTitle()
+        Parameters: StudentID
+        Purpose: Assigns a student object with a status title
 
     OTHER FUNCTIONS
         Function: GetRewardData()

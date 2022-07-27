@@ -37,12 +37,16 @@ Parse.Cloud.afterSave("Student", async(request)=>{
         var params = {"XpInput" : 0};
         var xptitle = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", params));
         var defaultCosmetics = JSON.parse(await Parse.Cloud.run("GetGlobal"));
+        var StatusTitleIDPointer = await Parse.Cloud.run("AssignStatusTitle", student.YearLevel);   //To be tested
         return student.save({
             "RegisterDate" : Global.getDateToday(),
             "XP" : 0,
             "AscensionPoints" : 0,
             "BadgesIDEarned" : [],
             "TrophiesIDUnlocked" : [],
+            "StudentStatusTitleIDPointer" : StatusTitleIDPointer,
+            "StudentDailyQuestsID" : [],
+            "StudentWeeklyQuestsID": [],
             "ChosenTrophies" : [undefined, undefined, undefined],
             "AvatarsIDUnlocked" : [defaultCosmetics.DefaultAvatarID],
             "FrameIDUnlocked" : [defaultCosmetics.DefaultFrameID],
@@ -76,14 +80,14 @@ Parse.Cloud.define("EditStudent", async(request) =>{
                         "YearLevel", "StudentUnitIDPointer", "StudentDegreeIDPointer", "StudentCoursesIDPointer",
                         "XP", "AscensionPoints", "BadgesIDEarned", "TrophiesIDUnlocked", "ChosenTrophies",
                         "AvatarsIDUnlocked", "FrameIDUnlocked", "BannerID", "CoverPhotoIDUnlocked","AscensionTitle",
-                        "StudentHouseIDPointer", "EquippedCosmetics", "StatusTitleID", "StudentDailyQuestsID", "StudentWeeklyQuestsID",
+                        "StudentHouseIDPointer", "EquippedCosmetics", "StatusTitleIDPointer", "StudentDailyQuestsID", "StudentWeeklyQuestsID",
     ];
     var list_of_arguments = [argument.FirstName, argument.MiddleName, argument.LastName, argument.Email, argument.ContactNumber,
                             argument.RegisterDate, argument.UserName, argument.Address, argument.SchoolID,
                             argument.YearLevel, argument.StudentUnitIDPointer, argument.StudentDegreeIDPointer, argument.StudentCoursesIDPointer,
                             argument.XP, argument.AscensionPoints, argument.BadgesIDEarned, argument.TrophiesIDUnlocked, argument.ChosenTrophies,
                             argument.AvatarsIDUnlocked, argument.FrameIDUnlocked, argument.BannerID, argument.CoverPhotoIDUnlocked, argument.AscensionTitle,
-                            argument.StudentHouseIDPointer, argument.EquippedCosmetics, argument.StatusTitleID, argument.StudentDailyQuestsID, argument.StudentWeeklyQuestsID,
+                            argument.StudentHouseIDPointer, argument.EquippedCosmetics, argument.StatusTitleIDPointer, argument.StudentDailyQuestsID, argument.StudentWeeklyQuestsID,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
@@ -380,4 +384,65 @@ Parse.Cloud.define("DisplayStudentXPTitle", async(request) => {
     res.save().then(()=>{
         console.log("Successfully Displayed/Hidden StudentXPTitle!");
     });
+});
+
+//If LeaderboardLimit is passed, then limit that query to that number
+Parse.Cloud.define("GetStudentsLeaderboard", async(request) => {
+    const Student = Parse.Object.extend("Student");
+    const query = new Parse.Query(Student);
+    const argument = request.params;
+    query.descending("XP");
+    if(argument.LeaderboardLimit !== undefined){
+        query.limit(argument.LeaderboardLimit);
+    }
+    var res = await query.find();
+    //Add ranking
+    let rank = 1;
+    let lastXP = null;
+    for(var student of res){
+        let studentXP = student.get("XP");
+        if(lastXP === null){
+            student.set("Ranking", rank);
+            lastXP = studentXP;
+            continue;
+        }
+        if(lastXP != studentXP){
+            rank += 1;
+        }
+        student.set("Ranking", rank);
+        lastXP = studentXP;
+    }
+    return JSON.stringify(res);
+});
+
+//StudentID
+Parse.Cloud.define("GetStudentLeaderboardRanking", async(request) =>{
+    const argument = request.params;
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type" : 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams);
+    var leaderboard = JSON.parse(await Parse.Cloud.run("GetStudentsLeaderboard"));
+    for(const student of leaderboard){
+        if(student.objectId === res.id){
+            return JSON.stringify(student);
+        }
+    }
+    return Promise.reject("Student Not Found");
+});
+
+//StudentID, XP
+Parse.Cloud.define("ModifyStudentXP", async(request) =>{
+    const argument = request.params
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams);
+    var newXP = res.get("XP") + argument.XP;
+    var ascensionTitleData = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", {"XpInput" : newXP}));
+    res.set("XP", newXP);
+    res.set("AscensionTitle", ascensionTitleData.AscensionName);
+    res.save();
 });
