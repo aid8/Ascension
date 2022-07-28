@@ -1,9 +1,17 @@
-//TO DO:
-//Must add logic to avoid having titles with the same (year) level
-//Test AssignStatusTitle()
-
 Parse.Cloud.define("AddStatusTitle", async(request) => {
     const argument = request.params;
+    
+    const titles = JSON.parse(await Parse.Cloud.run("GetStatusTitles"));
+    for(const title of titles){
+        console.log("Arguemnt: " + argument.StatusTitleLevel)
+        console.log("Title " + title.StatusTitleLevel)
+        if(argument.StatusTitleLevel == title.StatusTitleLevel){
+            console.log("Error: A status title already has this year level!")
+            return
+            // return Promise.reject("Error: A status title already has this year level!")
+        }
+    }
+
     const StatusTitle = Parse.Object.extend("StatusTitle");
     const statusTitle = new StatusTitle();
 
@@ -22,6 +30,7 @@ Parse.Cloud.define("AddStatusTitle", async(request) => {
     });
 });
 
+
 Parse.Cloud.define("EditStatusTitle", async(request) =>{
     const argument = request.params
     const dataParams = {
@@ -32,6 +41,17 @@ Parse.Cloud.define("EditStatusTitle", async(request) =>{
 
     res.set("StatusTitleName", argument.StatusTitleName)
     res.set("StatusTitleLevel", argument.StatusTitleLevel);
+
+    const titles = JSON.parse(await Parse.Cloud.run("GetStatusTitles"));
+    for(const title of titles){
+        if(argument.StatusTitleLevel == title.StatusTitleLevel){
+            if(argument.StatusTitleID != title.objectId){
+                console.log("Error: A status title already has this year level!")
+                return
+                // return Promise.reject("Error: A status title already has this year level!")
+            }
+        }
+    }
 
     if(argument.StatusTitleImage != null && argument.StatusTitleImageName != null){
         //Delete old image
@@ -103,16 +123,16 @@ Parse.Cloud.define("GetStatusTitles", async(request) =>{
 //StudentID must be passed
 Parse.Cloud.define("AssignStatusTitle", async(request) =>{
     const argument = request.params;
-    var params = {
-        "StudentID": argument.StudentID,
-        "Type" : 1,
-    }
-    const student = await Parse.Cloud.run("GetStudentData", params);
+    // var params = {
+    //     "StudentID": argument.StudentID,
+    //     "Type" : 1,
+    // }
+    // const student = JSON.parse(await Parse.Cloud.run("GetStudentData", params));
 
-    const statusTitles = await Parse.Cloud.run("GetStatusTitles", params);
+    const statusTitles = JSON.parse(await Parse.Cloud.run("GetStatusTitles"));
 
     for(const title of statusTitles){
-        if(title.StatusTitleLevel == student.YearLevel){
+        if(title.StatusTitleLevel == argument.YearLevel){
             return title.objectId;
         }
     }

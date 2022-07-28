@@ -4,7 +4,8 @@ Parse.Cloud.define("AddStudent", async(request) => {
     const Student = Parse.Object.extend("Student");
     const student = new Student();
     const argument = request.params;
-
+    var param = {"YearLevel" : argument.YearLevel}
+    const StatusTitleIDPointer = await Parse.Cloud.run("AssignStatusTitle", param);
     student.save({
         "FirstName" : argument.FirstName,
         "MiddleName" : argument.MiddleName,
@@ -18,6 +19,7 @@ Parse.Cloud.define("AddStudent", async(request) => {
         "StudentUnitIDPointer" : argument.StudentUnitIDPointer,
         "StudentDegreeIDPointer" : argument.StudentDegreeIDPointer,
         "StudentCoursesIDPointer" : argument.StudentCoursesIDPointer,
+        "StudentStatusTitleIDPointer" : StatusTitleIDPointer,
     }).then(async (res)=>{
         var user = request.user;
         user.set("AccountID", res.id);
@@ -37,14 +39,12 @@ Parse.Cloud.afterSave("Student", async(request)=>{
         var params = {"XpInput" : 0};
         var xptitle = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", params));
         var defaultCosmetics = JSON.parse(await Parse.Cloud.run("GetGlobal"));
-        var StatusTitleIDPointer = await Parse.Cloud.run("AssignStatusTitle", student.YearLevel);   //To be tested
         return student.save({
             "RegisterDate" : Global.getDateToday(),
             "XP" : 0,
             "AscensionPoints" : 0,
             "BadgesIDEarned" : [],
             "TrophiesIDUnlocked" : [],
-            "StudentStatusTitleIDPointer" : StatusTitleIDPointer,
             "StudentDailyQuestsID" : [],
             "StudentWeeklyQuestsID": [],
             "ChosenTrophies" : [undefined, undefined, undefined],
@@ -55,14 +55,15 @@ Parse.Cloud.afterSave("Student", async(request)=>{
             "AscensionTitle" : xptitle.AscensionName,
             "StudentHouseIDPointer" : "",
             "EquippedCosmetics" : [defaultCosmetics.DefaultAvatarID, defaultCosmetics.DefaultFrameID, defaultCosmetics.DefaultCoverPhotoID], //set to default id [Avatar, Frame, CoverPhoto]
-            "StudentStatusTitleIDPointer" : StatusTitleIDPointer,
             "StudentDailyQuestsID" : [],
             "StudentWeeklyQuestsID" : [],
+            
         }).then(async(res)=>{
             //Run assign house
             params = {"StudentID" : res.id,};
             await Parse.Cloud.run("AssignHouse", params);
         });
+        
     }
 });
 
@@ -80,14 +81,14 @@ Parse.Cloud.define("EditStudent", async(request) =>{
                         "YearLevel", "StudentUnitIDPointer", "StudentDegreeIDPointer", "StudentCoursesIDPointer",
                         "XP", "AscensionPoints", "BadgesIDEarned", "TrophiesIDUnlocked", "ChosenTrophies",
                         "AvatarsIDUnlocked", "FrameIDUnlocked", "BannerID", "CoverPhotoIDUnlocked","AscensionTitle",
-                        "StudentHouseIDPointer", "EquippedCosmetics", "StudentStatusTitleIDPointer", "StudentDailyQuestsID", "StudentWeeklyQuestsID",
+                        "StudentHouseIDPointer", "EquippedCosmetics", "StudentDailyQuestsID", "StudentWeeklyQuestsID",
     ];
     var list_of_arguments = [argument.FirstName, argument.MiddleName, argument.LastName, argument.Email, argument.ContactNumber,
                             argument.RegisterDate, argument.UserName, argument.Address, argument.SchoolID,
                             argument.YearLevel, argument.StudentUnitIDPointer, argument.StudentDegreeIDPointer, argument.StudentCoursesIDPointer,
                             argument.XP, argument.AscensionPoints, argument.BadgesIDEarned, argument.TrophiesIDUnlocked, argument.ChosenTrophies,
                             argument.AvatarsIDUnlocked, argument.FrameIDUnlocked, argument.BannerID, argument.CoverPhotoIDUnlocked, argument.AscensionTitle,
-                            argument.StudentHouseIDPointer, argument.EquippedCosmetics, argument.StudentStatusTitleIDPointer, argument.StudentDailyQuestsID, argument.StudentWeeklyQuestsID,
+                            argument.StudentHouseIDPointer, argument.EquippedCosmetics, argument.StudentDailyQuestsID, argument.StudentWeeklyQuestsID,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
@@ -96,6 +97,10 @@ Parse.Cloud.define("EditStudent", async(request) =>{
         }
     }
 
+    var param = {"YearLevel" : argument.YearLevel}
+    const StatusTitleIDPointer = await Parse.Cloud.run("AssignStatusTitle", param);
+    res.set("StudentStatusTitleIDPointer", StatusTitleIDPointer)
+    
     res.save().then(()=>{
         console.log("Successfully Edited Student");
     });
