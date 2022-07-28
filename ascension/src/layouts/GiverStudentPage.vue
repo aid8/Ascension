@@ -13,6 +13,7 @@
     .remove-scroll::-webkit-scrollbar{
         display: none;
     }
+
 /*100vh*/
 </style>
 
@@ -22,12 +23,13 @@
         <main class="min-w-[1000px]">
             <!--pop up menu for giving badges-->
             <div class="absolute top-0 flex items-center justify-center min-w-[1000px] min-h-[600px] w-full h-[100vh] bg-black/20 backdrop-blur-[20px] z-50" v-bind:class="{'hidden': activePopUpTab === true, 'hidden': activePopUpTab === false}">
+                
                 <div class="flex items-center justify-center w-full h-full">
                     <div class="relative flex flex-row items-center justify-center gap-3 bg-black/20 border-[1px] border-gray px-[12px] w-[700px] h-[450px]">
                         <!--go back button-->
                         <nav class="absolute top-0 flex flex-row items-center gap-3 w-full h-auto px-[10px] py-[5px]">
                             <a class="text-[15px] text-white hover:text-gold_hover active:text-gold_active" v-on:click="viewPopUpTab(false)" href="#"><i class="fa-solid fa-angle-left"></i></a>
-                            <span class="text-[15px] text-white">House Name</span>
+                            <span class="text-[15px] text-white">Username</span>
                         </nav>
                         <!--item inventory/list-->
                         <div class="inline-flex flex-col items-center justify-center gap-2 w-[70%] h-[370px]">
@@ -79,9 +81,9 @@
                 <a class="absolute left-[10px] z-[9]" href="/"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
 
                 <!--student page-->
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverStudentPage">STUDENT</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gold z-[9]"><a class="text-gold text-[13px]" href="GiverStudentPage">STUDENT</a></div>
                 <!--house page-->
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gold z-[9]"><a class="text-gold text-[13px]" href="GiverHousePage">HOUSE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverHousePage">HOUSE</a></div>
                 <!--leaderboard page-->
                 <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverLeaderboardPage">LEADERBOARDS</a></div>
                 <!--request page-->
@@ -99,52 +101,105 @@
             </nav>
             <!--main content-->
             <div class="absolute top-0 min-w-[1000px] min-h-[600px] w-full h-[100vh] pt-[80px] pb-[35px]">
-                <!--house section-->
-                <div class="flex flex-col items-center justify-start gap-3 w-full h-full">
+                <!--student section-->
+                <div class="flex flex-col items-center justify-start gap-3 min-h-[500px] w-full h-full">
+                    <!--selected user-->
+                    <div class="inline-flex flex-row items-center justify-center gap-3 bg-black/20 px-[20px] border-[1px] border-gray min-w-[1000px] w-[80%] h-auto">
+                        <!--avatar and personal info-->
+                        <div class="inline-flex flex-row gap-2 w-[45%]">
+                            <!--avatar and frame-->
+                            <div class="relative inline-flex items-center jutsify-center w-[150px] h-[150px]">
+                                <img class="absolute inset-0 m-auto rounded-full w-[105px] h-auto" src="../assets/img/avatar/avatar.jpg" />
+                                <img class="absolute inset-0 m-auto w-full h-full" src="../assets/img/frames/gear_frame.png" />
+                            </div>
+                            <!--personal info-->
+                            <div class="inline-flex flex-col items-start justify-center">
+                                <span class="text-[20px] text-gold">Username#123</span>
+                                <span class="text-[13px] text-white">Rondale Floyd Magtibay Bufete</span>
+                                <span class="text-[13px] text-white">123 Address</span>
+                                <span class="text-[13px] text-white">09516101009</span>
+                                <span class="text-[13px] text-white">rbufete@gbox.adnu.edu.ph</span>
+                            </div>
+                        </div>
+                        <div class="inline-flex flex-row items-center justify-end gap-5 w-[55%] h-full"> <!--graphics-->
+                            <!--status icon-->
+                            <div class="inline-flex justify-center w-auto h-auto">
+                                <img class="max-w-[130px] w-auto h-full" src="../assets/img/logo/status-logo.png" />
+                            </div>
+                            <!--banner-->
+                            <div class="inline-flex justify-center w-auto h-full">
+                                <img class="max-h-[200px] w-auto h-full" src="../assets/img/banner/liberalitas-banner.png" />
+                            </div>
+                            <!--top 3 trophies and recently obtained badges-->
+                            <div class="inline-flex flex-col items-center justify-center w-auto">
+                                <div class="inline-flex flex-row items-center justify-center gap-2 w-full">
+                                    <img class="w-[50px] h-auto" src="../assets/img/trophies/trophy_1.png" />
+                                    <img class="w-[50px] h-auto" src="../assets/img/trophies/trophy_1.png" />
+                                    <img class="w-[50px] h-auto" src="../assets/img/trophies/trophy_1.png" />
+                                </div>
+                                <span class="block border-gray border-b-[1px] my-[5px] mx-[auto] leading-[0.1px] w-[80%]"></span> <!--separator-->
+                                <div class="inline-flex flex-row items-center justify-center gap-2 w-full">
+                                    <img class="w-[30px] h-auto" src="../assets/img/badges/badge_1.png" />
+                                    <img class="w-[30px] h-auto" src="../assets/img/badges/badge_2.png" />
+                                    <img class="w-[30px] h-auto" src="../assets/img/badges/badge_3.png" />
+                                    <img class="w-[30px] h-auto" src="../assets/img/badges/badge_4.png" />
+                                    <img class="w-[30px] h-auto" src="../assets/img/badges/badge_5.png" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!--search bar and sorter-->
-                    <form class="flex flex-row items-center justify-start gap-5 min-w-[1000px] w-[80%] h-[35px]">
+                    <form class="flex flex-row items-center justify-start gap-5 min-w-[1000px] w-[80%] h-[55px]">
                         <!--search bar-->
-                        <input class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-full w-[200px] px-[10px]" type="search" placeholder="Search house..." />
+                        <input class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-full w-[200px] px-[10px]" type="search" placeholder="Search student..." />
                         <div class="flex flex-row items-center w-auto h-full gap-5">
                             <span class="text-[12px] text-white">Search By:</span>
                             <select class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-full w-[150px] px-[10px]">
-                                <option class="text-black">Name</option>
-                                <option class="text-black">Points</option>
-                                <option class="text-black">No. of Members</option>
+                                <option class="text-black">First Name</option>
+                                <option class="text-black">Last Name</option>
+                                <option class="text-black">Username</option>
+                                <option class="text-black">School ID</option>
                             </select>
                         </div>
                     </form>
-                    <!--house list-->
-                    <div class="flex flex-row items-center justify-center gap-3 w-[80%] h-full">
-                        <!--house list-->
+                    <!--student list-->
+                    <div class="flex flex-row items-center justify-center gap-3 min-w-[1000px] w-[80%] h-full">
+                        <!--student list-->
                         <div class="flex flex-col w-full h-full">
-                            <!--house list head container-->
-                            <ul class="flex flex-row border-x-[1px] border-t-[1px] border-gray w-full h-[5%] bg-black/50">
-                                <!--house leaderboard head row-->
+                            <!--student leaderboard head container-->
+                            <ul class="flex flex-row border-x-[1px] border-t-[1px] border-gray w-full max-h-full min-h-[25px] h-[5%] bg-black/50">
+                                <!--student leaderboard head row-->
                                 <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 h-full w-full">
-                                    <div class="flex items-center justify-center w-[35%] h-full text-white text-[12px]">NAME</div>
-                                    <div class="flex items-center justify-center w-[35%] h-full text-white text-[12px]">POINTS</div>
-                                    <div class="flex items-center justify-center w-[19%] h-full text-white text-[12px]">MEMBERS</div>
+                                    <div class="flex items-center justify-center w-[5%] h-full"></div> <!--space filler-->
+                                    <div class="flex items-center justify-center w-[40%] h-full text-white text-[12px]">NAME</div>
+                                    <div class="flex items-center justify-center w-[23%] h-full text-white text-[12px]">TITLE</div>
+                                    <div class="flex items-center justify-center w-[11%] h-full text-white text-[12px]">POINTS</div>
+                                    <div class="flex items-center justify-center w-[10%] h-full text-white text-[12px]">HOUSE</div>
                                     <div class="flex items-center justify-center w-[11%] h-full text-white text-[12px]">ACTION</div>
                                 </li>
                             </ul>
-                            <!--house list body-->
-                            <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-[95%] bg-black/20 overflow-y-scroll">
-                                <!--house leaderboard list row-->
-                                <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 w-full border-b-[1px] border-gray">
-                                    <!--house name and banner-->
-                                    <div class="flex items-center justify-start gap-3 w-[35%] h-full">
+                            <!--student leaderboard list body-->
+                            <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-full bg-black/20 overflow-y-scroll">
+                                <!--student leaderboard list row-->
+                                <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 w-full h-[55px] border-b-[1px] border-gray">
+                                    <div class="flex items-center justify-center gap-2 w-[5%] h-full">
+                                        <a class="text-[25px] text-white" href="#"><i class="fa-solid fa-eye"></i></a>
+                                    </div>
+                                    <div class="flex items-center justify-start gap-2 w-[40%] h-full">
                                         <!--image-->
-                                        <div class="relative w-[40px] h-full flex items-center justify-center">
-                                            <img class="w-[35px] h-auto" src="../assets/img/banner/liberalitas-banner.png" />
+                                        <div class="relative w-[50px] h-[50px] flex items-center justify-center">
+                                            <img class="w-[35px] rounded-full h-auto" src="../assets/img/avatar/avatar.jpg" />
+                                            <img class="absolute inset-0 m-auto w-full h-full" src="../assets/img/frames/gear_frame.png" />
                                         </div>
                                         <!--text-->
-                                        <strong class="text-white text-[15px]">Liberalitas</strong>
+                                        <div class="inline-flex flex-col">
+                                            <strong class="text-white text-[15px]">Username#123</strong>
+                                            <span class="text-white text-[13px]">Rondale Floyd Magtibay Bufete</span>
+                                        </div>
                                     </div>
-                                    <!--house points-->
-                                    <div class="flex items-center justify-center w-[35%] h-full"><span class="text-white text-[13px]">999999</span></div>
-                                    <!--house members-->
-                                    <div class="flex items-center justify-center w-[19%] h-full"><span class="text-white text-[13px]">999</span></div>
+                                    <div class="flex items-center justify-center w-[23%] h-full"><span class="text-white text-[13px]">Official Knight of the Round Order</span></div>
+                                    <div class="flex items-center justify-center w-[11%] h-full"><span class="text-white text-[13px]">999999</span></div>
+                                    <div class="flex items-center justify-center w-[10%] h-full"><span class="text-white text-[13px]">Fides</span></div>
                                     <!--give badge to house button-->
                                     <div class="flex items-center justify-center w-[11%] h-full">
                                         <button class="bg-blue text-white text-[12px] hover:bg-blue_hover w-[100px] py-[8px] active:bg-blue_active" v-on:click="viewPopUpTab(true)">GIVE BADGE</button>
@@ -162,6 +217,7 @@
 <script>
     import Parse from 'parse';
     import '/src/assets/css/tailwind.css';
+
     export default {
         data(){
             return{
