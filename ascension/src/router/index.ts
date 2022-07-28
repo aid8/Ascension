@@ -95,6 +95,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'GiverHousePage',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverHousePage.vue')
   },
+  {
+    path: '/GiverLeaderboardPage',
+    name: 'GiverLeaderboardPage',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverLeaderboardPage.vue')
+  },
 ]
 
 const router = createRouter({
