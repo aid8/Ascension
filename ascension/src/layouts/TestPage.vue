@@ -186,7 +186,7 @@
                         </div>
                     </form>
                     <!--quest-->
-                    <form class="grid justify-center py-[30px]" id="quests">
+                    <form class="grid justify-center py-[30px]" id="quest">
                         <legend class="mb-[10px] text-white text-[13px]">QUEST</legend>
                         <input v-model="QuestName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Quest Name" />
                         <input v-model="QuestDescription" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Quest Description" />
@@ -203,6 +203,41 @@
                             <input @click="addQuest()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
+                    <!--Status Title-->
+                    <form class="grid justify-center py-[30px]" id="status">
+                        <legend class="mb-[10px] text-white text-[13px]">STATUS TITLE</legend>
+                        <input v-model="StatusTitleName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Status Title Name" />
+                        <input v-model="StatusTitleLevel" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Status Title Level" />
+                        <input @change="onStatusTitleImageSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="StatusTitleFileUpload"/>
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteStatusTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editStatusTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addStatusTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--Quest Reward-->
+                    <form class="grid justify-center py-[30px]" id="rewards">
+                        <legend class="mb-[10px] text-white text-[13px]">QUEST REWARD</legend>
+                        <select v-model="RewardCosmeticType" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
+                            <option hidden value="">Reward Type</option>
+                            <option class="text-black" value="Avatar">Avatar</option>
+                            <option class="text-black" value="Frame">Frames</option>
+                            <option class="text-black" value="Banner">Banner</option>
+                            <option class="text-black" value="CoverPhoto" >Background</option>
+                        </select>
+                        <select v-model="RewardCosmeticID" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
+                            <option hidden value="">Choose Cosmetic Reward</option>
+                            <template v-for="cosmetic in Cosmetics" :key="cosmetic">
+                                <option v-if="cosmetic.CosmeticType === RewardCosmeticType" v-bind:value="cosmetic.objectId">{{cosmetic.CosmeticName}}</option>
+                            </template>
+                        </select>
+                        <input v-model="RequiredAscensionPoints" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Required Ascension Points" />
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteQuestReward()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editQuestReward()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addQuestReward()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
                 </div>
                 <!--right section-->
                 <div class="col-span-1">
@@ -217,6 +252,8 @@
                         <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'cosmetics', 'text-gold border-b-[1px] border-gold': openModifyTab === 'cosmetics'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('cosmetics')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'cosmetics', 'text-gold cursor-default': openModifyTab === 'cosmetics'}" href="#cosmetics" title="List of Cosmetics">COSMETICS</a></div>
                         <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'houses', 'text-gold border-b-[1px] border-gold': openModifyTab === 'houses'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('houses')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'houses', 'text-gold cursor-default': openModifyTab === 'houses'}" href="#house" title="List of Houses">HOUSES</a></div>
                         <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'quests', 'text-gold border-b-[1px] border-gold': openModifyTab === 'quests'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('quests')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'quests', 'text-gold cursor-default': openModifyTab === 'quests'}" href="#quest" title="List of Quests">QUESTS</a></div>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'status', 'text-gold border-b-[1px] border-gold': openModifyTab === 'status'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('status')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'status', 'text-gold cursor-default': openModifyTab === 'status'}" href="#status" title="List of Status Title">STATUS</a></div>
+                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'rewards', 'text-gold border-b-[1px] border-gold': openModifyTab === 'rewards'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('rewards')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'rewards', 'text-gold cursor-default': openModifyTab === 'rewards'}" href="#rewards" title="List of Rewards">REWARDS</a></div>
                     </nav>
                     <!--units tab-->
                     <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'units', 'block': openModifyTab === 'units'}">
@@ -386,6 +423,9 @@
                                     <!--image and text-->
                                     <div class="flex col-span-7 cursor-default">
                                         <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="House Logo" v-bind:src="house.HouseLogo" />
+                                        </div>
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
                                             <img class="w-[20px] h-[auto]" alt="House Logo" v-bind:src="house.HouseBanner" />
                                         </div>
                                         <div class="flex justify-center items-center w-[auto]">{{house.HouseName}}</div>
@@ -421,6 +461,57 @@
                                     <!--quest points--> 
                                     <div class="flex justify-end items-center col-span-2 cursor-default">
                                         <span class="text-right mr-[10px] w-[auto]"><i class="mr-[5px] fa-solid fa-circle-user"></i>{{quest.QuestPoints}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--Status Title tab-->
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'status', 'block': openModifyTab === 'status'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="statusTitle in StatusTitles" :key="statusTitle.objectId" v-bind:value="statusTitle.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectStatusTitle(statusTitle)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedStatusTitleID === statusTitle.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--image and text-->
+                                    <div class="flex col-span-7 cursor-default">
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="House Logo" v-bind:src="statusTitle.StatusTitleImage" />
+                                        </div>
+                                        <div class="flex justify-center items-center w-[auto]">{{statusTitle.StatusTitleName}}</div>
+                                    </div>
+                                    <!--number of population--> 
+                                    <div class="flex justify-end items-center col-span-2 cursor-default">
+                                        <span class="text-right mr-[10px] w-[auto]"><i class="mr-[5px] fa-solid fa-circle-user"></i>{{statusTitle.StatusTitleLevel}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--Quest Rewards Tab-->
+                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'rewards', 'block': openModifyTab === 'rewards'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="reward in QuestRewards" :key="reward.objectId" v-bind:value="reward.objectId">
+                                <!--whole item-->
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectQuestReward(reward)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedQuestRewardID === reward.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--image and text-->
+                                    <div class="flex col-span-7 cursor-default w-[100%]">
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img v-if="reward.CosmeticData !== undefined" class="w-[20px] h-[auto]" alt="Badge" v-bind:src="reward.CosmeticData.CosmeticImage" />
+                                        </div>
+                                        <div class="flex justify-center items-center w-[auto]">{{reward.RequiredAscensionPoints}}</div>
+                                    </div>
+                                    <!--reward type-->
+                                    <div class="flex justify-end items-center col-span-2 cursor-default text-right mr-[10px]">
+                                        <span class="w-[auto]">{{reward.RewardCosmeticType}}</span>
                                     </div>
                                 </div>
                             </li>
@@ -705,6 +796,8 @@
                 Students: [],
                 Givers: [],
                 Quests: [],
+                StatusTitles: [],
+                QuestRewards: [],
 
                 //Unit Variables
                 UnitName: '',
@@ -809,6 +902,19 @@
                 QuestDescription: '',
                 QuestPoints: '',
                 SelectedQuestID: '',
+
+                //StatusTitle Variables
+                StatusTitleName: '',
+                StatusTitleLevel: '',
+                StatusTitleImage: '',
+                StatusTitleImageName: '',
+                SelectedStatusTitleID: '',
+
+                //QuestReward Variables
+                RewardCosmeticID: '',
+                RewardCosmeticType: '',
+                RequiredAscensionPoints: '',
+                SelectedQuestRewardID: '',
             }
         },
 
@@ -910,6 +1016,23 @@
                 this.Quests = res;
             },
 
+            async getStatusTitles(){
+                const res = JSON.parse(await Parse.Cloud.run("GetStatusTitles"));
+                this.StatusTitles = res;
+            },
+
+            async getQuestRewards(){
+                this.QuestRewards = [];
+                var res = JSON.parse(await Parse.Cloud.run("GetQuestRewards"));
+
+                //Get Data of Cosmetic Reward
+                for(var questReward of res){
+                    var param = {"CosmeticID" : questReward.RewardCosmeticID};
+                    questReward["CosmeticData"] = JSON.parse(await Parse.Cloud.run("GetCosmeticData", param));
+                    this.QuestRewards.push(questReward);
+                }
+            },
+
             async getStudents(){
                 this.Students = [];
                 var res = JSON.parse(await Parse.Cloud.run("GetStudents"));
@@ -998,6 +1121,12 @@
                 }
                 else if(type === "Quest"){
                     return (this.QuestName === "" ||  this.QuestType === "" || this.QuestDescription === "" || this.QuestPoints === "");
+                }
+                else if(type === "StatusTitle"){
+                    return (this.StatusTitleName === "" || this.StatusTitleLevel === "");
+                }
+                else if(type === "QuestReward"){
+                    return (this.RewardCosmeticID === "" || this.RewardCosmeticType === "" || this.RequiredAscensionPoints === "");
                 }
                 return false;
             },
@@ -2120,6 +2249,184 @@
                     alert(error.message);
                 }
             },
+
+            //StatusTitle Functions
+            async addStatusTitle(){
+                if(this.checkIncompleteData("StatusTitle") || this.StatusTitleImage === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "StatusTitleName" : this.StatusTitleName,
+                    "StatusTitleLevel" : this.StatusTitleLevel,
+                    "StatusTitleImage" : this.StatusTitleImage,
+                    "StatusTitleImageName" : this.StatusTitleImageName,
+                }
+                await Parse.Cloud.run("AddStatusTitle", params);
+                alert("Added Status Title!");
+                this.resetSelectedStatusTitle();
+
+                //Update status titles
+                this.getStatusTitles();
+            },
+
+            async onStatusTitleImageSelected(e){
+                var file = e.target.files[0];
+                this.StatusTitleImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.StatusTitleImage = data
+                );
+            },
+
+            selectStatusTitle(statusTitle){
+                if(this.SelectedStatusTitleID !== statusTitle.objectId){
+                    this.SelectedStatusTitleID = statusTitle.objectId;
+                    this.StatusTitleName = statusTitle.StatusTitleName;
+                    this.StatusTitleLevel = statusTitle.StatusTitleLevel;
+                    this.StatusTitleImage = statusTitle.StatusTitleImage;
+                }
+                else{
+                    this.resetSelectedStatusTitle();
+                }
+            },
+
+            resetSelectedStatusTitle(){
+                this.SelectedStatusTitleID = "";
+                this.StatusTitleName = "";
+                this.StatusTitleLevel = "";
+                this.StatusTitleImage = "";
+                this.StatusTitleImageName = "";
+                this.$refs.StatusTitleFileUpload.value = null;
+            },
+
+            async editStatusTitle(){
+                if(this.checkIncompleteData("StatusTitle")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "StatusTitleID" : this.SelectedStatusTitleID,
+                    "StatusTitleName" : this.StatusTitleName,
+                    "StatusTitleLevel" : this.StatusTitleLevel,
+                    "StatusTitleImage" : this.StatusTitleImage,
+                    "StatusTitleImageName" : this.StatusTitleImageName,
+                }
+                //If image is provided to change
+                if(this.StatusTitleImageName != ""){
+                    params["StatusTitleImage"] = this.StatusTitleImage;
+                    params["StatusTitleImageName"] = this.StatusTitleImageName;
+                }
+
+                await Parse.Cloud.run("EditStatusTitle", params);
+                alert("Edited Status Title!");
+                this.resetSelectedStatusTitle();
+
+                //Update statusTitles
+                this.getStatusTitles();
+            },
+
+            async deleteStatusTitle(){
+                if(this.SelectedStatusTitleID === ""){
+                    alert("Please select a StatusTitle to Delete!");
+                    return;
+                }
+                var params = {
+                    "StatusTitleID" : this.SelectedStatusTitleID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteStatusTitle", params);
+                    alert("Deleted StatusTitle!");
+                    this.resetSelectedStatusTitle();
+
+                    //Update status titles
+                    this.getStatusTitles();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Quest Reward Functions
+            async addQuestReward(){
+                if(this.checkIncompleteData("QuestReward")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "RewardCosmeticID": this.RewardCosmeticID,
+                    "RewardCosmeticType": this.RewardCosmeticType,
+                    "RequiredAscensionPoints": this.RequiredAscensionPoints,
+                }
+                await Parse.Cloud.run("AddQuestReward", params);
+                alert("Added Quest Reward");
+                this.resetSelectedQuestReward();
+                
+                //Update QuestRewards
+                this.getQuestRewards();
+            },
+
+            selectQuestReward(reward){
+                if(this.SelectedQuestRewardID !== reward.objectId){
+                    this.SelectedQuestRewardID = reward.objectId;
+                    this.RewardCosmeticID = reward.RewardCosmeticID;
+                    this.RewardCosmeticType = reward.RewardCosmeticType;
+                    this.RequiredAscensionPoints = reward.RequiredAscensionPoints;
+                }
+                else{
+                    this.resetSelectedQuestReward();
+                }
+            },
+
+            resetSelectedQuestReward(){
+                this.SelectedQuestRewardID = "";
+                this.RewardCosmeticID = "";
+                this.RewardCosmeticType = "";
+                this.RequiredAscensionPoints = "";
+            },
+
+            async editQuestReward(){
+                if(this.checkIncompleteData("QuestReward")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "QuestRewardID": this.SelectedQuestRewardID,
+                    "RewardCosmeticID" : this.RewardCosmeticID,
+                    "RewardCosmeticType": this.RewardCosmeticType,
+                    "RequiredAscensionPoints": this.RequiredAscensionPoints,
+                };
+                await Parse.Cloud.run("EditQuestReward", params);
+                alert("Edited Quest Reward!");
+                this.resetSelectedQuestReward();
+
+                //Update QuestRewards
+                this.getQuestRewards();
+            },
+
+            async deleteQuestReward(){
+                if(this.SelectedQuestRewardID === ""){
+                    alert("Please select a Quest Reward to Delete!");
+                    return;
+                }
+                var params = {
+                    "QuestRewardID" : this.SelectedQuestRewardID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteQuestReward", params);
+                    alert("Deleted Quest Reward!");
+                     this.resetSelectedQuestReward();
+
+                    //Update QuestRewards
+                    this.getQuestRewards();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
         },
 
         beforeMount(){
@@ -2135,6 +2442,8 @@
             this.getStudents();
             this.getGivers();
             this.getQuests();
+            this.getStatusTitles();
+            this.getQuestRewards();
         },
 
         computed: {

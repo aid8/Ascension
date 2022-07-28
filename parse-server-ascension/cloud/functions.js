@@ -70,6 +70,12 @@ Parse.Cloud.define("DeleteFile", async(request) =>{
         'X-Parse-Master-Key' : 'master',
         'X-Parse-Application-Id': 'myAppId'
     }
+  }).then(function (httpResponse) {
+    // success
+    console.log('Request succeeded: ' + httpResponse.text);
+  }, function (httpResponse) {
+    // error
+    console.error('Request failed with response code ' + httpResponse.status);
   });
 });
 

@@ -43,12 +43,12 @@ Parse.Cloud.define("EditHouse", async(request) => {
         "HouseID": argument.HouseID,
         "Type": 1,
     }
-    const res = await Parse.Cloud.run("GetHouseData", dataParams)
+    const res = await Parse.Cloud.run("GetHouseData", dataParams);
 
-    var list_of_attr = ["HouseName", "HouseLogo", "HouseBannerIDPointer", "HouseBadgesIDEarned", "HouseTrophiesIDUnlocked", "HousePopulation", "HouseXP",
+    var list_of_attr = ["HouseName", "HouseBannerIDPointer", "HouseBadgesIDEarned", "HouseTrophiesIDUnlocked", "HousePopulation", "HouseXP",
     ];
     
-    var list_of_arguments =[argument.HouseName, argument.HouseLogo, argument.HouseBannerIDPointer, argument.HouseBadgesIDEarned, argument.HouseTrophiesIDUnlocked, argument.HousePopulation, argument.HouseXP,
+    var list_of_arguments =[argument.HouseName, argument.HouseBannerIDPointer, argument.HouseBadgesIDEarned, argument.HouseTrophiesIDUnlocked, argument.HousePopulation, argument.HouseXP,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
@@ -57,9 +57,28 @@ Parse.Cloud.define("EditHouse", async(request) => {
         }
     }
 
-    res.save().then(()=>{
-        console.log("Successfully Edited House");
-    });
+    if(argument.HouseLogo != null && argument.HouseLogoName != null){
+        //Delete old image
+        var imageToDelete = res.get("HouseLogo").replace('/myAppId','');
+        var param = {"url" : imageToDelete};
+        await Parse.Cloud.run("DeleteFile", param);
+
+        var convertedImage = {base64: argument.HouseLogo};
+        var parseFile = new Parse.File(argument.HouseLogoName, convertedImage);
+
+        parseFile.save({ useMasterKey: true }).then(function(result) {
+            var link = result.url();
+            res.set("HouseLogo", link);
+            res.save().then(()=>{
+                console.log("Successfully Edited House");
+            });
+        });
+    }
+    else{
+        res.save().then(()=>{
+            console.log("Successfully Edited House");
+        });
+    }
 });
 
 //Must specify id of House with name of "HouseID"
