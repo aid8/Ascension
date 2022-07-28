@@ -16,19 +16,39 @@
 
 /*100vh*/
 </style>
-
 <template>
-
     <body>
         <main class="min-w-[1000px]">
+            <!--pop up menu for showing proof-->
+            <div class="absolute top-0 flex items-center justify-center min-w-[1000px] min-h-[600px] w-full h-[100vh] bg-black/20 backdrop-blur-[20px] z-50" v-bind:class="{'flex': activePopUpTab === true, 'hidden': activePopUpTab === false, 'flex': typePopUp === 'proof', 'hidden': typePopUp !== 'proof'}">
+                <div class="flex items-center justify-center w-full h-full">
+                    <div class="relative flex flex-row items-center justify-center gap-3 bg-black/20 border-[1px] border-gray px-[12px] w-[500px] h-[550px]">
+                        <!--go back button-->
+                        <nav class="absolute top-0 flex flex-row items-center gap-3 w-full h-auto px-[10px] py-[5px]">
+                            <a class="text-[15px] text-white hover:text-gold_hover active:text-gold_active" v-on:click="viewPopUpTab(false, '')" href="#"><i class="fa-solid fa-angle-left"></i></a>
+                            <span class="text-[15px] text-white">Proof</span>
+                        </nav>
+                        <!--item inventory/list-->
+                        <div class="inline-flex flex-col items-center justify-center gap-5 w-[90%] h-[85%]">
+                            <div class="items-start justify-start border-[1px] border-gray w-full h-[90%] overflow-x-scroll">
+                                <div class="w-[800px] h-auto">
+                                    <img class="w-full h-full" src="../assets/img/proof.png" />
+                                </div>
+                            </div>
+                            <button class="py-[10px] w-full h-[10%] bg-blue text-[12px] text-white hover:bg-blue_hover active:bg-blue_active">DOWNLOAD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!--pop up menu for giving badges-->
-            <div class="absolute top-0 flex items-center justify-center min-w-[1000px] min-h-[600px] w-full h-[100vh] bg-black/20 backdrop-blur-[20px] z-50" v-bind:class="{'hidden': activePopUpTab === true, 'hidden': activePopUpTab === false}">
+            <div class="absolute top-0 flex items-center justify-center min-w-[1000px] min-h-[600px] w-full h-[100vh] bg-black/20 backdrop-blur-[20px] z-50" v-bind:class="{'hidden': activePopUpTab === true, 'hidden': activePopUpTab === false, 'flex': typePopUp === 'givebadge', 'hidden': typePopUp !== 'givebadge'}">
                 <div class="flex items-center justify-center w-full h-full">
                     <div class="relative flex flex-row items-center justify-center gap-3 bg-black/20 border-[1px] border-gray px-[12px] w-[700px] h-[450px]">
                         <!--go back button-->
                         <nav class="absolute top-0 flex flex-row items-center gap-3 w-full h-auto px-[10px] py-[5px]">
-                            <a class="text-[15px] text-white hover:text-gold_hover active:text-gold_active" v-on:click="viewPopUpTab(false)" href="#"><i class="fa-solid fa-angle-left"></i></a>
-                            <span class="text-[15px] text-white">House Name</span>
+                            <a class="text-[15px] text-white hover:text-gold_hover active:text-gold_active" v-on:click="viewPopUpTab(false, '')" href="#"><i class="fa-solid fa-angle-left"></i></a>
+                            <span class="text-[15px] text-white">Username</span>
                         </nav>
                         <!--item inventory/list-->
                         <div class="inline-flex flex-col items-center justify-center gap-2 w-[70%] h-[370px]">
@@ -68,12 +88,13 @@
                                         proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                                 </div>
                                 <!--give button-->
-                                <button class="bg-blue text-white text-[12px] w-full h-[10%] hover:bg-blue_hover active:bg-blue_active">GIVE</button>
+                                <button class="bg-blue text-white text-[12px] w-full h-[10%] hover:bg-blue_hover active:bg-blue_active" v-on:click="viewClicked(true, 'given'), viewPopUpTab(false, '')">GIVE</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            
             <!--header navigation bar-->
             <nav class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center z-[7]">
                 <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[8]"></div>
@@ -82,11 +103,11 @@
                 <!--student page-->
                 <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverStudentPage">STUDENT</a></div>
                 <!--house page-->
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gold z-[9]"><a class="text-gold text-[13px]" href="GiverHousePage">HOUSE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverHousePage">HOUSE</a></div>
                 <!--leaderboard page-->
                 <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverLeaderboardPage">LEADERBOARDS</a></div>
                 <!--request page-->
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverRequestPage">REQUEST</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gold z-[9]"><a class="text-gold text-[13px]" href="GiverRequestPage">REQUEST</a></div>
 
                 <details class="absolute top-[15px] right-[10px] w-[170px] z-[9]">
                     <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
@@ -98,65 +119,55 @@
                     </div>
                 </details>
             </nav>
+
             <!--main content-->
             <div class="absolute top-0 min-w-[1000px] min-h-[600px] w-full h-[100vh] pt-[80px] pb-[35px]">
-                <!--house section-->
-                <div class="flex flex-col items-center justify-start gap-3 w-full h-full">
+                <!--student section-->
+                <div class="flex flex-col items-center justify-start gap-3 min-h-[500px] w-full h-full">
                     <!--search bar and sorter-->
                     <form class="flex flex-row items-center justify-start gap-5 max-h-[35px] w-[80%] h-[7%]">
                         <!--search bar-->
-                        <input class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-full w-[200px] px-[10px]" type="search" placeholder="Search house..." />
+                        <input class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-full w-[200px] px-[10px]" type="search" placeholder="Search request..." />
                         <div class="flex flex-row items-center w-auto h-full gap-5">
                             <span class="text-[12px] text-white">Search By:</span>
                             <select class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-full w-[150px] px-[10px]">
                                 <option class="text-black">Name</option>
-                                <option class="text-black">Points</option>
-                                <option class="text-black">No. of Members</option>
+                                <option class="text-black">Given</option>
+                                <option class="text-black">Denied</option>
+                                <option class="text-black">Date</option>
                             </select>
                         </div>
                     </form>
-                    <!--house list-->
-                    <div class="flex flex-row items-center justify-center gap-3 w-[80%] h-[93%]">
-                        <!--house list-->
+
+                    <div class="flex flex-row items-center justify-center gap-3 min-w-[1000px] w-[80%] h-[93%]">
+                        <!--student list-->
                         <div class="flex flex-col w-full h-full">
-                            <!--house list head container-->
-                            <ul class="flex flex-row border-x-[1px] border-t-[1px] border-gray max-h-[40px] w-full h-[7%] bg-black/50">
-                                <!--house leaderboard head row-->
-                                <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 h-full w-full">
-                                    <div class="flex items-center justify-center w-[35%] h-full text-white text-[12px]">NAME</div>
-                                    <div class="flex items-center justify-center w-[35%] h-full text-white text-[12px]">POINTS</div>
-                                    <div class="flex items-center justify-center w-[19%] h-full text-white text-[12px]">MEMBERS</div>
-                                    <div class="flex items-center justify-center w-[11%] h-full text-white text-[12px]">ACTION</div>
-                                </li>
-                            </ul>
-                            <!--house list body-->
-                            <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-[93%] bg-black/20 overflow-y-scroll">
-                                <!--house leaderboard list row-->
-                                <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 w-full border-b-[1px] border-gray">
-                                    <!--house name and banner-->
-                                    <div class="flex items-center justify-start gap-3 w-[35%] h-full">
+                            <!--student leaderboard head container-->
+                            <ul class="flex flex-col border-[1px] border-gray w-full h-[95%] bg-black/20 overflow-y-scroll">
+                                <!--student leaderboard list row-->
+                                <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 w-full h-[55px] border-b-[1px] border-gray">
+                                    <div class="flex items-center gap-3 justify-center w-[23%] h-full">
+                                        <button class="inline-flex items-center justify-center bg-blue text-white text-[12px] hover:bg-blue_hover w-full py-[8px] active:bg-blue_active" v-bind:class="{'hidden': isClicked === true}" v-on:click="viewPopUpTab(true, 'givebadge')">GIVE</button>
+                                        <button class="inline-flex items-center justify-center bg-blue text-white text-[12px] hover:bg-blue_hover w-full py-[8px] active:bg-blue_active" v-bind:class="{'hidden': isClicked === true}" v-on:click="viewClicked(true, 'denied')">DENY</button>
+                                        <div class="inline-flex items-center justify-center w-auto h-auto" v-bind:class="{'hidden': isClicked === false, 'inline-flex': isClicked === true, 'hidden': typeClicked !== 'given', 'inline-flex': typeClicked === 'given'}"><span class="text-[25px] text-white/30">GIVEN</span></div>
+                                        <div class="inline-flex items-center justify-center w-auto h-auto" v-bind:class="{'hidden': isClicked === false, 'inline-flex': isClicked === true, 'hidden': typeClicked !== 'denied', 'inline-flex': typeClicked === 'denied'}"><span class="text-[25px] text-white/30">DENIED</span></div>
+                                    </div>
+                                    <div class="flex items-center justify-start gap-2 w-auto h-full">
                                         <!--image-->
-                                        <div class="relative w-[40px] h-full flex items-center justify-center">
-                                            <img class="w-[35px] h-auto" src="../assets/img/banner/liberalitas-banner.png" />
+                                        <div class="relative w-[50px] h-[50px] flex items-center justify-center">
+                                            <img class="w-[35px] rounded-full h-auto" src="../assets/img/avatar/avatar.jpg" />
+                                            <img class="absolute inset-0 m-auto w-full h-full" src="../assets/img/frames/gear_frame.png" />
                                         </div>
-                                        <!--text-->
-                                        <strong class="text-white text-[15px]">Liberalitas</strong>
                                     </div>
-                                    <!--house points-->
-                                    <div class="flex items-center justify-center w-[35%] h-full"><span class="text-white text-[13px]">999999</span></div>
-                                    <!--house members-->
-                                    <div class="flex items-center justify-center w-[19%] h-full"><span class="text-white text-[13px]">999</span></div>
-                                    <!--give badge to house button-->
-                                    <div class="flex items-center justify-center w-[11%] h-full">
-                                        <button class="bg-blue text-white text-[12px] hover:bg-blue_hover w-[100px] py-[8px] active:bg-blue_active" v-on:click="viewPopUpTab(true)">GIVE BADGE</button>
-                                    </div>
+                                    <div class="flex items-center justify-start w-full h-full remove-scroll overflow-x-scroll"><span class="text-white text-[13px] whitespace-nowrap">Rondale Floyd Bufete sent you a <a class="text-gold text-[13px]" v-on:click="viewPopUpTab(true, 'proof')" href="#">proof</a> for badge request.</span></div>
+                                    <div class="flex items-center justify-end w-auto h-full whitespace-nowrap"><span class="text-white text-[13px]">July 28</span></div>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
-        </main> 
+        </main>
     </body>
 </template>
 
@@ -168,15 +179,23 @@
         data(){
             return{
                 activePopUpTab: false,
+                typePopUp: '',
                 selectedItem: false,
+                isClicked: false,
+                typeClicked: 'none',
             }
         },
         methods: {
             viewItem: function (itemName) {
                 this.selectedItem = itemName
             },
-            viewPopUpTab: function (bool) {
-                this.activePopUpTab = bool
+            viewPopUpTab: function (bool, typePopUp) {
+                this.activePopUpTab = bool,
+                this.typePopUp = typePopUp
+            },
+            viewClicked: function (bool, type) {
+                this.isClicked = bool,
+                this.typeClicked = type
             },
         }
     }

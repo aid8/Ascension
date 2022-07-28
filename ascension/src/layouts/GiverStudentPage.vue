@@ -23,7 +23,6 @@
         <main class="min-w-[1000px]">
             <!--pop up menu for giving badges-->
             <div class="absolute top-0 flex items-center justify-center min-w-[1000px] min-h-[600px] w-full h-[100vh] bg-black/20 backdrop-blur-[20px] z-50" v-bind:class="{'hidden': activePopUpTab === true, 'hidden': activePopUpTab === false}">
-                
                 <div class="flex items-center justify-center w-full h-full">
                     <div class="relative flex flex-row items-center justify-center gap-3 bg-black/20 border-[1px] border-gray px-[12px] w-[700px] h-[450px]">
                         <!--go back button-->
@@ -102,13 +101,13 @@
             <!--main content-->
             <div class="absolute top-0 min-w-[1000px] min-h-[600px] w-full h-[100vh] pt-[80px] pb-[35px]">
                 <!--student section-->
-                <div class="flex flex-col items-center justify-start gap-3 min-h-[500px] w-full h-full">
+                <div class="flex flex-col items-center justify-start gap-3 w-full h-full">
                     <!--selected user-->
-                    <div class="inline-flex flex-row items-center justify-center gap-3 bg-black/20 px-[20px] border-[1px] border-gray min-w-[1000px] w-[80%] h-auto">
+                    <div class="inline-flex flex-row items-center justify-center gap-3 bg-black/20 px-[20px] border-[1px] border-gray min-h-[180px] max-h-[190px] min-w-[1000px] w-[80%] h-[30%]">
                         <!--avatar and personal info-->
                         <div class="inline-flex flex-row gap-2 w-[45%]">
                             <!--avatar and frame-->
-                            <div class="relative inline-flex items-center jutsify-center w-[150px] h-[150px]">
+                            <div class="relative inline-flex items-center jutsify-center max-w-[150px] max-h-[150px] w-[150px] h-[150px]">
                                 <img class="absolute inset-0 m-auto rounded-full w-[105px] h-auto" src="../assets/img/avatar/avatar.jpg" />
                                 <img class="absolute inset-0 m-auto w-full h-full" src="../assets/img/frames/gear_frame.png" />
                             </div>
@@ -121,9 +120,9 @@
                                 <span class="text-[13px] text-white">rbufete@gbox.adnu.edu.ph</span>
                             </div>
                         </div>
-                        <div class="inline-flex flex-row items-center justify-end gap-5 w-[55%] h-full"> <!--graphics-->
+                        <div class="inline-flex flex-row items-center justify-end gap-10 w-[55%] h-full"> <!--graphics-->
                             <!--status icon-->
-                            <div class="inline-flex justify-center w-auto h-auto">
+                            <div class="inline-flex justify-center max-w-[125px] w-auto h-auto">
                                 <img class="max-w-[130px] w-auto h-full" src="../assets/img/logo/status-logo.png" />
                             </div>
                             <!--banner-->
@@ -149,7 +148,7 @@
                         </div>
                     </div>
                     <!--search bar and sorter-->
-                    <form class="flex flex-row items-center justify-start gap-5 min-w-[1000px] w-[80%] h-[55px]">
+                   <form class="flex flex-row items-center justify-start gap-5 max-h-[35px] min-w-[1000px] w-[80%] h-[7%]">
                         <!--search bar-->
                         <input class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-full w-[200px] px-[10px]" type="search" placeholder="Search student..." />
                         <div class="flex flex-row items-center w-auto h-full gap-5">
@@ -163,11 +162,11 @@
                         </div>
                     </form>
                     <!--student list-->
-                    <div class="flex flex-row items-center justify-center gap-3 min-w-[1000px] w-[80%] h-full">
+                    <div class="flex flex-row items-center justify-center gap-3 min-w-[1000px] w-[80%] h-[63%]">
                         <!--student list-->
                         <div class="flex flex-col w-full h-full">
-                            <!--student leaderboard head container-->
-                            <ul class="flex flex-row border-x-[1px] border-t-[1px] border-gray w-full max-h-full min-h-[25px] h-[5%] bg-black/50">
+                            <!--student list head container-->
+                            <ul class="flex flex-row border-x-[1px] border-t-[1px] border-gray max-h-[40px] w-full h-[10%] bg-black/50">
                                 <!--student leaderboard head row-->
                                 <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 h-full w-full">
                                     <div class="flex items-center justify-center w-[5%] h-full"></div> <!--space filler-->
@@ -179,7 +178,7 @@
                                 </li>
                             </ul>
                             <!--student leaderboard list body-->
-                            <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-full bg-black/20 overflow-y-scroll">
+                            <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-[90%] bg-black/20 overflow-y-scroll">
                                 <!--student leaderboard list row-->
                                 <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 w-full h-[55px] border-b-[1px] border-gray">
                                     <div class="flex items-center justify-center gap-2 w-[5%] h-full">
