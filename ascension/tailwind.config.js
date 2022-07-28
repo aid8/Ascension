@@ -12,7 +12,9 @@ module.exports = {
       blue: '#346FE2',
       blue_hover: '#3063C7',
       blue_active: '#2C59B3',
-      gold: '#FAC213'
+      gold: '#FAC213',
+      gold_hover: '#ebb615',
+      gold_active: '#b88e0d'
     },
     fontFamily :{
       default: ['Lexend Deca', 'sans-serif']
