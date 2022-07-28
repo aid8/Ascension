@@ -13,7 +13,6 @@
     .remove-scroll::-webkit-scrollbar{
         display: none;
     }
-
 /*100vh*/
 </style>
 
@@ -163,7 +162,6 @@
 <script>
     import Parse from 'parse';
     import '/src/assets/css/tailwind.css';
-
     export default {
         data(){
             return{
