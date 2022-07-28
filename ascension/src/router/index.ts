@@ -8,14 +8,6 @@ const routes: Array<RouteRecordRaw> = [
     component: HomePage
   },
   {
-    path: '/MainHomePage',
-    name: 'MainHomePage',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../layouts/MainHomePage.vue')
-  },
-  {
     path: '/AccountCreation',
     name: 'AccountCreation',
     // route level code-splitting
@@ -96,12 +88,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/GiverStudentPage',
     name: 'GiverStudentPage',
-    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverStudentPage.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverNotifications.vue')
   },
   {
     path: '/GiverHousePage',
     name: 'GiverHousePage',
     component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverHousePage.vue')
+  },
+  {
+    path: '/GiverLeaderboardPage',
+    name: 'GiverLeaderboardPage',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverLeaderboardPage.vue')
   },
 ]
 
