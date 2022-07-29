@@ -47,25 +47,21 @@
     <body class="flex items-center align-middle overflow-y-hidden overflow-x-hidden">    
     <div>
         <div class="overflow-y-hidden">
-                <div class="absolute mt-10 font-Lexend text-white w-full">
-                    <ul class="flex flex-wrap ml-6">
-                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('overview')" v-bind:class="{'text-gold': openTab === 'overview'}">
-                            <button @click="currentTab(1)">Overview</button>
-                        </li>
-                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('dailyquotes')" v-bind:class="{'text-gold': openTab === 'dailyquotes'}">
-                            <button @click="currentTab(2)">Daily Quotes</button>
-                        </li>
-                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('trivia')" v-bind:class="{'text-gold': openTab === 'trivia'}">
-                            <button @click="currentTab(3)">Trivia</button>
-                        </li>
-                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('wordle')" v-bind:class="{'text-gold': openTab === 'wordle'}">
-                            <button @click="currentTab(4)">Wordle</button>
-                        </li>
-                    </ul>
-                </div>
-
                     <div><!-- Tab contents -->
-
+                        <div class="w-full absolute flex items-center justify-center text-4xl text-white my-[350px] z-[5]"> <!-- Carousel ngaya -->
+                            <div class="w-1/2">
+                                <button class="ml-[40px]" v-bind:class="{'hidden' : tab === 1}" @click="prevPage()">&lt;</button>
+                            </div>
+                            <div class="w-1/2">
+                                <button class="float-right mr-[40px]" v-bind:class="{'hidden' : tab === 4}" @click="nextPage()">&gt;</button>
+                            </div>
+                        </div>
+                        <div class="absolute flex items-center justify-center text-2xl mt-[320px] gap-3 text-white w-full h-screen"> <!-- Radio buttons -->
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 1}">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 2}">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 3}">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 4}">&#11201;</button>
+                        </div>
                         <!-- Overview -->
                         <div v-if="tab === 1" class="overflow-y-hidden">
                             <div class="bg-[url('/src/assets/img/background/bg-1.jpg')] static flex bg-cover items-center w-screen h-screen">
@@ -82,8 +78,8 @@
                             </div>
                             <!-- News and Announcements -->
                             <div>
-                                <div class="absolute mt-5 text-white w-full"> <!-- getAnnouncements() -->
-                                    <section class="hero container max-w-5xl flex mx-auto justify-center items-center">
+                                <div class="absolute bg-white mt-5 text-black/70 w-full"> <!-- getAnnouncements() -->
+                                    <section class="hero container max-w-5xl py-5 flex mx-auto justify-center items-center">
                                         <img class="" src="../assets/img/posts/Orsem.jpg"/>
                                     </section>
                                         
@@ -256,7 +252,12 @@
             activeTab: function (tabName) {
                 this.openTab = tabName
             },
-
+            nextPage(){
+                    this.tab++;
+                },
+            prevPage(){
+                this.tab--;
+            },
             //==========BACKEND FUNCTIONS=================
             async logOut(){
                 await Parse.User.logOut();

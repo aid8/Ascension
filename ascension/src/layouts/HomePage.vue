@@ -25,7 +25,7 @@
         <title>Ascension</title>
     </head>
     
-    <header class="mb-2">
+    <header class="mb-2 background-default">
         <nav class="fixed top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
             <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png"/></a>
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-gold text-[13px] hover:text-gold" href="/StudentProfile"></a></div>
@@ -38,24 +38,21 @@
     <body class="flex items-center align-middle overflow-y-hidden overflow-x-hidden">    
     <div>
         <div class="overflow-y-hidden">
-                <div class="absolute mt-12 font-Lexend text-white w-full">
-                    <ul class="flex flex-wrap ml-6">
-                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('overview')" v-bind:class="{'text-gold': openTab === 'overview'}">
-                            <button @click="currentTab(1)">Overview</button>
-                        </li>
-                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('dailyquotes')" v-bind:class="{'text-gold': openTab === 'dailyquotes'}">
-                            <button @click="currentTab(2)">Daily Quotes</button>
-                        </li>
-                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('trivia')" v-bind:class="{'text-gold': openTab === 'trivia'}">
-                            <button @click="currentTab(3)">Trivia</button>
-                        </li>
-                        <li class="mr-6 hover:text-gold" v-on:click="activeTab('wordle')" v-bind:class="{'text-gold': openTab === 'wordle'}">
-                            <button @click="currentTab(4)">Wordle</button>
-                        </li>
-                    </ul>
-                </div>
-
                     <div><!-- Tab contents -->
+                        <div class="w-full absolute flex items-center justify-center text-4xl text-white my-[350px] z-[5]"> <!-- Carousel ngaya -->
+                            <div class="w-1/2">
+                                <button class="ml-[40px]" v-bind:class="{'hidden' : tab === 1}" @click="prevPage()">&lt;</button>
+                            </div>
+                            <div class="w-1/2">
+                                <button class="float-right mr-[40px]" v-bind:class="{'hidden' : tab === 4}" @click="nextPage()">&gt;</button>
+                            </div>
+                        </div>
+                        <div class="absolute flex items-center justify-center text-2xl mt-[320px] gap-3 text-white w-full h-screen"> <!-- Radio buttons -->
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 1}">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 2}">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 3}">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 4}">&#11201;</button>
+                        </div>
                         <div v-if="tab === 1" class="overflow-y-hidden">
                             <div class="bg-[url('/src/assets/img/background/bg-2.jpg')] static flex bg-cover items-center w-screen h-screen">
                                 <div class="font-Lexend text-white">
@@ -72,8 +69,8 @@
                                 </div>
                             </div>
                             <div>
-                                <div class="absolute mt-5 text-white w-full"> <!-- getAnnouncements() -->
-                                    <section class="hero container max-w-5xl flex mx-auto justify-center items-center">
+                                <div class="absolute bg-white mt-5 text-black/70 w-full"> <!-- getAnnouncements() -->
+                                    <section class="hero container max-w-5xl py-5 flex mx-auto justify-center items-center">
                                         <img class="" src="../assets/img/posts/Orsem.jpg"/>
                                     </section>
                                         
@@ -139,7 +136,7 @@
                         <div v-if="tab === 2">
                             <div class="flex items-center justify-center w-full h-full">
                                 <div class="font-Lexend text-white">
-                                    <div class="text-center w-screen py-64">
+                                    <div class="absolute flex flex-col items-center justify-center my-64">
                                         <div class="text-2xl tracking-wider">
                                             The best things
                                         </div>
@@ -186,13 +183,13 @@
                         </div>
                     </div>
             
-                <div v-if="tab === 5" class="absolute w-full h-full text-white">
-                    <div class="font-default -mt-12">
-                        <div class="absolute mt-24 text-center">
-                            <div class="mt-10 text-3xl">
+                <div v-if="tab === 5" class="w-full h-full text-white">
+                    <div class="font-default">
+                        <div class="absolute m-[230px] text-center">
+                            <div class="mb-10 text-3xl">
                                 Ascension
                             </div>
-                            <div class="py-64 mx-6 text-2xl">
+                            <div class="text-2xl mb-10">
                                 <p>
                                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                                 </p>
@@ -241,7 +238,12 @@
             activeTab: function (tabName) {
                 this.openTab = tabName;
             },
-
+            nextPage(){
+                    this.tab++;
+                },
+            prevPage(){
+                this.tab--;
+            },
             //==========BACKEND FUNCTIONS=================
             async admin(){
                 window.location.href ='http://' + this.host + '/AdminPage';
@@ -261,6 +263,6 @@
                     window.location.href ='http://' + this.host + '/SignUpPage';
                 }
             }
-        },
+        }, 
     }
 </script>
