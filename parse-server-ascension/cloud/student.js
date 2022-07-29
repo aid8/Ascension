@@ -1,3 +1,7 @@
+/*
+    Functions that needs further testing:
+    - GetStudentQuests
+*/
 var Global = require('./global');
 
 Parse.Cloud.define("AddStudent", async(request) => {
@@ -45,8 +49,6 @@ Parse.Cloud.afterSave("Student", async(request)=>{
             "AscensionPoints" : 0,
             "BadgesIDEarned" : [],
             "TrophiesIDUnlocked" : [],
-            "StudentDailyQuestsID" : [],
-            "StudentWeeklyQuestsID": [],
             "ChosenTrophies" : [undefined, undefined, undefined],
             "AvatarsIDUnlocked" : [defaultCosmetics.DefaultAvatarID],
             "FrameIDUnlocked" : [defaultCosmetics.DefaultFrameID],
@@ -57,6 +59,7 @@ Parse.Cloud.afterSave("Student", async(request)=>{
             "EquippedCosmetics" : [defaultCosmetics.DefaultAvatarID, defaultCosmetics.DefaultFrameID, defaultCosmetics.DefaultCoverPhotoID], //set to default id [Avatar, Frame, CoverPhoto]
             "StudentDailyQuestsID" : [],
             "StudentWeeklyQuestsID" : [],
+            "StudentLastLogin" : {"Day" : "", "Week" : ""}, // This is currently updated in the studentquestpage inorder to know when will the Quests reset.
             
         }).then(async(res)=>{
             //Run assign house
@@ -82,6 +85,7 @@ Parse.Cloud.define("EditStudent", async(request) =>{
                         "XP", "AscensionPoints", "BadgesIDEarned", "TrophiesIDUnlocked", "ChosenTrophies",
                         "AvatarsIDUnlocked", "FrameIDUnlocked", "BannerID", "CoverPhotoIDUnlocked","AscensionTitle",
                         "StudentHouseIDPointer", "EquippedCosmetics", "StudentDailyQuestsID", "StudentWeeklyQuestsID",
+                        "StudentLastLogin",
     ];
     var list_of_arguments = [argument.FirstName, argument.MiddleName, argument.LastName, argument.Email, argument.ContactNumber,
                             argument.RegisterDate, argument.UserName, argument.Address, argument.SchoolID,
@@ -89,6 +93,7 @@ Parse.Cloud.define("EditStudent", async(request) =>{
                             argument.XP, argument.AscensionPoints, argument.BadgesIDEarned, argument.TrophiesIDUnlocked, argument.ChosenTrophies,
                             argument.AvatarsIDUnlocked, argument.FrameIDUnlocked, argument.BannerID, argument.CoverPhotoIDUnlocked, argument.AscensionTitle,
                             argument.StudentHouseIDPointer, argument.EquippedCosmetics, argument.StudentDailyQuestsID, argument.StudentWeeklyQuestsID,
+                            argument.StudentLastLogin,
     ];
 
     for(let i = 0; i < list_of_attr.length; ++i){
@@ -449,5 +454,55 @@ Parse.Cloud.define("ModifyStudentXP", async(request) =>{
     var ascensionTitleData = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", {"XpInput" : newXP}));
     res.set("XP", newXP);
     res.set("AscensionTitle", ascensionTitleData.AscensionName);
+    res.save();
+});
+
+//StudentID
+Parse.Cloud.define("GetStudentQuests", async(request) =>{
+    const argument = request.params
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams);
+
+    var lastLogin = res.get("StudentLastLogin");
+    var params = {"QuestType" : "Daily", "NumOfQuests" : 2};
+
+    if(lastLogin.Day === "" || Global.compareDate(Global.addDaysOnDate(lastLogin.Day, 1), Global.getDateToday(), "<=")){
+        res.set("StudentDailyQuestsID",  JSON.parse(await Parse.Cloud.run("GetRandomQuests", params)));
+        lastLogin["Day"] = Global.getDateToday();
+    }
+    params["QuestType"] = "Weekly";
+    if(lastLogin.Week === "" || Global.compareDate(Global.addDaysOnDate(lastLogin.Week, 7), Global.getDateToday(), "<=")){
+        res.set("StudentWeeklyQuestsID",  JSON.parse(await Parse.Cloud.run("GetRandomQuests", params)));
+        lastLogin["Week"] = Global.getDateToday();
+    }
+    res.set("StudentLastLogin", lastLogin);
+    res.save();
+});
+
+//StudentID, QuestID, QuestType
+Parse.Cloud.define("CompleteStudentQuest", async(request) =>{
+    const argument = request.params
+    const dataParams = {
+        "StudentID": argument.StudentID,
+        "Type": 1,
+    }
+    const res = await Parse.Cloud.run("GetStudentData", dataParams);
+    var quests = res.get("Student" + argument.QuestType + "QuestsID");
+
+    var params = {"QuestID" : argument.QuestID};
+    const QuestData = JSON.parse(await Parse.Cloud.run("GetQuestData", params));
+    
+    for(let i = 0; i < quests.length; ++i){
+        if(quests[i].QuestID === argument.QuestID){
+            quests.splice(i, 1);
+            break;
+        }
+    }
+
+    res.set("AscensionPoints", res.get("AscensionPoints") + QuestData.QuestPoints);
+    res.set("Student" + argument.QuestType + "QuestsID", quests);
     res.save();
 });

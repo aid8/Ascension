@@ -13,7 +13,7 @@
                     TrophiesIDUnlocked(Check RewardTrophy() function: Array of RewardIDs where Reward consists of TrophyID, RewardType:Trophy, DateRewarded), 
                     ChosenTrophies, AvatarsIDUnlocked, FrameIDUnlocked, 
                     BannerID, CoverPhotoIDUnlocked, AscensionTitle,
-                    StudentHouseIDPointer, EquippedCosmetics, , StatusTitleID, StudentDailyQuestsID, StudentWeeklyQuestsID
+                    StudentHouseIDPointer, EquippedCosmetics, , StatusTitleID, StudentDailyQuestsID, StudentWeeklyQuestsID, StudentLastLogin ={"Daily" : "", "Weekly" : ""}
         Purpose: Add the other attributes only 'after' the student object is saved
 
         Function: EditStudent()
@@ -72,6 +72,14 @@
         Function: ModifyStudentXP()
         Parameters: StudentID, XP
         Purpose: Modifies the XP of the student and Automatically sets the AscensionTitle of the student
+
+        Function: GetStudentQuests()
+        Parameters: StudentID
+        Purpose: Gets Random Quests from student, this already checks if the day or week already resets and refreshes quests from student.
+
+        Function: CompleteStudentQuest()
+        Parameters: StudentID, QuestID, QuestType(Daily, Weekly)
+        Purpose: Removes the Completed Quest from the Student and Adds Ascension points according to the quest completed.
 
     TEACHER ENTITY  (Almost same with NT_DISTRIBUTOR entity)
         Function: AddTeacher()
@@ -507,6 +515,27 @@
         Parameters: StudentID
         Purpose: Assigns a student object with a status title
 
+    QUEST REWARD ENTITY
+        Function: AddQuestReward()
+        Parameters: RewardCosmeticID, RewardCosmeticType, RequiredAscensionPoints, 
+        Purpose: Saves a QuestReward object to the database
+
+        Function: EditStatusTitle()
+        Parameters: RewardCosmeticID, RewardCosmeticType, RequiredAscensionPoints,
+        Purpose: Edit the attribute/s of the QuestReward
+
+        Function: DeleteQuestReward()
+        Parameters: QuestRewardID
+        Purpose: Deletes the QuestReward object from the database
+
+        Function: GetQuestRewardData()
+        Parameters: QuestRewardID, Type
+        Purpose: Retrieve the data stored in QuestReward object, or returns query's result if Type is equal to 1
+
+        Function: GetQuestRewards()
+        Parameters: SortType(Ascending, Descending)->If not defined, this will not be sorted 
+        Purpose: Get all the status titles saved in the database.
+
     OTHER FUNCTIONS
         Function: GetRewardData()
         Parameters: RewardID
@@ -519,3 +548,26 @@
         Function: IdentifyUserType()
         Parameters: teacherEmails, nt_DistributorEmails, email  (third parameter is the current user's email)
         Purpose: Checks if the current user is a teacher, NT_Distributor or a student. Returns "Teacher", "Student", or "NT_Distributor"
+
+    GLOBAL FUNCTIONS THAT CAN BE CALLED IN CLOUD FUNCTIONS
+        Function: getRndInteger()
+        Parameters: min, max
+        Purpose: Returns a random number ranging between min and max (min is inclusive, max is exclusive)
+
+        Function: getDateToday()
+        Parameters: 
+        Purpose: Returns the date to day which is a string of format (mm/dd/yyy)
+
+        Function: addDaysOnDate()
+        Parameters: date, days
+        Purpose: Adds the given day with the days parameter. The month and year adjusts accordingly. Example: addDayOnDate("7/29/2022", 5) -> returns "8/3/2022"
+
+        Function: compareDate()
+        Parameters: date1, date2 (mm/dd/yyyy) format
+        Purpose: Compares two dates. Example: compareDate("7/29/2022", "7/30/2022", ">") -> returns false;
+
+        
+
+
+
+

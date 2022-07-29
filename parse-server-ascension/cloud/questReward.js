@@ -35,7 +35,7 @@ Parse.Cloud.define("EditQuestReward", async(request) =>{
 });
 
 Parse.Cloud.define("DeleteQuestReward", async(request) =>{
-    const argument = request.params
+    const argument = request.params;
     const dataParams = {
         "QuestRewardID": argument.QuestRewardID,
         "Type": 1,
@@ -44,9 +44,17 @@ Parse.Cloud.define("DeleteQuestReward", async(request) =>{
     res.destroy()
 });
 
-Parse.Cloud.define("GetQuestRewards", async(_request) =>{
+//If SortType is defined, this is sorted by that
+Parse.Cloud.define("GetQuestRewards", async(request) =>{
+    const argument = request.params
     const QuestReward = Parse.Object.extend("QuestReward");
     const query = new Parse.Query(QuestReward);
+    if(argument.SortType === "Ascending"){
+        query.ascending("RequiredAscensionPoints");
+    }
+    else if(argument.SortType === "Descending"){
+        query.descending("RequiredAscensionPoints");
+    }
     const res = await query.find();
     return JSON.stringify(res);
 });
@@ -58,9 +66,14 @@ Parse.Cloud.define("GetQuestRewardData", async(request) => {
     const query = new Parse.Query(QuestReward);
     const argument = request.params;
     query.equalTo("objectId", argument.QuestRewardID);
-    const res = await query.first();
+    var res = await query.first();
     if(argument.Type == 1){
         return res
     }
+    
+    //Also return reward data.
+    var param = {"CosmeticID" : res.get("RewardCosmeticID")};
+    res.set("RewardCosmeticData", JSON.parse(await Parse.Cloud.run("GetCosmeticData", param)));
+
     return JSON.stringify(res);
 });

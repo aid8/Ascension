@@ -23,7 +23,7 @@ exports.getRndInteger = function(min, max) {  //min is inclusive; max is exclusi
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-//format is mm/dd/yy
+//format is mm/dd/yyyy
 exports.getDateToday = function(){
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
@@ -32,6 +32,41 @@ exports.getDateToday = function(){
 
     today = mm + '/' + dd + '/' + yyyy;
     return today;
+}
+
+//format is mm/dd/yyyy
+//Adds the given day with the days parameter. It month and year adjusts accordingly.
+//addDayOnDate("7/29/2022", 5);
+exports.addDaysOnDate = function(date, days) {
+    var s = date.split('/');
+    var result = new Date(s[2] + '-' + s[0] + '-' + s[1]);
+    result.setDate(result.getDate() + days);
+    var resultArr = result.toISOString().slice(0,10).replace(/-/g," ").split(' ');
+    //Return as MM/DD/YY
+    return resultArr[1] + "/" + resultArr[2] + "/" + resultArr[0];
+}
+
+//format is mm/dd/yyyy
+//compareDate("7/29/2022", "7/30/2022", ">");
+exports.compareDate = function(date1, date2, operator){
+    var s1 = date1.split('/');
+    var s2 = date2.split('/');
+    var date1C = new Date(s1[2] + '-' + s1[0] + '-' + s1[1]);
+    var date2C = new Date(s2[2] + '-' + s2[0] + '-' + s2[1]);
+    switch(operator){
+        case ">":
+            return date1C > date2C;
+        case "<":
+            return date1C < date2C;
+        case ">=":
+            return date1C >= date2C;
+        case "<=":
+            return date1C <= date2C;
+        case "==":
+            return +date1C === +date2C;
+        default:
+    }
+    return false;
 }
 
 //Global Variables but in Database

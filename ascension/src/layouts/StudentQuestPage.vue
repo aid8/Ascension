@@ -21,22 +21,27 @@
         <title>Quest Page</title>
     </head>
     <body>
+        <div class="absolute h-[100vh] w-[100vw]">
+            <div class="absolute shadow-profile h-[100vh] w-[100vw]">
+            </div>
+            <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="h-[100vh] w-[100vw]" v-bind:src="StudentData.EquippedCosmeticsData[2].CosmeticImage" />
+        </div>
         <main class="min-w-[1000px]">
             <!--header navigation bar-->
             <nav class="sticky top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
                 <a class="absolute left-[10px]" href="#"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">PROFILE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentProfilePage">PROFILE</a></div>
                 <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold"><a class="text-gold text-[13px] hover:text-gold" href="#">QUEST</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">LEADERBOARDS</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">NOTIFICATION</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentLeaderboardPage">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentRequestPage">REQUEST</a></div>
                 <details class="absolute top-[10px] right-[10px] w-[170px]">
                     <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
-                        <span class="text-white text-[12px]">Username#123</span>
-                        <img class="border-[2px] border-white w-[30px] h-auto rounded-full" src="../assets/img/avatar/avatar.jpg" />
+                        <span class="text-white text-[12px]">{{StudentData.UserName}}</span>
+                        <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" />
                     </summary>
                     <div class="bg-black/20 border-[1px] mt-[15px] border-gray">
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="">ACCOUNT SETTINGS</a></div>
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="">SIGN OUT</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
+                        <div @click="logOut()" class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="">SIGN OUT</a></div>
                     </div>
                 </details>
             </nav>
@@ -54,15 +59,15 @@
                         <!--mission summary-->
                         <div class="w-full justify-center flex flex-row">
                             <div class="flex flex-col w-[70px] justify-center items-center gap-1 text-gold text-[13px]" title="Totaly daily mission completed">
-                                <span>10</span>
+                                <span>{{StudentData.StudentDailyQuestsID.length}}</span>
                                 <i class="fa-solid fa-calendar-day"></i>
                             </div>
                             <div class="flex flex-col w-[70px] justify-center items-center gap-1 text-gold text-[13px]" title="Totaly weekly mission completed">
-                                <span>10</span>
+                                <span>{{StudentData.StudentWeeklyQuestsID.length}}</span>
                                 <i class="fa-solid fa-calendar-week"></i>
                             </div>
-                            <div class="flex flex-col w-[70px] justify-center items-center gap-1 text-gold text-[13px]" title="Current XP">
-                                <span>550</span>
+                            <div class="flex flex-col w-[70px] justify-center items-center gap-1 text-gold text-[13px]" title="Current Ascension Points">
+                                <span>{{StudentData.AscensionPoints}}</span>
                                 <i class="fa-solid fa-fire"></i>
                             </div>
                         </div>
@@ -73,13 +78,13 @@
                         <!--next reward image-->
                         <div class="w-full flex items-center justify-center">
                             <div class="flex items-center justify-center border-[1px] border-gray w-[300px] h-[300px]">
-                                <img class="block w-auto h-auto" src="../assets/img/avatar/avatar_reward_2.jpg" />
+                                <img v-if="NextRewardData.RewardCosmeticData !== undefined" class="block w-auto h-auto" v-bind:src="NextRewardData.RewardCosmeticData.CosmeticImage" />
                             </div>
                         </div>
                         <!--next reward name and its level (what level its placed in)-->
                         <div class="w-full flex flex-col items-center justify-center text-white">
-                            <strong class="text-[15px]">Avatar Name</strong>
-                            <span class="text-[13px]">Level 10</span>
+                            <strong v-if="NextRewardData.RewardCosmeticData !== undefined" class="text-[15px]">{{NextRewardData.RewardCosmeticData.CosmeticName}}</strong>
+                            <span class="text-[13px]">Ascension Points Needed: {{NextRewardData.RequiredAscensionPoints}}</span>
                         </div>
                     </div>
 
@@ -91,62 +96,14 @@
                                 <!--bg color of number changes-->
                                 <!--level container-->
                                 <div class="flex w-full mx-[50px] h-full">
-                                    <!--level 1-->
-                                    <div class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" value="100" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gold rotate-45 w-[20px] h-[20px]"><span class="text-white text-[10px] rotate-[-45deg]">1</span></div>
-                                    </div>
-                                    <!--level 2-->
-                                    <div class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" value="100" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gold rotate-45 w-[20px] h-[20px]"><span class="text-white text-[10px] rotate-[-45deg]">2</span></div>
-                                    </div>
-                                    <!--level 3-->
-                                    <div class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" value="100" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gold rotate-45 w-[20px] h-[20px]"><span class="text-white text-[10px] rotate-[-45deg]">3</span></div>
-                                    </div>
-                                    <!--level 4-->
-                                    <div class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" value="100" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gold rotate-45 w-[20px] h-[20px]"><span class="text-white text-[10px] rotate-[-45deg]">4</span></div>
-                                    </div>
-                                    <!--level 5 (reward)-->
-                                    <div class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" value="100" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gold border-[5px] border-gold rotate-45 w-[50px] h-[50px] overflow-hidden">
-                                            <img class="flex -rotate-45 scale-[1.5] w-[150px] h-auto cursor-pointer" v-on:click="rewardClaimed(true)" v-bind:class="{'hidden': isRewardClaim === true, 'flex': isRewardClaim === false}" src="../assets/img/avatar/avatar_reward.jpg" />
-                                            <div class="relative flex items-center justify-center -rotate-45 scale-[1.5] w-[150px] h-auto" v-bind:class="{'hidden': isRewardClaim === false, 'flex': isRewardClaim === true }">
-                                                <img class="w-[150px] h-auto brightness-50 z-10" src="../assets/img/avatar/avatar_reward.jpg" />
+                                    <div v-for="reward in QuestRewards" :key="reward" class="flex items-center h-full">
+                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" v-bind:value="reward.ProgressPercentage" max="100"></progress>
+                                        <div class="inline-flex items-center justify-center bg-gold border-[5px] rotate-45 w-[50px] h-[50px] overflow-hidden" v-bind:class="{'border-gold': StudentData.AscensionPoints > reward.RequiredAscensionPoints}">
+                                            <img v-if="checkIfRewardIsNotAcquired(reward)" @click="claimQuestReward(reward)" class="flex -rotate-45 scale-[1.5] w-[150px] h-auto cursor-pointer" v-bind:src="reward.RewardCosmeticData.CosmeticImage" />
+                                            <div v-if="!checkIfRewardIsNotAcquired(reward)" class="relative flex items-center justify-center -rotate-45 scale-[1.5] w-[150px] h-auto">
+                                                <img class="w-[150px] h-auto brightness-50 z-10" v-bind:src="reward.RewardCosmeticData.CosmeticImage" />
                                                 <div class="absolute text-gold text-[15px] z-20"><i class="fa-solid fa-check"></i></div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <!--level 6-->
-                                    <div class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" value="50" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gray rotate-45 w-[20px] h-[20px]"><span class="text-white text-[10px] rotate-[-45deg]">6</span></div>
-                                    </div>
-                                    <!--level 7-->
-                                    <div class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" value="0" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gray rotate-45 w-[20px] h-[20px]"><span class="text-white text-[10px] rotate-[-45deg]">7</span></div>
-                                    </div>
-                                    <!--level 8-->
-                                    <div class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" value="0" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gray rotate-45 w-[20px] h-[20px]"><span class="text-white text-[10px] rotate-[-45deg]">8</span></div>
-                                    </div>
-                                    <!--level 9-->
-                                    <div class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" value="0" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gray rotate-45 w-[20px] h-[20px]"><span class="text-white text-[10px] rotate-[-45deg]">9</span></div>
-                                    </div>
-                                    <!--level 10 (reward)-->
-                                    <div class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" value="0" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gray border-[5px] border-gray rotate-45 w-[50px] h-[50px] overflow-hidden">
-                                            <img class="-rotate-45 scale-[1.5] w-[150px] h-auto cursor-default" src="../assets/img/avatar/avatar_reward_2.jpg" />
                                         </div>
                                     </div>
                                 </div>
@@ -157,22 +114,21 @@
                             <!--quest list container-->
                             <ul class="flex flex-col border-[1px] border-gray w-full h-full bg-black/20 overflow-y-scroll">
                                 <!--quest list row-->
-                                <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 h-[60px] w-full border-b-[1px] border-gray">
+                                <li v-for="quest in StudentData.StudentDailyQuests" :key="quest" class="relative flex flex-row items-center justify-center px-[12px] gap-3 h-[60px] w-full border-b-[1px] border-gray">
                                     <!--required number of how many times to do the quest-->
                                     <div class="flex items-center justify-center h-full">
                                         <div class="flex items-center justify-center rounded-full w-[45px] h-[45px] border-[1px] border-gray">
-                                            <span class="text-white text-[12px]">0/5</span>
+                                            <span class="text-white text-[12px]">{{quest.QuestPoints}}</span>
                                         </div>
                                     </div>
                                     <!--quest information-->
                                     <div class="flex flex-col items-start justify-center text-white remove-scroll overflow-x-auto whitespace-nowrap h-full w-full" title="Press shift + scroll to scroll horizontally">
-                                        <strong class="text-[15px]">Daily Quest Title</strong>
-                                        <span class="text-[12px]">Quest description description description descriptiondescription descriptiondescription descriptiondescription descriptiondescription description.</span>
+                                        <strong class="text-[15px]">{{quest.QuestName}}</strong>
+                                        <span class="text-[12px]">{{quest.QuestDescription}}</span>
                                     </div>
                                     <!--claim button-->
-                                    <div class="flex items-center justify-center h-full">
-                                        <button class="flex items-center justify-center bg-blue text-white text-[12px] w-[100px] h-[35px] hover:bg-blue_hover active:bg-blue_active" v-on:click="dailyClaimed(true)" v-bind:class="{'hidden': isDailyClaim === true, 'flex': isDailyClaim === false}">CLAIM</button>
-                                        <div class="flex items-center justify-center border-[1px] border-gray text-white text-[12px] w-[100px] h-[35px]" v-bind:class="{'hidden': isDailyClaim === false, 'flex': isDailyClaim === true}">CLAIMED</div>
+                                    <div v-if="quest.QuestStatus === 'Completed'" class="flex items-center justify-center h-full">
+                                        <button @click="claimPoints(quest)" class="flex items-center justify-center bg-blue text-white text-[12px] w-[100px] h-[35px] hover:bg-blue_hover active:bg-blue_active">CLAIM</button>
                                     </div>
                                 </li>
                             </ul>
@@ -182,22 +138,21 @@
                             <!--quest list container-->
                             <ul class="flex flex-col border-[1px] border-gray w-full h-full bg-black/20 overflow-y-scroll">
                                 <!--quest list row-->
-                                <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 h-[60px] w-full border-b-[1px] border-gray">
+                                <li v-for="quest in StudentData.StudentWeeklyQuests" :key="quest" class="relative flex flex-row items-center justify-center px-[12px] gap-3 h-[60px] w-full border-b-[1px] border-gray">
                                     <!--required number of how many times to do the quest-->
                                     <div class="flex items-center justify-center h-full">
                                         <div class="flex items-center justify-center rounded-full w-[45px] h-[45px] border-[1px] border-gray">
-                                            <span class="text-white text-[12px]">0/5</span>
+                                            <span class="text-white text-[12px]">{{quest.QuestPoints}}</span>
                                         </div>
                                     </div>
                                     <!--quest information-->
                                     <div class="flex flex-col items-start justify-center text-white remove-scroll overflow-x-auto whitespace-nowrap h-full w-full" title="Press shift + scroll to scroll horizontally">
-                                        <strong class="text-[15px]">Weekly Quest Title</strong>
-                                        <span class="text-[12px]">Quest description description description descriptiondescription descriptiondescription descriptiondescription descriptiondescription description.</span>
+                                        <strong class="text-[15px]">{{quest.QuestName}}</strong>
+                                        <span class="text-[12px]">{{quest.QuestDescription}}</span>
                                     </div>
                                     <!--claim button-->
-                                    <div class="flex items-center justify-center h-full">
-                                        <button class="flex items-center justify-center bg-blue text-white text-[12px] w-[100px] h-[35px] hover:bg-blue_hover active:bg-blue_active" v-on:click="weeklyClaimed(true)" v-bind:class="{'hidden': isWeeklyClaim === true, 'flex': isWeeklyClaim === false}">CLAIM</button>
-                                        <div class="flex items-center justify-center border-[1px] border-gray text-white text-[12px] w-[100px] h-[35px]" v-bind:class="{'hidden': isWeeklyClaim === false, 'flex': isWeeklyClaim === true}">CLAIMED</div>
+                                    <div v-if="quest.QuestStatus === 'Completed'"  class="flex items-center justify-center h-full">
+                                        <button @click="claimPoints(quest)" class="flex items-center justify-center bg-blue text-white text-[12px] w-[100px] h-[35px] hover:bg-blue_hover active:bg-blue_active">CLAIM</button>
                                     </div>
                                 </li>
                             </ul>
@@ -217,14 +172,24 @@
     export default {
         data(){
             return{
+                //FRONTEND VARIABLES
                 openTab: 'daily', //daily, weekly
                 isDailyClaim: false,
                 isWeeklyClaim: false, 
                 isRewardClaim: false,
+
+                //BACKEND VARIABLES
+                currentUser: Parse.User.current(),
+                host:  window.location.host,
+
+                StudentData: [],
+                QuestRewards: [],
+                NextRewardData: '',
             }
         },
 
         methods: {
+            //===========FRONTEND FUNCTIONS===============
             activeTab: function (tabName) {
                 this.openTab = tabName
             },
@@ -237,7 +202,132 @@
             rewardClaimed: function (yes) {
                 this.isRewardClaim = yes
             },
-        }
+
+            //==========BACKEND FUNCTIONS=================
+            async logOut(){
+                await Parse.User.logOut();
+                window.location.href ='http://' + this.host;
+                //this.$router.go(0); refresh the page
+            },
+
+            async getAccountData(){
+                var param = {"StudentID" : this.currentUser.get("AccountID")};
+                //Run GetStudentQuestFirst
+                await Parse.Cloud.run("GetStudentQuests", param).then(async()=>{
+                    this.StudentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
+                });
+
+                //Get unacquired cosmetics
+                param["CosmeticType"] = "Avatar";
+                this.StudentData["UnacquiredAvatars"] = JSON.parse(await Parse.Cloud.run("GetUnacquiredCosmetics", param));
+                param["CosmeticType"] = "Frame";
+                this.StudentData["UnacquiredFrames"] = JSON.parse(await Parse.Cloud.run("GetUnacquiredCosmetics", param));
+                param["CosmeticType"] = "CoverPhoto";
+                this.StudentData["UnacquiredCoverPhotos"] = JSON.parse(await Parse.Cloud.run("GetUnacquiredCosmetics", param));
+
+                //Get DailyQuests Data
+                var studentDailyQuests = [];
+                for(let quest of this.StudentData.StudentDailyQuestsID){
+                    param = {"QuestID" : quest.QuestID};
+                    let data = JSON.parse(await Parse.Cloud.run("GetQuestData", param));
+                    data["QuestStatus"] = quest.QuestStatus;
+                    studentDailyQuests.push(data);
+                }
+                //Get WeeklyQuests Data
+                var studentWeeklyQuests = [];
+                for(let quest of this.StudentData.StudentWeeklyQuestsID){
+                    param = {"QuestID" : quest.QuestID};
+                    let data = JSON.parse(await Parse.Cloud.run("GetQuestData", param));
+                    data["QuestStatus"] = quest.QuestStatus;
+                    studentWeeklyQuests.push(data);
+                }
+                this.StudentData["StudentDailyQuests"] = studentDailyQuests;
+                this.StudentData["StudentWeeklyQuests"] = studentWeeklyQuests;
+
+                //Then GetQuestReward (needs here since there is await)
+                this.getQuestRewards();
+            },
+
+            async getQuestRewards(){
+                var param = {"SortType" : "Ascending"};
+                var res = JSON.parse(await Parse.Cloud.run("GetQuestRewards", param));
+                this.QuestRewards = [];
+
+                var lastPoint = 0;
+                for(var questReward of res){
+                    param = {"QuestRewardID" : questReward.objectId};
+                    var data = JSON.parse(await Parse.Cloud.run("GetQuestRewardData", param));
+                    //Compute Progress bar here
+                    var neededPoints = data.RequiredAscensionPoints - lastPoint;
+                    if(this.StudentData.AscensionPoints < data.RequiredAscensionPoints && this.NextRewardData === ''){
+                        this.NextRewardData = data;
+                    }
+                    data["ProgressPercentage"] = ((this.StudentData.AscensionPoints - lastPoint) / neededPoints) * 100;
+                    this.QuestRewards.push(data);
+                    lastPoint = data.RequiredAscensionPoints;
+                }
+            },
+
+            async claimPoints(quest){
+                if(quest.QuestStatus === "Completed"){
+                    var param = {
+                        "StudentID" : this.currentUser.get("AccountID"), 
+                        "QuestID" : quest.objectId,
+                        "QuestType" : quest.QuestType,
+                    };
+                    await Parse.Cloud.run("CompleteStudentQuest", param);
+                    alert("CLAIMED!");
+                }
+            },
+
+            async claimQuestReward(reward){
+                var param = {
+                    "StudentID": this.currentUser.get("AccountID"),
+                    "CosmeticID": reward.RewardCosmeticID,
+                    "CosmeticType": reward.RewardCosmeticType,
+                };
+                await Parse.Cloud.run("RewardCosmetic", param);
+                alert("REWARD CLAIMED!, CHECK COLLECTIONS");
+                this.$router.go(0);
+            },
+
+            checkIfRewardIsNotAcquired(reward){
+                var type = reward.RewardCosmeticType;
+                var id = reward.RewardCosmeticID;
+                if(this.StudentData.UnacquiredAvatars === undefined || this.StudentData.UnacquiredFrames === undefined || this.StudentData.UnacquiredCoverPhotos === undefined){
+                    return false;
+                }
+                if(type === "Avatar"){
+                    return this.StudentData.UnacquiredAvatars.map(function(e) { return e.objectId; }).indexOf(id) > -1;
+                }
+                else if(type === "Frame"){
+                    return this.StudentData.UnacquiredFrames.map(function(e) { return e.objectId; }).indexOf(id) > -1;
+                }
+                else if(type === "CoverPhoto"){
+                    return this.StudentData.UnacquiredCoverPhotos.map(function(e) { return e.objectId; }).indexOf(id) > -1;
+                }
+                return false;
+            },
+        },
+
+        beforeMount(){
+            if (this.currentUser) {
+                //If account is not student, go to homepage
+                if(this.currentUser.get("AccountType") !== "Student"){
+                    window.location.href ='http://' + this.host;
+                    return;
+                }
+                //If Account is logged in and does not have an account yet, redirect to sign up page
+                else if(this.currentUser.get("AccountID") === undefined){
+                    window.location.href ='http://' + this.host + '/SignUpPage';
+                    return;
+                }
+                this.getAccountData();
+            }
+            else{
+                window.location.href ='http://' + this.host;
+            }
+        },
 
     }
 </script>

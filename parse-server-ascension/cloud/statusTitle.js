@@ -6,9 +6,7 @@ Parse.Cloud.define("AddStatusTitle", async(request) => {
         console.log("Arguemnt: " + argument.StatusTitleLevel)
         console.log("Title " + title.StatusTitleLevel)
         if(argument.StatusTitleLevel == title.StatusTitleLevel){
-            console.log("Error: A status title already has this year level!")
-            return
-            // return Promise.reject("Error: A status title already has this year level!")
+            return Promise.reject("Error: A status title already has this year level!");
         }
     }
 
@@ -46,9 +44,7 @@ Parse.Cloud.define("EditStatusTitle", async(request) =>{
     for(const title of titles){
         if(argument.StatusTitleLevel == title.StatusTitleLevel){
             if(argument.StatusTitleID != title.objectId){
-                console.log("Error: A status title already has this year level!")
-                return
-                // return Promise.reject("Error: A status title already has this year level!")
+                return Promise.reject("Error: A status title already has this year level!");
             }
         }
     }

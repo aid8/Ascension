@@ -2262,12 +2262,18 @@
                     "StatusTitleImage" : this.StatusTitleImage,
                     "StatusTitleImageName" : this.StatusTitleImageName,
                 }
-                await Parse.Cloud.run("AddStatusTitle", params);
-                alert("Added Status Title!");
-                this.resetSelectedStatusTitle();
+                try{
+                    await Parse.Cloud.run("AddStatusTitle", params);
+                    alert("Added Status Title!");
+                    this.resetSelectedStatusTitle();
 
-                //Update status titles
-                this.getStatusTitles();
+                    //Update status titles
+                    this.getStatusTitles();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+                
             },
 
             async onStatusTitleImageSelected(e){
@@ -2317,12 +2323,17 @@
                     params["StatusTitleImageName"] = this.StatusTitleImageName;
                 }
 
-                await Parse.Cloud.run("EditStatusTitle", params);
-                alert("Edited Status Title!");
-                this.resetSelectedStatusTitle();
+                try{
+                    await Parse.Cloud.run("EditStatusTitle", params);
+                    alert("Edited Status Title!");
+                    this.resetSelectedStatusTitle();
 
-                //Update statusTitles
-                this.getStatusTitles();
+                    //Update statusTitles
+                    this.getStatusTitles();
+                }
+                catch(error){
+                    alert(error.message);
+                }
             },
 
             async deleteStatusTitle(){
