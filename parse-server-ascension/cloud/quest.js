@@ -1,3 +1,5 @@
+var Global = require('./global');
+
 Parse.Cloud.define("AddQuest", async(request) => {
     const Quest = Parse.Object.extend("Quest");
     const quest = new Quest();
@@ -77,17 +79,21 @@ Parse.Cloud.define("GetRandomQuests", async(request) =>{
     query.equalTo("QuestType", argument.QuestType);
     const res = await query.find();
 
-    var questsCopy = res.splice();
+    var questsCopy = [];
     var randomQuests = [];
     
+    for (const quest of res){
+        questsCopy.push(quest.id);
+    }
+
     if(argument.NumOfQuests > res.length){
         return Promise.reject("Number of Quests given exceeds quests storage with type of " + argument.QuestType);
     }
 
     for(let i = 0; i < argument.NumOfQuests; ++i){
         let idx = Global.getRndInteger(0, questsCopy.length);
-        randomQuests.push(questsCopy[idx]);
-        questsCopy.slice(idx, 1);
+        randomQuests.push({"QuestID" : questsCopy[idx], "QuestStatus" : "Incomplete"});
+        questsCopy.splice(idx, 1);
     }
         
     return JSON.stringify(randomQuests);

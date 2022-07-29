@@ -219,3 +219,23 @@ Parse.Cloud.define("GetUnacquiredCosmetics", async(request) => {
     }
     return JSON.stringify(unacquiredCosmetics);
 });
+
+//StudentID, CosmeticID, CosmeticType
+Parse.Cloud.define("RewardCosmetic", async(request) =>{
+    const argument = request.params;
+    var params = {
+        "StudentID" : argument.StudentID,
+        "Type" : 1,
+    };
+    var student = await Parse.Cloud.run("GetStudentData", params);
+    var cosmeticName = {
+        "Avatar" : "AvatarsIDUnlocked",
+        "Frame" : "FrameIDUnlocked",
+        "CoverPhoto" : "CoverPhotoIDUnlocked",
+    };
+
+    let cosmetic = student.get(cosmeticName[argument.CosmeticType]);
+    cosmetic.push(argument.CosmeticID);
+    student.set(cosmeticName[argument.CosmeticType], cosmetic);
+    student.save();
+});
