@@ -49,7 +49,7 @@ Parse.Cloud.afterSave("Student", async(request)=>{
             "AscensionPoints" : 0,
             "BadgesIDEarned" : [],
             "TrophiesIDUnlocked" : [],
-            "ChosenTrophies" : [undefined, undefined, undefined],
+            "ChosenTrophies" : [],
             "AvatarsIDUnlocked" : [defaultCosmetics.DefaultAvatarID],
             "FrameIDUnlocked" : [defaultCosmetics.DefaultFrameID],
             "BannerID" : "", //will be set to Banner of house upon assigning house
