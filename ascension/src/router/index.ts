@@ -41,9 +41,9 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "about" */ '../layouts/StudentHomePage.vue')
   },
   {
-    path: '/AccountSettingsPage',
-    name: 'AccountSettingsPage',
-    component: () => import(/* webpackChunkName: "about" */ '../layouts/AccountSettingsPage.vue')
+    path: '/AccountSettings',
+    name: 'AccountSettings',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/AccountSettings.vue')
   },
   {
     path: '/StudentProfilePage',

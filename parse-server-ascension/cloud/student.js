@@ -159,6 +159,16 @@ Parse.Cloud.define("GetStudentData", async(request) => {
     res.set("StudentDegree", JSON.parse(await Parse.Cloud.run("GetDegreeData", params)));
 
     //Pass Course Data(NOT SURE IF NEEDED)
+    var CoursesData = [];
+    for(const CourseID of res.get("StudentCoursesIDPointer")){
+        params = {"CourseID" : CourseID}; 
+        CoursesData.push(JSON.parse(await Parse.Cloud.run("GetCourseData", params)));
+    }
+    res.set("StudentCourses", CoursesData);
+
+    //Pass StatusTitleData
+    params = {"StatusTitleID" : res.get("StudentStatusTitleIDPointer")};
+    res.set("StatusTitleData", JSON.parse(await Parse.Cloud.run("GetStatusTitleData", params)));
 
     //Pass House Data
     params = {"HouseID" : res.get("StudentHouseIDPointer")};

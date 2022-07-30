@@ -1,157 +1,390 @@
 <style>
     body {
-        background-image: url('/src/assets/img/background/bg-2.jpg');
-        background-repeat: no-repeat;
+        background-image: theme('backgroundImage.default');
         background-size: cover;
         background-attachment: fixed;
-        margin: 0;}
-    html {
-        scroll-behavior: smooth;
+        background-repeat: no-repeat;
+        font-family: theme('fontFamily.default');
+        margin: 0;
     }
+    ul::-webkit-scrollbar {
+        display: none;
+    }
+    .remove-scroll::-webkit-scrollbar{
+        display: none;
+    }
+
+/*100vh*/
 </style>
+
 <template>
-    <head>
-        <title>Ascension</title>
-    </head>
+
     <body>
-        <!--navigation bar-->
-        <nav class="fixed z-[5] w-[100%] bg-black/15 backdrop-blur-[5px] border-b-[1px] border-gray font-Lexend text-center">
-            <div class="inline-block w-[1350px] h-[39px] text-white text-center">
-                <div class="inline-block mr-[220px] w-[150px] text-center">
-                    <a href="#"><img class="inline-block w-[125px]" src="../assets/img/logo/text-logo-default.png" /></a>
+        <main class="min-w-[1000px]">
+            <!--main header navigation bar-->
+            <nav v-if="currentUser.get('AccountType') === ''" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
+                <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
+                <a class="absolute left-[10px]" href="#"><img class="w-[130px] h-auto" src="" /></a> <!--../assets/img/logo/AscensionWhite.png-->
+                <div class="absolute top-[15px] right-[10px] flex items-center justify-end cursor-pointer w-[170px] z-[9]">
+                    <a class="text-white text-[13px] hover:text-gold active:text-gold_hover" href="#">SIGN IN</a>
                 </div>
-                <button class="inline-block border-b-[1px] border-b-gold text-gold text-[13px] my-[0px] w-[150px] h-[40px] align-middle">PROFILE</button>
-                <button class="inline-block hover:text-gold text-[13px] my-[0px] w-[150px] h-[40px] align-middle">QUEST</button>
-                <button class="inline-block hover:text-gold text-[13px] my-[0px] w-[150px] h-[40px] align-middle">LEADERBOARDS</button>
-                <button class="inline-block hover:text-gold text-[13px] my-[0px] w-[150px] h-[40px] align-middle">NOTIFICATION</button>
-                <div class="inline-block ml-[220px] w-[150px] text-center">
-                    <select class="bg-black/0 text-white text-[12px]">
-                        <option hidden>Username#123</option>
-                        <option class="text-black text-[12px]">Account Settings</option>
-                        <option class="text-black text-[12px]">Logout</option>
-                    </select>
-                </div>
-            </div>
-        </nav>
-        
-        <div class="grid md:grid-cols-3">
-            <div class="col-span-1 h-full mt-10 backdrop-blur-sm bg-black/40 w-[350px] fixed">
-                 <!--sidenavigation bar-->
-                <nav class="py-10">
-                    <div>
-                        <h1 class="font-Lexend font-bold text-white ml-10 text-3xl py-5">Account Settings</h1>
+            </nav>
+            <!--student header navigation bar-->
+            <nav v-if="currentUser.get('AccountType') === 'Student'" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
+                <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
+                <a class="absolute left-[10px]" href="#"><img class="w-[130px] h-auto" src="" /></a>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentProfilePage">PROFILE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentQuestPage">QUEST</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentLeaderboardPage">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentRequestPage">REQUEST</a></div>
+
+                <details class="absolute top-[10px] right-[10px] w-[170px]">
+                    <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
+                        <span class="text-white text-[12px]">{{UserData.UserName}}</span>
+                        <img v-if="UserData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="UserData.EquippedCosmeticsData[0].CosmeticImage" />
+                    </summary>
+                    <div class="bg-black/20 border-[1px] mt-[15px] border-gray">
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[12px] hover:text-gold" href="">SIGN OUT</a></div>
                     </div>
-                    <ul class="ml-10 text-white font-Lexend font-medium">
-                        <li class="my-3">
-                            <a href="#1" class="hover:text-gold"> PERSONAL INFORMATION </a>
-                        </li>
-                        <li class="my-3">
-                            <a href="#2" class="hover:text-gold"> USER SUPPORT </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-            <div class="col-span-2 overflow-y-hidden right-0 w-[980px] absolute">                
-                <!--personal info -->
-                <div class="col-span-2 py-1">
-                    <div id="1" class="pt-14">
-                        <div class="grid md:grid-cols-2 mx-24 my-12">
-                            <div class="col-span-1 bg-white h-[550px]">
-                                <div class="font-Lexend text-black mx-7">
-                                    <h1 class="font-bold mt-7 mb-2">Personal Information</h1>
-                                    <p class="font-normal"> This information is private and will 
-                                        not be shared with other students.</p>
+                </details>
+            </nav>
+            <!--giver header navigation bar-->
+            <nav v-if="currentUser.get('AccountType') === 'Teacher' || currentUser.get('AccountType') === 'NT_Distributor'" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
+                <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
+                <a class="absolute left-[10px]" href="#"><img class="w-[130px] h-auto" src="" /></a>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverStudentPage">STUDENT</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverHousePage">HOUSE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverLeaderboardPage">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverRequestPage">REQUEST</a></div>
+
+                <details class="absolute top-[15px] right-[10px] w-[170px] z-[9]">
+                    <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
+                        <span class="text-white text-[13px]">{{UserData.FirstName}}</span>
+                    </summary>
+                    <div class="relative bg-black/20 border-[1px] mt-[22px] border-gray z-[9]">
+                        <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[8]"></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[13px] hover:text-gold z-[9]" href="">ACCOUNT SETTINGS</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[13px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
+                    </div>
+                </details>
+            </nav>
+
+            <!--main content-->
+            <div class="absolute top-0 flex min-w-[1000px] w-full h-full pt-[50px]">
+                <div class="inline-flex items-center justify-center w-full h-full">
+                    <div class="flex flex-row max-w-[1366px] w-full h-full">
+                        <!--overflow body for form-->
+                        <div class="flex flex-col items-center justify-start gap-5 w-full h-full remove-scroll overflow-y-scroll">
+                            <!--student form body-->
+                            <form v-if="currentUser.get('AccountType') === 'Student'" class="flex flex-col items-start justify-start gap-3 max-[35%] w-[35%] h-auto py-[30px]">
+                                <!--display profile-->
+                                <div class="flex justify-center w-full">
+                                    <div class="relative flex items-center justify-center w-[180px] h-[180px]">
+                                        <img v-if="UserData.EquippedCosmeticsData !== undefined" class="rounded-full w-[130px] h-auto" v-bind:src="UserData.EquippedCosmeticsData[0].CosmeticImage" />
+                                        <img v-if="UserData.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[180px] h-auto" v-bind:src="UserData.EquippedCosmeticsData[1].CosmeticImage" />
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-span-1">
-                                <form class="backdrop-blur h-[550px] border-[1px] border-white">
-                                    <h3 class="ml-12 mr-9 pt-9 font-Lexend text-white"> USERNAME </h3>
-                                    <div class="ml-12 mr-9 pt-2">
-                                        <input required class="border-[1px] border-white bg-white/10 w-full py-3 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" 
-                                        placeholder="MyUsername#123">
-                                    </div>
-                                    <h3 class="ml-12 mr-9 pt-2 font-Lexend text-white"> EMAIL ADDRESS </h3>
-                                    <div class="ml-12 mr-9 pt-2">
-                                        <input required class="border-[1px] border-white bg-white/10 w-full py-3 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" 
-                                        placeholder="mguerrero@gbox.adnu.edu.ph
-                                        ">
-                                    </div>
-                                    <h3 class="ml-12 mr-9 pt-2 font-Lexend text-white"> MOBILE NUMBER </h3>
-                                    <div class="ml-12 mr-9 pt-2">
-                                        <input required class="border-[1px] border-white bg-white/10 w-full py-3 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" 
-                                        placeholder="09954668472
-                                        ">
-                                    </div>
-                                    <h3 class="ml-12 mr-9 pt-2 font-Lexend text-white"> SCHOOL </h3>
-                                    <div class="ml-12 mr-9 pt-2">
-                                        <input required class="border-[1px] border-white bg-white/10 w-full py-3 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" 
-                                        placeholder="Ateneo de Naga University
-                                        ">
-                                    </div>
-                                    <h3 class="ml-12 mr-9 pt-2 font-Lexend text-white"> DATE OF BIRTH </h3>
-                                    <div class="ml-12 mr-9 pt-2 pb-8">
-                                        <input required class="border-[1px] border-white bg-white/10 w-full py-3 px-3 text-black leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" 
-                                        placeholder="07|02|2001
-                                        ">
-                                    </div>
-                                    <div class="ml-48 mr-9 text-center focus:shadow-none">
-                                        <input class="font-Lexend bg-blue text-white text-[12px] h-[45px] w-[160px]" type="submit" value="SAVE AND VERIFY" />
-                                    </div>
-                                </form>
-                            </div>
+                                <div class="flex flex-col items-center w-full">
+                                    <span class="text-gold text-[25px]">{{UserData.UserName}}</span>
+                                    <span class="text-white text-[13px]">{{UserData.FirstName}} {{UserData.MiddleName}} {{UserData.LastName}}</span>
+                                    <span class="text-white text-[13px]">{{UserData.Email}}</span>
+                                    <span class="text-white text-[13px]">{{UserData.ContactNumber}}</span>
+                                </div>
+                                <!--change username, schoold id, address-->
+                                <div class="flex items-center justify-center gap-3 flex-row w-full">
+                                    <input v-model="UserData.UserName" class="bg-black/20 border-[1px] border-gray p-[10px] text-white text-[13px] w-[50%]" type="text" placeholder="Username" />
+                                    <input v-model="UserData.SchoolID" class="bg-black/20 border-[1px] border-gray p-[10px] text-white text-[13px] w-[50%]" type="text" placeholder="School ID" />
+                                </div>
+                                <input v-model="UserData.Address" class="bg-black/20 border-[1px] border-gray p-[10px] text-white text-[13px] w-full" type="text" placeholder="Address" />
+                                <!--change current degree-->
+                                <select @change="onDegreeChange($event)" v-model="UserDegreeIndex" class="bg-black/20 border-[1px] border-gray p-[10px] w-full text-white text-[13px]">
+                                    <option v-for="(degree, index) in Degrees" :key="degree" class="text-black text-[13px]" v-bind:name="index" v-bind:value="index">{{degree.DegreeName}}</option>
+                                </select>
+                                <!--add new course-->
+                                <span class="text-white text-[13px]">SELECT COURSE</span>
+                                <select v-model="UserCoursesIDToAdd" multiple class="flex flex-col border-[1px] border-gray bg-black/20 px-[10px] h-[200px] w-full remove-scroll overflow-y-scroll cursor-default">
+                                    <template v-for="course in Courses" :key="course.objectId">
+                                        <option v-if="(course.CourseDegreesIDPointers.indexOf(UserDegreeIDPointer) !== -1 || course.CourseDegreesIDPointers.length === 0 ) && UserCoursesIDPointer.indexOf(course.objectId) === -1" class="text-white text-[13px]" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                    </template>
+                                </select>
+
+                                <div class="flex justify-end w-full"><button @click="addUserCourses()" class="bg-blue text-white text-[12px] py-[5px] w-[80px]" type="button">ADD</button></div>
+
+                                <!--student's current course (remove current course)-->
+                                <span class="text-white text-[13px]">CURRENT COURSE</span>
+                                <select v-model="UserCoursesIDToDelete" multiple class="flex flex-col border-[1px] border-gray bg-black/20 px-[10px] h-[200px] w-full remove-scroll overflow-y-scroll cursor-default">
+                                    <template v-for="course in Courses" :key="course.objectId">
+                                        <option v-if="UserCoursesIDPointer.indexOf(course.objectId) > -1" class="text-white text-[13px]" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                    </template>
+                                </select>
+
+                                <div class="flex justify-end w-full"><button @click="deleteUserCourses()" class="bg-blue text-white text-[12px] py-[5px] w-[80px]" type="button">REMOVE</button></div>
+                                <!--save changes button-->
+                                <div class="flex flex-row justify-center w-full">
+                                    <button @click="saveChanges()" class="bg-blue text-white text-[12px] py-[10px] w-full" type="button">SAVE CHANGES</button>
+                                </div>
+                               
+                            </form>
+                            <!--teacher form body-->
+                            <form v-if="currentUser.get('AccountType') === 'Teacher'" class="flex flex-col items-start justify-start gap-3 max-[35%] w-[35%] h-auto py-[30px]">
+                                <!--display profile-->
+                                <div class="flex flex-col items-center w-full">
+                                    <span class="text-white text-[18px]">{{UserData.FirstName}} {{UserData.MiddleName}} {{UserData.LastName}}</span>
+                                    <span class="text-white text-[13px]">{{UserData.Email}}</span>
+                                    <span class="text-white text-[13px]">{{UserData.ContactNumber}}</span>
+                                </div>
+                                <!--change job title-->
+                                <input v-model="UserData.JobTitle" class="bg-black/20 border-[1px] border-gray p-[10px] text-white text-[13px] w-full" type="text" placeholder="Job Title" />
+                                <!--change current unit-->
+                                <select v-model="UserUnitIDPointer" class="bg-black/20 border-[1px] border-gray p-[10px] w-full text-white text-[13px]">
+                                    <option v-for="unit in Units" :key="unit" v-bind:value="unit.objectId" class="text-black text-[13px]">{{unit.UnitName}}</option>
+                                </select>
+                                <!--add new course-->
+                                <span class="text-white text-[13px]">SELECT COURSE</span>
+                                <select v-model="UserCoursesIDToAdd" multiple class="flex flex-col border-[1px] border-gray bg-black/20 px-[10px] h-[200px] w-full remove-scroll overflow-y-scroll cursor-default">
+                                    <template v-for="course in Courses" :key="course.objectId">
+                                        <option v-if="UserCoursesIDPointer.indexOf(course.objectId) === -1" class="text-white text-[13px]" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                    </template>
+                                </select>
+                                <div class="flex justify-end w-full"><button @click="addUserCourses()" class="bg-blue text-white text-[12px] py-[5px] w-[80px]" type="button">ADD</button></div>
+
+                                <!--giver's current course (remove current course)-->
+                                <span class="text-white text-[13px]">CURRENT COURSE</span>
+                                <select v-model="UserCoursesIDToDelete" multiple class="flex flex-col border-[1px] border-gray bg-black/20 px-[10px] h-[200px] w-full remove-scroll overflow-y-scroll cursor-default">
+                                    <template v-for="course in Courses" :key="course.objectId">
+                                        <option v-if="UserCoursesIDPointer.indexOf(course.objectId) > -1" class="text-white text-[13px]" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                    </template>
+                                </select>
+                                <div class="flex justify-end w-full"><button @click="deleteUserCourses()" class="bg-blue text-white text-[12px] py-[5px] w-[80px]" type="button">REMOVE</button></div>
+                                <!--save changes button-->
+                                <div class="flex flex-row justify-center w-full">
+                                    <button @click="saveChanges()" class="bg-blue text-white text-[12px] py-[10px] w-full" type="button">SAVE CHANGES</button>
+                                </div>
+                               
+                            </form>
+                            <!--nt-distributor form body-->
+                            <form v-if="currentUser.get('AccountType') === 'NT_Distributor'" class="flex flex-col items-start justify-start gap-3 max-[35%] w-[35%] h-auto py-[30px]">
+                                <!--display profile-->
+                                <div class="flex flex-col items-center w-full">
+                                    <span class="text-white text-[18px]">{{UserData.FirstName}} {{UserData.MiddleName}} {{UserData.LastName}}</span>
+                                    <span class="text-white text-[13px]">{{UserData.Email}}</span>
+                                    <span class="text-white text-[13px]">{{UserData.ContactNumber}}</span>
+                                </div>
+                                <!--change job title-->
+                                <input v-model="UserData.JobTitle" class="bg-black/20 border-[1px] border-gray p-[10px] text-white text-[13px] w-full" type="text" placeholder="Job Title" />
+                                <!--change current unit-->
+                                <select v-model="UserUnitIDPointer" class="bg-black/20 border-[1px] border-gray p-[10px] w-full text-white text-[13px]">
+                                    <option v-for="unit in Units" :key="unit" v-bind:value="unit.objectId" class="text-black text-[13px]">{{unit.UnitName}}</option>
+                                </select>
+                                <!--save changes button-->
+                                <div class="flex flex-row justify-center w-full">
+                                    <button @click="saveChanges()" class="bg-blue text-white text-[12px] py-[10px] w-full" type="button">SAVE CHANGES</button>
+                                </div>
+                               
+                            </form>
                         </div>
                     </div>
-                    <!--user support-->
-                    <div class="col-span-2 py-1">
-                        <div id="2" class="pt-14">
-                            <div class="grid md:grid-cols-2 mx-24 my-12 border-[1px] border-white">
-                                <div class="col-span-1 bg-white h-[550px]">
-                                    <div class="font-Lexend text-black mx-7">
-                                        <h1 class="font-bold mt-7 mb-2">User Support</h1>
-                                        <p class="font-normal"> Get help from ADNU CCS when 
-                                            a user encounter problems with the system.</p>
-                                    </div>
-                                </div>                                <div class="col-span-1">
-                                    <form class="backdrop-blur h-[550px]">
-                                        <div class="ml-12 mr-9 pt-10 pb-5">
-                                        <textarea class="border-[1px] border-white bg-white/10 text-white/75 w-full h-[200px] py-3 px-3" placeholder="STATE YOUR CONCERN"></textarea>    
-                                        </div>
-                                        <div class="ml-48 mr-9 text-center focus:shadow-none">
-                                            <input class="font-Lexend bg-blue text-white text-[12px] h-[45px] w-[160px]" type="submit" value="SEND" />
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>            
+        </main> 
     </body>
 </template>
 
 <script>
     import Parse from 'parse';
-    import '/src/assets/css/tailwind.css'
-    export default{
+    import '/src/assets/css/tailwind.css';
+
+    export default {
         data(){
             return{
-                userType: '',
+                //BACKEND VARIABLES
+                currentUser: Parse.User.current(),
+                host:  window.location.host,
+
+                UserData: [],
+                Degrees: [],
+                Courses: [],
+                Units: [],
+
+                //Need UserDegreeIndex and LastDegreeIndex to roll back to last Degree upon changing if there are courses not enrolled in that degreee
+                UserDegreeIndex: '',
+                UserLastDegreeIndex: '',
+                UserDegreeIDPointer: '',
+
+                UserUnitIDPointer: '',
+                UserCoursesIDPointer: [],
+                UserCoursesData: [],
+                UserCoursesIDToAdd: [],
+                UserCoursesIDToDelete: [],
             }
         },
-        components:{
-           
-        },
-        methods:{
-            async signIn(){
-                let host = window.location.host
-                window.location.href ='http://' + host + '/AccountCreation';
+
+        methods: {
+            //===========FRONTEND FUNCTIONS===============
+            activeTab: function (tabName) {
+                this.openTab = tabName
+            },
+            onDegreeChange(event){
+                this.selectDegree(event.target.value);
             },
 
-            async admin(){
-                let host = window.location.host;
-                window.location.href ='http://' + host + '/AdminPage';
+            async selectDegree(degreeIndex){
+                var lastUserDegreeIDPointer = this.UserDegreeIDPointer;
+                this.UserDegreeIDPointer = this.Degrees[degreeIndex].objectId;
+                this.UserUnitIDPointer = this.Degrees[degreeIndex].DegreeUnitIDPointer;
+                await this.getCourses();
+                //Checks if selected courses are valid
+                if(this.currentUser.get("AccountType") === "Student"){
+                    console.log("YPE");
+                    if(!this.checkIfSelectedCoursesAreValid()){
+                        alert("Please remove courses that are not in that degree");
+                        this.UserDegreeIndex = this.UserLastDegreeIndex;
+                        this.UserDegreeIDPointer = lastUserDegreeIDPointer;
+                        this.getCourses();
+                    }
+                }
+                this.UserLastDegreeIndex = this.UserDegreeIndex;
+            },
+            selectUnit(UnitID){
+                this.UserUnitIDPointer = UnitID;
+            },
+
+            //==========BACKEND FUNCTIONS=================
+            async logOut(){
+                await Parse.User.logOut();
+                window.location.href ='http://' + this.host;
+                //this.$router.go(0); refresh the page
+            },
+
+            checkIfSelectedCoursesAreValid(){
+                console.log(this.UserCoursesIDPointer, "IS VALID", this.Courses);
+                for(const course of this.UserCoursesIDPointer){
+                    if(this.Courses.map(function(e) { return e.objectId; }).indexOf(course) === -1){
+                        return false;
+                    }
+                }
+                return true;
+            },
+            
+            addUserCourses(){
+                this.UserCoursesIDPointer = this.UserCoursesIDPointer.concat(this.UserCoursesIDToAdd);
+            },
+
+            deleteUserCourses(){
+                for(const e of this.UserCoursesIDToDelete){
+                    var index = this.UserCoursesIDPointer.indexOf(e);
+                    if (index > -1){
+                        this.UserCoursesIDPointer.splice(index, 1);
+                        break;
+                    }
+                }
+            },
+
+            async getAccountData(){
+                var params = {}
+                if(this.currentUser.get("AccountType") === "Student"){
+                    params = {"StudentID" : this.currentUser.get("AccountID")};
+                    this.UserData = JSON.parse(await Parse.Cloud.run("GetStudentData", params));
+                    this.UserCoursesIDPointer = this.UserData.StudentCoursesIDPointer;
+                    this.UserDegreeIDPointer = this.UserData.StudentDegreeIDPointer;
+                    await this.getDegrees();
+                    this.UserDegreeIndex = this.Degrees.map(function(e) { return e.objectId; }).indexOf(this.UserDegreeIDPointer);
+                    this.UserLastDegreeIndex = this.UserDegreeIndex;
+                    this.getCourses();
+                }
+                else if(this.currentUser.get("AccountType") === "Teacher"){
+                    params = {"TeacherID" : this.currentUser.get("AccountID")};
+                    this.UserData = JSON.parse(await Parse.Cloud.run("GetTeacherData", params));
+                    this.getUnits("Department");
+                    this.getCourses();
+                    this.UserUnitIDPointer = this.UserData.TeacherUnitIDPointer;
+                    this.UserCoursesIDPointer = this.UserData.TeacherCoursesIDPointer;
+                    this.UserDegreeIDPointer = this.UserData.TeacherDegreeIDPointer;
+                    
+                }
+                else if(this.currentUser.get("AccountType") === "NT_Distributor"){
+                    params = {"NT_DistributorID" : this.currentUser.get("AccountID")};
+                    this.UserData = JSON.parse(await Parse.Cloud.run("GetNT_DistributorData", params));
+                    this.getUnits("Office");
+                    this.UserUnitIDPointer = this.UserData.NT_DistributorUnitIDPointer;
+                }
+            },
+            
+            async getUnits(type){
+                var params = {
+                    "UnitType" : type,
+                };
+                const res = JSON.parse(await Parse.Cloud.run("GetUnits", params));
+                this.Units = res;
+            },
+
+            async getDegrees(UnitID){
+                var params = {
+                    "DegreeUnitIDPointer" : UnitID,
+                };
+                const res = JSON.parse(await Parse.Cloud.run("GetDegrees", params));
+                this.Degrees = res;
+            },
+
+            //Gets Courses Related/Relevant Only to Selected Degree
+            async getCourses(){
+                var params = {};
+                if(this.currentUser.get("AccountType") === "Student"){
+                    params = {
+                        "CourseDegreeID" : this.UserDegreeIDPointer,
+                    };
+                }
+                const res = JSON.parse(await Parse.Cloud.run("GetCourses", params));
+                this.Courses = res;
+            },
+
+            async saveChanges(){
+                var params = {};
+                if(this.currentUser.get("AccountType") === "Student"){
+                    params = {
+                        "StudentID" : this.currentUser.get("AccountID"),
+                        "UserName" : this.UserData.UserName,
+                        "SchoolID" : this.UserData.SchoolID,
+                        "Address" : this.UserData.Address,
+                        "StudentDegreeIDPointer" : this.UserDegreeIDPointer,
+                        "StudentCoursesIDPointer" : this.UserCoursesIDPointer,
+                    }
+                    await Parse.Cloud.run("EditStudent", params);
+                    alert("Changes Saved!");
+                }
+                else if(this.currentUser.get("AccountType") === "Teacher"){
+                    params = {
+                        "TeacherID" : this.currentUser.get("AccountID"),
+                        "JobTitle" : this.UserData.JobTitle,
+                        "TeacherUnitIDPointer" : this.UserUnitIDPointer,
+                        "TeacherDegreeIDPointer" : this.UserDegreeIDPointer,
+                        "TeacherCoursesIDPointer" : this.UserCoursesIDPointer,
+                    }
+                    await Parse.Cloud.run("EditTeacher", params);
+                    alert("Changes Saved!");
+                }
+                else if(this.currentUser.get("AccountType") === "NT_Distributor"){
+                    params = {
+                        "NT_DistributorID" : this.currentUser.get("AccountID"),
+                        "JobTitle" : this.UserData.JobTitle,
+                        "NT_DistributorUnitIDPointer" : this.UserUnitIDPointer,
+                    }
+                    await Parse.Cloud.run("EditNT_Distributor", params);
+                    alert("Changes Saved!");
+                }
+            },
+        },
+
+        beforeMount(){
+            if (this.currentUser) {
+                this.getAccountData();
             }
-        }
+            else {
+                window.location.href ='http://' + this.host;
+            }
+
+        },
+
     }
 </script>
