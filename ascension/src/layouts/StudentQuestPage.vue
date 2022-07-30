@@ -59,11 +59,11 @@
                         <!--mission summary-->
                         <div class="w-full justify-center flex flex-row">
                             <div class="flex flex-col w-[70px] justify-center items-center gap-1 text-gold text-[13px]" title="Totaly daily mission completed">
-                                <span>{{StudentData.StudentDailyQuestsID.length}}</span>
+                                <span v-if="StudentData.StudentDailyQuestsID !== undefined">{{StudentData.StudentDailyQuestsID.length}}</span>
                                 <i class="fa-solid fa-calendar-day"></i>
                             </div>
                             <div class="flex flex-col w-[70px] justify-center items-center gap-1 text-gold text-[13px]" title="Totaly weekly mission completed">
-                                <span>{{StudentData.StudentWeeklyQuestsID.length}}</span>
+                                <span v-if="StudentData.StudentWeeklyQuestsID !== undefined">{{StudentData.StudentWeeklyQuestsID.length}}</span>
                                 <i class="fa-solid fa-calendar-week"></i>
                             </div>
                             <div class="flex flex-col w-[70px] justify-center items-center gap-1 text-gold text-[13px]" title="Current Ascension Points">
@@ -281,6 +281,9 @@
             },
 
             async claimQuestReward(reward){
+                if(this.StudentData.AscensionPoints < reward.RequiredAscensionPoints){
+                    return;
+                }
                 var param = {
                     "StudentID": this.currentUser.get("AccountID"),
                     "CosmeticID": reward.RewardCosmeticID,

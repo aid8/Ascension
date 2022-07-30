@@ -29,77 +29,76 @@
                     <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Last Name" v-model="LastName" readonly/>
                     <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="email" placeholder="Email" v-model="Email" readonly/>
                     <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="tel" placeholder="Contact Number" v-model="ContactNumber" />
+
                     <div class="flex flex-row gap-3 items-center justify-center">
-                        <input checked type="radio" id="student" v-on:click="showRole('student')" name='UserType' /><label for="student" class="text-[10px] text-white">STUDENT</label>
-                        <input type="radio" id="teacher" v-on:click="showRole('teacher')" name='UserType' /><label  for="teacher" class="text-[10px] text-white">TEACHER</label>
-                        <input type="radio" id="ntDistributor" v-on:click="showRole('ntDistributor')" name='UserType' /><label for="ntDistributor" class="text-[10px] text-white">NT DISTRIBUTOR</label>
+                        <input v-model="selectedRole" type="radio" id="student" v-on:click="showRole('Student')" name='UserType' value="Student"/><label for="student" class="text-[10px] text-white">STUDENT</label>
+                        <input v-model="selectedRole" type="radio" id="teacher" v-on:click="showRole('Teacher')" name='UserType' value="Teacher"/><label  for="teacher" class="text-[10px] text-white">TEACHER</label>
+                        <input v-model="selectedRole" type="radio" id="ntDistributor" v-on:click="showRole('NT_Distributor')" name='UserType' value="NT_Distributor" /><label for="ntDistributor" class="text-[10px] text-white">NT DISTRIBUTOR</label>
                     </div>
                     
                     <!--student-->
-                    <div class="flex flex-col items-center justify-center gap-2 w-full" v-bind:class="{'hidden': selectedRole !== 'student', 'flex': selectedRole === 'student'}">
-                        <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Address" />
+                    <div class="flex flex-col items-center justify-center gap-2 w-full" v-bind:class="{'hidden': selectedRole !== 'Student', 'flex': selectedRole === 'Student'}">
+                        <input v-model="Address" class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Address" />
                         <div class="flex flex-row gap-2 items-center justify-center">
                             <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Username" v-model="UserName"/>
                             <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="School ID" v-model="SchoolID" />
-                            <select class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full">
-                                <option hidden>Year Level</option>
-                                <option class="text-black" value="1">1</option>
-                                <option class="text-black" value="2">2</option>
-                                <option class="text-black" value="3">3</option>
-                                <option class="text-black" value="4">4</option>
-                                <option class="text-black" value="5">5</option>
+                            <select v-model="YearLevel" class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full">
+                                <option hidden value="">Year Level</option>
+                                <option class="text-black" value=1>1</option>
+                                <option class="text-black" value=2>2</option>
+                                <option class="text-black" value=3>3</option>
+                                <option class="text-black" value=4>4</option>
                             </select>
                         </div>
 
-                        <select class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full">
-                            <option hidden>Select Degree</option>
-                            <option class="text-black">Degree Name</option>
+                        <select @change="onDegreeChange($event)" v-model="StudentDegreeIDPointerIndex" class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full">
+                            <option hidden value="">Select Degree</option>
+                            <option v-for="(degree, index) in Degrees" :key="degree" class="text-black" v-bind:name="index" v-bind:value="index">{{degree.DegreeName}}</option>
                         </select>
                         
                         <details class="cursor-pointer w-full">
                             <summary class="text-white text-[12px]">SELECT COURSE</summary>
-                            <div class="flex flex-row gap-2 border-gray border-b-[1px]"><input type="checkbox" /><label class="text-white text-[12px]">Course Name</label></div>
-                            <div><button class="float-right mt-[10px] text-white bg-blue hover:bg-blue_hover active:bg-blue_active text-[10px] h-[30px] w-[5vw]">ADD</button></div>
+                            <span class="text-white text-[12px]">HOLD CTRL TO SELECT MULTIPLE</span>
+                            <select v-model="StudentCoursesIDPointer" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[340px] px-[10px]">
+                                <template v-for="course in Courses" :key="course.objectId">
+                                    <option v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                </template>
+                            </select>
                         </details>
 
-                        <details class="cursor-pointer w-full">
-                            <summary class="text-white text-[12px]">ADDED COURSE</summary>
-                            <div class="flex flex-row gap-2 border-gray border-b-[1px]"><input type="checkbox" /><label class="text-white text-[12px]">Course Name</label></div>
-                            <div><button class="float-right mt-[10px] text-white bg-blue hover:bg-blue_hover active:bg-blue_active text-[10px] h-[30px] w-[5vw]">REMOVE</button></div>
-                        </details>
-                        <input class="text-white bg-blue hover:bg-blue_hover active:bg-blue_active text-[10px] h-[30px] w-[100%]" type="submit" value="CONTINUE" />
+                        <input @click="saveProfile()" class="text-white bg-blue hover:bg-blue_hover active:bg-blue_active text-[10px] h-[30px] w-[100%]" type="button" value="CONTINUE" />
                     </div>
                     <!--teacher-->
-                    <div class="flex flex-col items-center justify-center gap-2 w-full" v-bind:class="{'hidden': selectedRole !== 'teacher', 'flex': selectedRole === 'teacher'}">
+                    <div class="flex flex-col items-center justify-center gap-2 w-full" v-bind:class="{'hidden': selectedRole !== 'Teacher', 'flex': selectedRole === 'Teacher'}">
                         <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Job Title" />
 
-                        <select class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full">
-                            <option hidden>Select Unit</option>
-                            <option class="text-black">Unit Name</option>
+                        <select v-model="TeacherUnitIDPointer" class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full">
+                            <option hidden value="">Select Unit</option>
+                            <option v-for="unit in Units" :key="unit" class="text-black" v-bind:value="unit.objectId">{{unit.UnitName}}</option>
                         </select>
                         
                         <details class="cursor-pointer w-full">
                             <summary class="text-white text-[12px]">SELECT COURSE</summary>
-                            <div class="flex flex-row gap-2 border-gray border-b-[1px]"><input type="checkbox" /><label class="text-white text-[12px]">Course Name</label></div>
-                            <div><button class="float-right mt-[10px] bg-blue text-white text-[10px] h-[30px] w-[5vw]">ADD</button></div>
+                            <span class="text-white text-[12px]">HOLD CTRL TO SELECT MULTIPLE</span>
+                            <select v-model="TeacherCoursesIDPointer" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[340px] px-[10px]">
+                                <template v-for="course in Courses" :key="course.objectId">
+                                    <option v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                </template>
+                            </select>
                         </details>
 
-                        <details class="cursor-pointer w-full">
-                            <summary class="text-white text-[12px]">ADDED COURSE</summary>
-                            <div class="flex flex-row gap-2 border-gray border-b-[1px]"><input type="checkbox" /><label class="text-white text-[12px]">Course Name</label></div>
-                            <div><button class="float-right mt-[10px] bg-blue text-white text-[10px] h-[30px] w-[5vw]">REMOVE</button></div>
-                        </details>
-                        <input class="bg-blue text-white text-[10px] h-[30px] w-[100%]" type="submit" value="CONTINUE" />
+                        <input @click="saveProfile()" class="text-white bg-blue hover:bg-blue_hover active:bg-blue_active text-[10px] h-[30px] w-[100%]" type="button" value="CONTINUE" />
                     </div>
                     <!--non teaching distributor-->
-                    <div class="flex flex-col items-center justify-center gap-2 w-full" v-bind:class="{'hidden': selectedRole !== 'ntDistributor', 'flex': selectedRole === 'ntDistributor'}">
+                    <div class="flex flex-col items-center justify-center gap-2 w-full" v-bind:class="{'hidden': selectedRole !== 'NT_Distributor', 'flex': selectedRole === 'NT_Distributor'}">
                         <input class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full" type="text" placeholder="Job Title" />
 
-                        <select class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full">
-                            <option hidden>Select Unit</option>
-                            <option class="text-black">Unit Name</option>
+                        <select v-model="NT_DistributorUnitIDPointer" class="bg-black/20 border-[1px] border-gray text-[12px] text-white p-[10px] w-full">
+                            <option hidden value="">Select Unit</option>
+                            <option v-for="unit in Units" :key="unit" class="text-black" v-bind:value="unit.objectId">{{unit.UnitName}}</option>
                         </select>
-                        <input class="bg-blue text-white text-[10px] h-[30px] w-[100%]" type="submit" value="CONTINUE" />
+                        
+                        <input @click="saveProfile()" class="text-white bg-blue hover:bg-blue_hover active:bg-blue_active text-[10px] h-[30px] w-[100%]" type="button" value="CONTINUE" />
                     </div>
                 </form>
             </section> 
@@ -118,8 +117,7 @@
         data(){
             return{
                 //VARIABLES USED IN FRONT-END
-                selectedRole: 'student', //student, teacher, ntDistributor
-                userType: '',
+                selectedRole: 'Student', //Student, Teacher, NT_Distributor
                 FirstName: Parse.User.current().get("firstname"),
                 MiddleName: '',
                 LastName: Parse.User.current().get("lastname"),
@@ -129,10 +127,25 @@
                 Address: '',
                 SchoolID: '',
                 YearLevel: '',
+                StudentUnitIDPointer: '',
+                StudentDegreeIDPointer: '',
+                StudentDegreeIDPointerIndex: '',
+                StudentCoursesIDPointer: [],
+
+                //Giver Variables
+                JobTitle: '',
+                TeacherUnitIDPointer: '',
+                TeacherCoursesIDPointer: [],
+                NT_DistributorUnitIDPointer: '',
+
+                CoursesIDToAdd: [],
+                CoursesIDToDelete: [],
 
                 //OTHER VARIABLES
                 StaffEmails: [],
-                
+                Units: [],
+                Degrees: [],
+                Courses: [],
 
                 //BACKEND VARIABLES
                 currentUser: Parse.User.current(),
@@ -141,14 +154,132 @@
         },
 
         methods: {
+            //===========FRONTEND FUNCTIONS===============
             showRole: function (roleType) {
                 this.selectedRole = roleType
+            },
+
+            onDegreeChange(event){
+                this.selectDegree(event.target.value);
+            },
+
+            checkIfDataIsIncomplete(){
+                if(this.MiddleName === "" || this.ContactNumber === ""){
+                    return true;
+                }
+                if(this.selectedRole === "Student"){
+                    return (this.UserName === "" || this.SchoolID === "" || this.YearLevel === "" ||
+                    this.StudentDegreeIDPointer === "" || this.Address === "");
+                }
+                else if(this.selectedRole === "Teacher"){
+                    return (this.JobTitle === "" || this.TeacherUnitIDPointer === "");
+                }
+                else if(this.selectedRole === "NT_Distributor"){
+                    return (this.JobTitle === "" || this.NT_DistributorUnitIDPointer === "");
+                }
+                return false;
+            },
+
+            //==========BACKEND FUNCTIONS=================
+            async getUnits(type){
+                var params = {
+                    "UnitType" : type,
+                };
+                const res = JSON.parse(await Parse.Cloud.run("GetUnits", params));
+                this.Units = res;
+            },
+
+            async getDegrees(UnitID){
+                var params = {
+                    "DegreeUnitIDPointer" : UnitID,
+                };
+                const res = JSON.parse(await Parse.Cloud.run("GetDegrees", params));
+                this.Degrees = res;
+            },
+
+            //Gets Courses Related/Relevant Only to Selected Degree
+            async getCourses(){
+                var params = {
+                    "CourseDegreeID" : this.StudentDegreeIDPointer,
+                };
+                if(this.selectedRole == "Student"){
+                    params["CourseDegreeID"] = this.StudentDegreeIDPointer;
+                }
+                else{
+                    params = {};
+                }
+                const res = JSON.parse(await Parse.Cloud.run("GetCourses", params));
+                this.Courses = res;
+            },
+
+            selectDegree(degreeIndex){
+                if(this.selectedRole == "Student"){
+                    this.StudentDegreeIDPointer = this.Degrees[degreeIndex].objectId;
+                    this.StudentUnitIDPointer = this.Degrees[degreeIndex].DegreeUnitIDPointer;
+                    this.getCourses();
+                }
+                
+            },
+            selectUnit(UnitID){
+                if(this.selectedRole == "Teacher"){
+                    this.TeacherUnitIDPointer = UnitID;
+                }
+                else if(this.selectedRole == "NT_Distributor"){
+                    this.NT_DistributorUnitIDPointer = UnitID;
+                }
+            },
+
+            async saveProfile(){
+                if(this.checkIfDataIsIncomplete()){
+                    alert("Please fill out all details!");
+                    return;
+                }
+                var params = {
+                    "FirstName": this.FirstName,
+                    "MiddleName": this.MiddleName,
+                    "LastName": this.LastName,
+                    "Email" : this.Email,
+                    "ContactNumber" : this.ContactNumber,
+                }
+                if(this.selectedRole == "Student"){
+                    params["UserName"] = this.UserName;
+                    params["SchoolID"] = this.SchoolID;
+                    params["Address"] = this.Address;
+                    params["YearLevel"] = parseInt(this.YearLevel);
+                    params["StudentUnitIDPointer"] = this.StudentUnitIDPointer;
+                    params["StudentDegreeIDPointer"] = this.StudentDegreeIDPointer;
+                    params["StudentCoursesIDPointer"] = this.StudentCoursesIDPointer;
+                    await Parse.Cloud.run("AddStudent", params);
+                }
+                else if(this.selectedRole == "Teacher"){
+                    params["JobTitle"] = this.JobTitle;
+                    params["TeacherUnitIDPointer"] = this.TeacherUnitIDPointer;
+                    params["TeacherCoursesIDPointer"] = this.TeacherCoursesIDPointer;
+                    await Parse.Cloud.run("AddTeacher", params);
+                }
+                else if(this.selectedRole == "NT_Distributor"){
+                    params["JobTitle"] = this.JobTitle;
+                    params["NT_DistributorUnitIDPointer"] = this.NT_DistributorUnitIDPointer;
+                    await Parse.Cloud.run("AddNT_Distributor", params);
+                }
+                alert("Added " + this.selectedRole);
+                
+                //Update user locally
+                var currentUser = Parse.User.current();
+                params = {"UserID" : currentUser.id};
+                var updatedData = JSON.parse(await Parse.Cloud.run("GetUpdatedUserData", params));
+                Parse.User.current().set("AccountType", updatedData.AccountType);
+                Parse.User.current().set("AccountID", updatedData.AccountID);
+                await Parse.User.current().save().then(()=>{
+                    //refresh page
+                    this.$router.go(0); 
+                });
             },
         },
 
         async beforeMount(){
+            console.log(this.currentUser);
             if (this.currentUser) {
-                console.log("THERE IS A USER")
                 //Preparing values of Teaching and NonTeaching Arrays (line 129 and 130)
                 //For getting staff emails for User Type assignment
                 //Change directory if needed
@@ -159,11 +290,23 @@
                     "nt_DistributorEmails": this.StaffEmails.nt_DistributorEmails,
                     "email": this.Email,
                 }
-                this.selectedRole = await Parse.Cloud.run("IdentifyUserType", param)
-                console.log(this.selectedRole)
+                this.selectedRole = await Parse.Cloud.run("IdentifyUserType", param);
+                if(this.selectedRole === "Student"){
+                    this.getDegrees();
+                }
+                else if(this.selectedRole === "Teacher"){
+                    this.getUnits("Department");
+                    this.getCourses();
+                }
+                else if(this.selectedRole === "NT_Distributor"){
+                    this.getUnits("Office");
+                }
                 //Redirect to StudentHomePage if logged in and has data
                 if(this.currentUser.get("AccountType") === "Student"){
                     window.location.href ='http://' + this.host + '/StudentHomePage';
+                }
+                else if(this.currentUser.get("AccountType") === "Teacher" || this.currentUser.get("AccountType") === "NT_Distributor"){
+                    window.location.href ='http://' + this.host + '/GiverStudentPage';
                 }
             }
         },

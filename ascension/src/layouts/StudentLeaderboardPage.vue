@@ -74,7 +74,7 @@
                                     <!--student leaderboard list row-->
                                     <li v-for="student in StudentsLeaderboard" :key="student" class="relative flex flex-row items-center justify-center px-[12px] gap-3 py-[3px] w-full border-b-[1px] border-gray">
                                         <div class="flex items-center justify-center w-[5%] h-full">
-                                            <div class="block w-[30px] h-[30px] border-[3px]" v-bind:class="{'border-gold -rotate-45': student.Ranking <= 3}"><span class="flex items-center justify-center h-full w-full text-white font-bold text-[15px] rotate-45">{{student.Ranking}}</span></div>
+                                            <div class="block w-[30px] h-[30px] border-[3px] -rotate-45" v-bind:class="{'border-gold': student.Ranking <= 3}"><span class="flex items-center justify-center h-full w-full text-white font-bold text-[15px] rotate-45">{{student.Ranking}}</span></div>
                                         </div>
                                         <div class="flex items-center justify-start gap-3 w-[45%] h-full">
                                             <!--image-->
