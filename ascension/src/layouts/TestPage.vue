@@ -203,7 +203,7 @@
                             <input @click="addQuest()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
-                    <!--Status Title-->
+                    <!--status title-->
                     <form class="grid justify-center py-[30px]" id="status">
                         <legend class="mb-[10px] text-white text-[13px]">STATUS TITLE</legend>
                         <input v-model="StatusTitleName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Status Title Name" />
@@ -215,7 +215,7 @@
                             <input @click="addStatusTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
                         </div>
                     </form>
-                    <!--Quest Reward-->
+                    <!--quest rewards-->
                     <form class="grid justify-center py-[30px]" id="rewards">
                         <legend class="mb-[10px] text-white text-[13px]">QUEST REWARD</legend>
                         <select v-model="RewardCosmeticType" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
@@ -240,23 +240,25 @@
                     </form>
                 </div>
                 <!--right section-->
-                <div class="col-span-1">
+                <div class="flex flex-col h-full pt-[5%] gap-3">
                     <!--sub navigation bar-->
-                    <nav class="grid grid-cols-9 col-span-1">
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'units', 'text-gold border-b-[1px] border-gold': openModifyTab === 'units'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('units')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'units', 'text-gold cursor-default': openModifyTab === 'units'}" href="#units" title="List of Units">UNITS</a></div>
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'degrees', 'text-gold border-b-[1px] border-gold': openModifyTab === 'degrees'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('degrees')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'degrees', 'text-gold cursor-default': openModifyTab === 'degrees'}" href="#degrees" title="List of Degrees">DEGREES</a></div>
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'courses', 'text-gold border-b-[1px] border-gold': openModifyTab === 'courses'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('courses')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'courses', 'text-gold cursor-default': openModifyTab === 'courses'}" href="#courses" title="List of Courses">COURSES</a></div>
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'badges', 'text-gold border-b-[1px] border-gold': openModifyTab === 'badges'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('badges')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'badges', 'text-gold cursor-default': openModifyTab === 'badges'}" href="#badges" title="List of Badges">BADGES</a></div>
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'trophies', 'text-gold border-b-[1px] border-gold': openModifyTab === 'trophies'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('trophies')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'trophies', 'text-gold cursor-default': openModifyTab === 'trophies'}" href="#trophies" title="List of Trophies">TROPHIES</a></div>
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'titles', 'text-gold border-b-[1px] border-gold': openModifyTab === 'titles'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('titles')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'titles', 'text-gold cursor-default': openModifyTab === 'titles'}" href="#title" title="List of Ascension Titles">TITLES</a></div>
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'cosmetics', 'text-gold border-b-[1px] border-gold': openModifyTab === 'cosmetics'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('cosmetics')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'cosmetics', 'text-gold cursor-default': openModifyTab === 'cosmetics'}" href="#cosmetics" title="List of Cosmetics">COSMETICS</a></div>
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'houses', 'text-gold border-b-[1px] border-gold': openModifyTab === 'houses'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('houses')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'houses', 'text-gold cursor-default': openModifyTab === 'houses'}" href="#house" title="List of Houses">HOUSES</a></div>
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'quests', 'text-gold border-b-[1px] border-gold': openModifyTab === 'quests'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('quests')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'quests', 'text-gold cursor-default': openModifyTab === 'quests'}" href="#quest" title="List of Quests">QUESTS</a></div>
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'status', 'text-gold border-b-[1px] border-gold': openModifyTab === 'status'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('status')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'status', 'text-gold cursor-default': openModifyTab === 'status'}" href="#status" title="List of Status Title">STATUS</a></div>
-                        <div class="py-[10px] flex items-center justify-center" v-bind:class="{'text-white border-b-[1px] border-gray': openModifyTab !== 'rewards', 'text-gold border-b-[1px] border-gold': openModifyTab === 'rewards'}"><a class="text-white text-[10px]" v-on:click="activeModifyTab('rewards')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openModifyTab !== 'rewards', 'text-gold cursor-default': openModifyTab === 'rewards'}" href="#rewards" title="List of Rewards">REWARDS</a></div>
-                    </nav>
+                    <div class="flex justify-center w-full h-[5%]">
+                        <select v-model="openModifyTab" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] px-[10px] max-h-[40px] h-full w-[500px]" for="rewards">
+                            <option class="text-black text-[12px]" value='units'>Units</option>
+                            <option class="text-black text-[12px]" value='degrees'>Degrees</option>
+                            <option class="text-black text-[12px]" value='courses'>Courses</option>
+                            <option class="text-black text-[12px]" value='badges'>Badges</option>
+                            <option class="text-black text-[12px]" value='trophies'>Trophies</option>
+                            <option class="text-black text-[12px]" value='ranks'>Ranks</option>
+                            <option class="text-black text-[12px]" value='cosmetics'>Cosmetics</option>
+                            <option class="text-black text-[12px]" value='houses'>Houses</option>
+                            <option class="text-black text-[12px]" value='quests'>Quests</option>
+                            <option class="text-black text-[12px]" value='status'>Status</option>
+                            <option class="text-black text-[12px]" value='rewards'>Rewards</option>
+                        </select>
+                    </div>
                     <!--units tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'units', 'block': openModifyTab === 'units'}">
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'units', 'flex': openModifyTab === 'units'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="unit in Units" :key="unit.objectId" v-bind:value="unit.objectId">
@@ -274,7 +276,7 @@
                         </ul>
                     </div>
                     <!--degrees tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'degrees', 'block': openModifyTab === 'degrees'}">
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'degrees', 'flex': openModifyTab === 'degrees'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="degree in Degrees" :key="degree.objectId" v-bind:value="degree.objectId">
@@ -292,7 +294,7 @@
                         </ul>
                     </div>
                     <!--courses tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'courses', 'block': openModifyTab === 'courses'}">
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'courses', 'flex': openModifyTab === 'courses'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="course in Courses" :key="course.objectId" v-bind:value="course.objectId">
@@ -310,7 +312,7 @@
                         </ul>
                     </div>
                     <!--badges tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'badges', 'block': openModifyTab === 'badges'}">
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'badges', 'flex': openModifyTab === 'badges'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="badge in Badges" :key="badge.objectId" v-bind:value="badge.objectId">
@@ -335,7 +337,7 @@
                         </ul>
                     </div>
                     <!--trophies tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'trophies', 'block': openModifyTab === 'trophies'}">
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'trophies', 'flex': openModifyTab === 'trophies'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="trophy in Trophies" :key="trophy.objectId" v-bind:value="trophy.objectId">
@@ -360,7 +362,7 @@
                         </ul>
                     </div>
                     <!--ascension title tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'titles', 'block': openModifyTab === 'titles'}">
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'ranks', 'flex': openModifyTab === 'ranks'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="title in AscensionTitles" :key="title.objectId" v-bind:value="title.objectId">
@@ -385,7 +387,7 @@
                         </ul>
                     </div>
                     <!--cosmetics tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'cosmetics', 'block': openModifyTab === 'cosmetics'}">
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'cosmetics', 'flex': openModifyTab === 'cosmetics'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="cosmetic in Cosmetics" :key="cosmetic.objectId" v-bind:value="cosmetic.objectId">
@@ -411,7 +413,7 @@
                         </ul>
                     </div>
                     <!--house tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'houses', 'block': openModifyTab === 'houses'}">
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'houses', 'flex': openModifyTab === 'houses'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="house in Houses" :key="house.objectId" v-bind:value="house.objectId">
@@ -439,7 +441,7 @@
                         </ul>
                     </div>
                     <!--quest tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'quests', 'block': openModifyTab === 'quests'}">
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'quests', 'flex': openModifyTab === 'quests'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="quest in Quests" :key="quest.objectId" v-bind:value="quest.objectId">
@@ -466,8 +468,8 @@
                             </li>
                         </ul>
                     </div>
-                    <!--Status Title tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'status', 'block': openModifyTab === 'status'}">
+                    <!--status title tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'status', 'flex': openModifyTab === 'status'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="statusTitle in StatusTitles" :key="statusTitle.objectId" v-bind:value="statusTitle.objectId">
@@ -491,8 +493,8 @@
                             </li>
                         </ul>
                     </div>
-                    <!--Quest Rewards Tab-->
-                    <div class="grid justify-center py-[30px]" v-bind:class="{'hidden': openModifyTab !== 'rewards', 'block': openModifyTab === 'rewards'}">
+                    <!--quest rewards tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'rewards', 'flex': openModifyTab === 'rewards'}">
                         <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
                             <!--list container-->
                             <li v-for="reward in QuestRewards" :key="reward.objectId" v-bind:value="reward.objectId">
@@ -668,7 +670,6 @@
                     </div>
                 </div>
             </section>
-
             <!--giver list-->
             <section class="grid col-span-10 h-[100vh]" v-bind:class="{'hidden': openTab !== 'giver', 'block': openTab === 'giver'}">
                 <div class="col-span-1 px-[30px] py-[30px]">
@@ -774,7 +775,7 @@
             return{
                 //Frontend Variables
                 openTab: 'modify', //modify, student, giver
-                openModifyTab: 'units', //units, degrees, courses, trophies, badges, titles, cosmetics, houses
+                openModifyTab: 'units', //units, degrees, courses, trophies, badges, ranks, cosmetics, houses
                 popUp: '', //editStudent, closePopUp
                 openStudent: 0,
                 isHidden: true,
@@ -2267,7 +2268,7 @@
                     alert("Added Status Title!");
                     this.resetSelectedStatusTitle();
 
-                    //Update status titles
+                    //Update status ranks
                     this.getStatusTitles();
                 }
                 catch(error){
@@ -2351,7 +2352,7 @@
                     alert("Deleted StatusTitle!");
                     this.resetSelectedStatusTitle();
 
-                    //Update status titles
+                    //Update status ranks
                     this.getStatusTitles();
                 }
                 catch(error){
