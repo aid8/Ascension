@@ -1,328 +1,822 @@
+<style>
+    body {
+        background-image: theme('backgroundImage.default');
+        background-size: cover;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        font-family: theme('fontFamily.default');
+        margin: 0;
+    }
+    ul::-webkit-scrollbar {
+        display: none;
+    }
+    .remove-scroll::-webkit-scrollbar{
+        display: none;
+    }
+
+/*100vh*/
+</style>
 <template>
-    <h1> Admin page </h1>
+    <head>
+        <title>Admin</title>
+    </head>
 
-    <h3>Add Unit</h3>
-    <span>UnitName: </span>
-    <input v-model="UnitName" type="text"><br>
-    <span>ContactNumber: </span>
-    <input v-model="UnitContactNumber" type="Number"><br>
-    <span>Unit Type: </span>
-    <input type="radio" id="department" value="Department" v-model="UnitType" />
-    <label for="department">Department</label>
-    <input type="radio" id="office" value="Office" v-model="UnitType" />
-    <label for="office">Office</label><br>
-    <button @click="addUnit()">Add Unit</button>
-    <hr>
+    <body>
+        <!--
+        <nav class="px-[10px] py-[5px] block bg-black/30 mx-[auto] min-w-[1000px] w-[100%] backdrop-blur-[20px] border-b-[1px] border-gray text-right z-[5]">
+            <a class="text-[13px] text-white hover:text-gold" href="#">Admin <i class="fa-solid fa-caret-down"></i></a>
+        </nav>
+        -->
+        <main class="mx-[auto] grid grid-cols-12 grid-rows-1 min-w-[1366px] max-w-[1366px]">
+            <!--left navigation bar-->
+            <nav class="flex flex-col items-center justify-start col-span-2 text-[13px] py-[20px] h-[100%] border-r-[1px] border-gray">
+                <button class="w-[100%] py-[10px] px-[20px] text-right" v-on:click="activeTab('modify')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'modify', 'text-gold cursor-default': openTab === 'modify'}">MODIFY</button>
+                <button class="w-[100%] py-[10px] px-[20px] text-right" v-on:click="activeTab('student')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'student', 'text-gold cursor-default': openTab === 'student'}">STUDENT</button>
+                <button class="w-[100%] py-[10px] px-[20px] text-right" v-on:click="activeTab('giver')" v-bind:class="{'text-white hover:text-gold cursor-pointer': openTab !== 'giver', 'text-gold cursor-default': openTab === 'giver'}">GIVER</button>
+                <details class="text-right w-full cursor-pointer">
+                    <summary class="text-white py-[10px] px-[20px]">ADMIN</summary>
+                    <button class="bg-black/20 px-[20px] text-white w-full text-right py-[10px]">SIGN OUT</button>
+                </details>
+            </nav>
+            <!--add/edit/delete tab-->
+            <section class="grid grid-cols-2 col-span-10" v-bind:class="{'hidden': openTab !== 'modify', 'block': openTab === 'modify'}">
+                <!--middle section-->
+                <div class="py-[30px] remove-scroll col-span-1 h-[100vh] overflow-y-scroll">
+                    <!--units-->
+                    <form class="grid justify-center py-[30px]" id="units">
+                        <legend class="mb-[10px] text-white text-[13px]">UNIT</legend>
+                        <input v-model="UnitName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Unit Name" />
+                        <input v-model="UnitContactNumber" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="tel" placeholder="Contact Number" />
+                        <div class="mb-[10px]">
+                            <input v-model="UnitType" required class="align-middle mr-[5px]" type="radio" id="department" value="Department" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="department">Department</label>
+                            <input v-model="UnitType" required class="align-middle mr-[5px]" type="radio" id="office" value="Office" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="office">Office</label>
+                        </div>
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteUnit()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editUnit()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addUnit()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--degrees-->
+                    <form class="grid justify-center py-[30px]" id="degrees">
+                        <legend class="mb-[10px] text-white text-[13px]">DEGREE</legend>
+                        <input v-model="DegreeName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Degree Name" />
+                        <select v-model="DegreeUnitIDPointer" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
+                            <option hidden value="">Select Department</option>
+                            <option v-for="department in Departments" :key="department.objectId" v-bind:value="department.objectId">{{ department.UnitName }}</option>
+                        </select>
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteDegree()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editDegree()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addDegree()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--courses-->
+                    <form class="grid justify-center py-[30px]" id="courses">
+                        <legend class="mb-[10px] text-white text-[13px]">COURSE</legend>
+                        <input v-model="CourseName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Course Name" />
+                        <input v-model="CourseCode" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Course Code" />
+                        <legend class="mb-[10px] text-white text-[13px]">SELECT DEGREES (CTRL TO SELECT MULTIPLE)</legend>
+                        <select v-model="CourseDegreesIDPointers" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[400px] px-[10px]">
+                            <option v-for="degree in Degrees" :key="degree.objectId" v-bind:value="degree.objectId">{{ degree.DegreeName }}</option>
+                        </select>
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteCourse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editCourse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addCourse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--badges-->
+                    <form class="grid justify-center py-[30px]" id="badges">
+                        <legend class="mb-[10px] text-white text-[13px]">BADGE</legend>
+                        <input v-model="BadgeName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Badge Name" />
+                        <input v-model="BadgeDescription" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Description" />
+                        <input v-model="BadgeDesignInspiration" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Design Inspiration" />
+                        <input v-model="BadgePoints" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Badge Points" />
+                        <div class="mb-[10px]">
+                            <input v-model="BadgeType" required class="align-middle mr-[5px]" type="radio" id="studentBadgeType" value="Student" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="studentBadgeType">Student</label>
+                            <input v-model="BadgeType" required class="align-middle mr-[5px]" type="radio" id="houseBadgeType" value="House" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="houseBadgeType">House</label>
+                        </div>
+                        <input @change="onBadgeImageSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="BadgeFileUpload"/>
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteBadge()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editBadge()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addBadge()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--trophies-->
+                    <form class="grid justify-center py-[30px]" id="trophies">
+                        <legend class="mb-[10px] text-white text-[13px]">TROPHY</legend>
+                        <input v-model="TrophyName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Trophy Name" />
+                        <input v-model="TrophyDescription" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Description" />
+                        <input v-model="TrophyDesignInspiration" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="textarea" placeholder="Design Inspiration" />
+                        <input v-model="TrophyPoints" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Trophy Points" />
+                        <div class="mb-[10px]">
+                            <input v-model="TrophyType" required class="align-middle mr-[5px]" type="radio" id="studentTrophyType" value="Student" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="studentTrophyType">Student</label>
+                            <input v-model="TrophyType" required class="align-middle mr-[5px]" type="radio" id="houseTrophyType" value="House" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="houseTrophyType">House</label>
+                            <input v-model="TrophyType" required class="align-middle mr-[5px]" type="radio" id="ultimateTrophyType" value="Ultimate" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="ultimateTrophyType">Ultimate</label>
+                        </div>
+                        <legend v-if="TrophyType !== 'Ultimate' && TrophyType !== ''" class="mb-[10px] text-white text-[13px]">SELECT BADGES NEEDED BY TROPHY (CTRL TO SELECT MULTIPLE)</legend>
+                        <select v-if="TrophyType !== 'Ultimate' && TrophyType !== ''" v-model="BadgesIDNeeded" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[400px] px-[10px]">
+                            <template v-if="TrophyType === 'Student'">
+                                <option v-for="badge in StudentBadges" :key="badge.objectId" v-bind:value="badge.objectId">{{ badge.BadgeName }}</option>
+                            </template>
+                            <template v-if="TrophyType === 'House'">
+                                <option v-for="badge in HouseBadges" :key="badge.objectId" v-bind:value="badge.objectId">{{ badge.BadgeName }}</option>
+                            </template>
+                        </select>
+                        <input @change="onTrophyImageSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="TrophyFileUpload"/>
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteTrophy()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editTrophy()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addTrophy()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--title-->
+                    <form class="grid justify-center py-[30px]" id="title">
+                        <legend class="mb-[10px] text-white text-[13px]">ASCENSION TITLE</legend>
+                        <input v-model="AscensionName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Ascension Title" />
+                        <input v-model="AscensionXpRangeStart" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" min="0" max="940" type="number" placeholder="Starting XP Value" />
+                        <input v-model="AscensionXpRangeCap" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" min="120px" max="1020" type="number" placeholder="Max XP Value" />
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteAscensionTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editAscensionTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addAscensionTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--cosmetics-->
+                    <form class="grid justify-center py-[30px] " id="cosmetics">
+                        <legend class="mb-[10px] text-white text-[13px]">COSMETICS</legend>
+                        <input v-model="CosmeticName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Cosmetic Name" />
+                        <select v-model="CosmeticType" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
+                            <option hidden value="">Cosmetic Type</option>
+                            <option class="text-black" value="Avatar">Avatar</option>
+                            <option class="text-black" value="Frame">Frames</option>
+                            <option class="text-black" value="Banner">Banner</option>
+                            <option class="text-black" value="CoverPhoto" >Background</option>
+                        </select>
+                        <input @change="onCosmeticImageSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="CosmeticFileUpload"/>
+                        <div class="w-[400px] grid grid-cols-4 grid-rows-1 gap-2">
+                            <input @click="deleteCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="setDefaultCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="SET DEFAULT" title="Set default for user's cosmetic" />
+                            <input @click="editCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addCosmetic()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--house-->
+                    <form class="grid justify-center py-[30px]" id="house">
+                        <legend class="mb-[10px] text-white text-[13px]">HOUSE</legend>
+                        <input v-model="HouseName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="House Name" />
+                        <select v-model="HouseBannerIDPointer" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
+                            <option hidden value="">Select Banner</option>
+                            <option v-for="banner in Banners" :key="banner.objectId" v-bind:value="banner.objectId">{{ banner.CosmeticName }}</option>
+                        </select>
+                        <input @change="onHouseLogoSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="HouseFileUpload"/>
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteHouse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editHouse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addHouse()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--quest-->
+                    <form class="grid justify-center py-[30px]" id="quest">
+                        <legend class="mb-[10px] text-white text-[13px]">QUEST</legend>
+                        <input v-model="QuestName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Quest Name" />
+                        <input v-model="QuestDescription" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Quest Description" />
+                        <input v-model="QuestPoints" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Quest Points" />
+                        <div class="mb-[10px]">
+                            <input v-model="QuestType" required class="align-middle mr-[5px]" type="radio" id="daily" value="Daily" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="daily">Daily Quest</label>
+                            <input v-model="QuestType" required class="align-middle mr-[5px]" type="radio" id="weekly" value="Weekly" />
+                            <label class="text-white text-[12px] align-middle mr-[20px]" for="weekly">Weekly Quest</label>
+                        </div>
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteQuest()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editQuest()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addQuest()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--status title-->
+                    <form class="grid justify-center py-[30px]" id="status">
+                        <legend class="mb-[10px] text-white text-[13px]">STATUS TITLE</legend>
+                        <input v-model="StatusTitleName" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="text" placeholder="Status Title Name" />
+                        <input v-model="StatusTitleLevel" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Status Title Level" />
+                        <input @change="onStatusTitleImageSelected" required class="text-[12px] h-[40px] w-[400px]" type="file" name="img" accept="image/x-png,image/gif,image/jpeg" ref="StatusTitleFileUpload"/>
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteStatusTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editStatusTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addStatusTitle()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                    <!--quest rewards-->
+                    <form class="grid justify-center py-[30px]" id="rewards">
+                        <legend class="mb-[10px] text-white text-[13px]">QUEST REWARD</legend>
+                        <select v-model="RewardCosmeticType" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
+                            <option hidden value="">Reward Type</option>
+                            <option class="text-black" value="Avatar">Avatar</option>
+                            <option class="text-black" value="Frame">Frames</option>
+                            <option class="text-black" value="Banner">Banner</option>
+                            <option class="text-black" value="CoverPhoto" >Background</option>
+                        </select>
+                        <select v-model="RewardCosmeticID" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]">
+                            <option hidden value="">Choose Cosmetic Reward</option>
+                            <template v-for="cosmetic in Cosmetics" :key="cosmetic">
+                                <option v-if="cosmetic.CosmeticType === RewardCosmeticType" v-bind:value="cosmetic.objectId">{{cosmetic.CosmeticName}}</option>
+                            </template>
+                        </select>
+                        <input v-model="RequiredAscensionPoints" required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[400px] px-[10px]" type="number" placeholder="Required Ascension Points" />
+                        <div class="w-[400px] grid grid-cols-3 gap-2">
+                            <input @click="deleteQuestReward()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                            <input @click="editQuestReward()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="EDIT" />
+                            <input @click="addQuestReward()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[100%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                        </div>
+                    </form>
+                </div>
+                <!--right section-->
+                <div class="flex flex-col h-full pt-[5%] gap-3">
+                    <!--sub navigation bar-->
+                    <div class="flex justify-center w-full h-[5%]">
+                        <select @change="onTabChange($event)" v-model="openModifyTab" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] px-[10px] max-h-[40px] h-full w-[500px]" for="rewards">
+                            <option class="text-black text-[12px]" value='units'>Units</option>
+                            <option class="text-black text-[12px]" value='degrees'>Degrees</option>
+                            <option class="text-black text-[12px]" value='courses'>Courses</option>
+                            <option class="text-black text-[12px]" value='badges'>Badges</option>
+                            <option class="text-black text-[12px]" value='trophies'>Trophies</option>
+                            <option class="text-black text-[12px]" value='ranks'>Ranks</option>
+                            <option class="text-black text-[12px]" value='cosmetics'>Cosmetics</option>
+                            <option class="text-black text-[12px]" value='houses'>Houses</option>
+                            <option class="text-black text-[12px]" value='quests'>Quests</option>
+                            <option class="text-black text-[12px]" value='status'>Status</option>
+                            <option class="text-black text-[12px]" value='rewards'>Rewards</option>
+                        </select>
+                    </div>
+                    <!--units tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'units', 'flex': openModifyTab === 'units'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="unit in Units" :key="unit.objectId" v-bind:value="unit.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectUnit(unit)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedUnitID === unit.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--text-->
+                                    <div class="flex col-span-9 cursor-default">
+                                        <div class="flex justify-center items-center w-[auto]">{{unit.UnitName}}</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--degrees tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'degrees', 'flex': openModifyTab === 'degrees'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="degree in Degrees" :key="degree.objectId" v-bind:value="degree.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectDegree(degree)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedDegreeID === degree.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--text-->
+                                    <div class="flex col-span-8 cursor-default">
+                                        <div class="flex justify-center items-center w-[auto]">{{degree.DegreeName}}</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--courses tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'courses', 'flex': openModifyTab === 'courses'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="course in Courses" :key="course.objectId" v-bind:value="course.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectCourse(course)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedCourseID === course.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--text-->
+                                    <div class="flex col-span-8 cursor-default">
+                                        <div class="flex justify-center items-center w-[auto]">{{course.CourseName}}</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--badges tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'badges', 'flex': openModifyTab === 'badges'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="badge in Badges" :key="badge.objectId" v-bind:value="badge.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectBadge(badge)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedBadgeID === badge.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--image and text-->
+                                    <div class="flex col-span-7 cursor-default">
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="Badge" v-bind:src="badge.BadgeImage" />
+                                        </div>
+                                        <div class="flex justify-center items-center w-[auto]">{{badge.BadgeName}}</div>
+                                    </div>
+                                    <!--number of badges contained-->
+                                    <div class="flex justify-end items-center col-span-2 cursor-default">
+                                        <span class="text-right mr-[10px] w-[auto]">{{badge.BadgeType}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--trophies tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'trophies', 'flex': openModifyTab === 'trophies'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="trophy in Trophies" :key="trophy.objectId" v-bind:value="trophy.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectTrophy(trophy)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedTrophyID === trophy.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--image and text-->
+                                    <div class="flex col-span-7 cursor-default">
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="Trophy" v-bind:src="trophy.TrophyImage" />
+                                        </div>
+                                        <div class="flex justify-center items-center w-[auto]">{{trophy.TrophyName}}</div>
+                                    </div>
+                                    <!--number of badges contained-->
+                                    <div class="flex justify-end items-center col-span-2 cursor-default">
+                                        <span class="text-right mr-[10px] w-[auto]">{{trophy.TrophyType}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--ascension title tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'ranks', 'flex': openModifyTab === 'ranks'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="title in AscensionTitles" :key="title.objectId" v-bind:value="title.objectId">
+                                <!--whole item-->
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectAscensionTitle(title)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedAscensionTitleID === title.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--image and text-->
+                                    <div class="flex col-span-7 cursor-default w-[100%]">
+                                        <div class="flex justify-center items-center w-[auto]">{{title.AscensionName}}</div>
+                                    </div>
+                                    <!--number of badges contained-->
+                                    <div class="flex justify-end items-center col-span-2 cursor-default text-right mr-[10px]">
+                                        <span class="w-[auto]">{{title.AscensionXpRangeStart}}</span>
+                                        <span class="w-[auto] mx-[5px]">-</span>
+                                        <span class="w-[auto]">{{title.AscensionXpRangeCap}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--cosmetics tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'cosmetics', 'flex': openModifyTab === 'cosmetics'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="cosmetic in Cosmetics" :key="cosmetic.objectId" v-bind:value="cosmetic.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectCosmetic(cosmetic)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedCosmeticID === cosmetic.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--image and text-->
+                                    <div class="flex col-span-7 cursor-default">
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="Avatar" v-bind:src="cosmetic.CosmeticImage" />
+                                        </div>
+                                        <div class="flex justify-center items-center w-[auto]">{{cosmetic.CosmeticName}}</div>
+                                    </div>
+                                    <!--number of badges contained-->
+                                    <div class="flex justify-end items-center col-span-2 cursor-default">
+                                        <i v-if="cosmetic.CosmeticDefault" class="fa-solid fa-gear mr-[10px]"></i>
+                                        <span class="text-right mr-[10px] w-[auto]">{{cosmetic.CosmeticType}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--house tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'houses', 'flex': openModifyTab === 'houses'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="house in Houses" :key="house.objectId" v-bind:value="house.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectHouse(house)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedHouseID === house.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--image and text-->
+                                    <div class="flex col-span-7 cursor-default">
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="House Logo" v-bind:src="house.HouseLogo" />
+                                        </div>
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="House Logo" v-bind:src="house.HouseBanner" />
+                                        </div>
+                                        <div class="flex justify-center items-center w-[auto]">{{house.HouseName}}</div>
+                                    </div>
+                                    <!--number of population--> 
+                                    <div class="flex justify-end items-center col-span-2 cursor-default">
+                                        <span class="text-right mr-[10px] w-[auto]"><i class="mr-[5px] fa-solid fa-circle-user"></i>{{house.HousePopulation}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--quest tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'quests', 'flex': openModifyTab === 'quests'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="quest in Quests" :key="quest.objectId" v-bind:value="quest.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectQuest(quest)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedQuestID === quest.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--text-->
+                                    <div class="flex col-span-2 cursor-default">
+                                        <div class="flex justify-center items-center w-[auto]">{{quest.QuestName}}</div>
+                                    </div>
+                                    <div class="flex col-span-2 cursor-default">
+                                        <div class="flex justify-center items-center w-[auto]">{{quest.QuestType}}</div>
+                                    </div>
+                                    <div class="flex col-span-2 cursor-default">
+                                        <div class="flex justify-center items-center w-[auto]">{{quest.QuestDescription}}</div>
+                                    </div>
+                                    <!--quest points--> 
+                                    <div class="flex justify-end items-center col-span-2 cursor-default">
+                                        <span class="text-right mr-[10px] w-[auto]"><i class="mr-[5px] fa-solid fa-circle-user"></i>{{quest.QuestPoints}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--status title tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'status', 'flex': openModifyTab === 'status'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="statusTitle in StatusTitles" :key="statusTitle.objectId" v-bind:value="statusTitle.objectId">
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectStatusTitle(statusTitle)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedStatusTitleID === statusTitle.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--image and text-->
+                                    <div class="flex col-span-7 cursor-default">
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img class="w-[20px] h-[auto]" alt="House Logo" v-bind:src="statusTitle.StatusTitleImage" />
+                                        </div>
+                                        <div class="flex justify-center items-center w-[auto]">{{statusTitle.StatusTitleName}}</div>
+                                    </div>
+                                    <!--number of population--> 
+                                    <div class="flex justify-end items-center col-span-2 cursor-default">
+                                        <span class="text-right mr-[10px] w-[auto]"><i class="mr-[5px] fa-solid fa-circle-user"></i>{{statusTitle.StatusTitleLevel}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <!--quest rewards tab-->
+                    <div class="flex justify-center w-full h-[95%]" v-bind:class="{'hidden': openModifyTab !== 'rewards', 'flex': openModifyTab === 'rewards'}">
+                        <ul class="bg-black/20 backdrop-blur-[5px] border-[1px] border-gray h-[85vh] w-[500px] overflow-y-scroll">
+                            <!--list container-->
+                            <li v-for="reward in QuestRewards" :key="reward.objectId" v-bind:value="reward.objectId">
+                                <!--whole item-->
+                                <div class="grid grid-cols-10 items-center text-white text-[10px] pl-[0px] py-[0px]">
+                                    <!--button-->
+                                    <div class="flex items-center justify-center col-span-1 pr-[10px]">
+                                        <button @click="selectQuestReward(reward)" class="my-[5px] bg-blue hover:bg-blue_hover active:bg-blue_hover text-white text-[10px] w-[25px] h-[25px] cursor-pointer"><i v-if="SelectedQuestRewardID === reward.objectId" class="fa-solid fa-check"></i></button>
+                                    </div>
+                                    <!--image and text-->
+                                    <div class="flex col-span-7 cursor-default w-[100%]">
+                                        <div class="flex justify-center items-center bg-black/20 border-[1px] w-[25px] h-[25px] mr-[10px] overflow-hidden">
+                                            <img v-if="reward.CosmeticData !== undefined" class="w-[20px] h-[auto]" alt="Badge" v-bind:src="reward.CosmeticData.CosmeticImage" />
+                                        </div>
+                                        <div class="flex justify-center items-center w-[auto]">{{reward.RequiredAscensionPoints}}</div>
+                                    </div>
+                                    <!--reward type-->
+                                    <div class="flex justify-end items-center col-span-2 cursor-default text-right mr-[10px]">
+                                        <span class="w-[auto]">{{reward.RewardCosmeticType}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <!--student list-->
+            <section class="grid col-span-10 h-[100vh]" v-bind:class="{'hidden': openTab !== 'student', 'block': openTab === 'student'}">
+                <div class="col-span-1 px-[30px] py-[30px]">
+                    <!--selected user-->
+                    <div class="grid grid-cols-11 mb-[10px] mx-[auto] h-[25vh] w-[100%]">
+                        <!--user image-->
+                        <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-5 flex items-center justify-start">
+                            <div class="relative flex items-center justify-center w-[150px] h-[150px] mr-[5px]">
+                                <img v-if="SelectedStudentID !== ''" class="border-[5px] border-white absolute h-[120px] w-[120px] rounded-full" alt="Avatar" v-bind:src="StudentEquippedCosmeticsData[0].CosmeticImage"/>
+                            </div>
+                            <div>
+                                <span class="block text-[22px] text-gold">{{StudentUserName}}</span>
+                                <span class="block text-[12px] text-white">{{StudentFirstName}} {{StudentMiddleName}} {{StudentLastName}}</span>
+                                <span class="block text-[12px] text-white">{{StudentAddress}}</span>
+                                <span class="block text-[12px] text-white">{{StudentContactNum}}</span>
+                                <span class="block text-[12px] text-white">{{StudentEmail}}</span>
+                            </div>
+                        </div>
+                        <!--house banner-->
+                        <div  v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-1 flex items-center justify-center">
+                            <img class="w-[60px] h-[auto]" title="House Banner" alt="House Banner" v-bind:src="StudentHouseData.HouseBanner" />
+                        </div>
+                        <!--top three trophies and recently obtained badges-->
+                        <div v-bind:class="{'hidden': openStudent !== 1, 'block': openStudent === 1}" class="col-span-3 flex flex-col items-center justify-center">
+                                <!--trophies-->
+                                <div class="flex flex-row gap-3 items-center justify-center">
+                                    <template v-for="trophy in StudentChosenTrophies" :key="trophy">
+                                        <img v-if="trophy !== null" class="col-span-1 inline-block w-[50px] h-[auto]" v-bind:title="trophy.TrophyName"  v-bind:alt="trophy.TrophyName" v-bind:src="trophy.TrophyImage" />
+                                    </template>
+                                </div>
+                                <!--badges-->
+                                <span class="block border-gray border-b-[1px] my-[5px] mx-[auto] leading-[0.1px] w-[250px]"></span> <!--separator-->
+                                <div class="flex flex-row gap-2 items-center justify-center">
+                                    <template v-for="badge in StudentAcquiredBadges" :key="badge">
+                                        <img v-if="badge !== null" class="col-span-1 inline-block w-[35px] h-[auto]" v-bind:title="badge.BadgeName" v-bind:alt="badge.BadgeName" v-bind:src="badge.BadgeImage" />
+                                    </template>
+                                </div>
+                        </div>
+                    </div>
+                    <!--search bar-->
+                    <form class="mb-[10px] mx-[auto] w-[100%]">
+                        <input v-model="StudentSearch" class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[400px] px-[10px]" type="text" placeholder="Search student..." />
+                        <span class="mb-[10px] mx-[10px] text-white text-[11px]">Search by:</span>
+                        <select v-model="StudentSearchType" class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[150px] px-[10px]">
+                            <option class="text-black" value="FirstName">First Name</option>
+                            <option class="text-black" value="LastName">Last Name</option>
+                            <option class="text-black" value="UserName">User Name</option>
+                            <option class="text-black" value="SchoolID">School ID</option>
+                        </select>
+                    </form>
+                    <!--student list-->
+                    <table class="mx-[auto] border-gray w-[100%] border-[1px]">
+                        <thead class="bg-black/20 border-b-[1px] border-gray text-white flex flex-col">
+                            <tr class="py-[5px] px-[10px]">
+                                <th class="sticky w-[40px] text-[13px] text-center font-normal"></th>
+                                <th class="sticky w-[320px] text-[13px] text-center font-normal">Name</th>
+                                <th class="sticky w-[120px] text-[13px] text-center font-normal">School ID</th>
+                                <th class="sticky w-[350px] text-[13px] text-center font-normal">Degree</th>
+                                <th class="sticky w-[50px] text-[13px] text-center font-normal">Year</th>
+                                <th class="sticky w-[100px] text-[13px] text-center font-normal">House</th>
+                                <th class="sticky w-[75px] text-[13px] text-center font-normal">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-black/30 remove-scroll text-white overflow-y-scroll h-[50vh] flex flex-col">
+                            <tr v-for="student in studentQuery" :key="student.objectId" v-bind:value="student.objectId" class="py-[5px] px-[10px]">                           
+                                <td class="w-[40px] text-center">
+                                    <button @click="selectStudent(student)" class="text-[25px] hover:text-white/50 active:text-white/20"><i class="fa-solid fa-eye"></i></button>
+                                </td>
+                                <td class="w-[320px] text-[12px] text-left">
+                                    <div class="flex items-center justify-start">
+                                        <img class="border-[2px] h-[40px] w-[40px] mr-[10px] rounded-full" alt="Avatar" v-bind:src="student.EquippedCosmeticsData[0].CosmeticImage">
+                                        <div>
+                                            <span class="block my-[-3px] text-[13px]">{{student.UserName}}</span>
+                                            <span class="block my-[-3px] text-[12px]">{{student.FirstName}} {{student.MiddleName}} {{student.LastName}}</span>    
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="w-[120px] text-[12px] text-center">{{student.SchoolID}}</td>
+                                <td class="w-[350px] text-[12px] text-left">{{student.StudentDegree.DegreeName}}</td>
+                                <td class="w-[50px] text-[12px] text-center">{{student.YearLevel}}</td>
+                                <td class="w-[100px] text-[12px] text-center">{{student.StudentHouse.HouseName}}</td>
+                                <td class="w-[75px] text-[12px] text-center">
+                                    <button @click="selectStudent(student, 'edit')" class="mr-[5px] bg-blue hover:bg-blue_hover active:bg-blue_active w-[30px] h-[30px] text-white" title="Edit this user" v-on:click="activePopUp('editStudent')"><i class="fa-solid fa-user-pen"></i></button>
+                                    <button @click="selectStudent(student, 'delete')" class="ml-[5px] bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--pop up menu (edit menu)-->  
+                    <div class="flex items-center justify-center absolute inset-[0px] m-[auto] bg-black/20 backdrop-blur-[20px] w-[100vw] h-[100vh]" v-bind:class="{'hidden': popUp === 'closePopUp', 'hidden': popUp !== 'editStudent', 'flex': popUp === 'editStudent'}">
+                        <div class="absolute inset-[0px] m-[auto] bg-black/50 text-white border-[1px] border-gray h-[70vh] w-[75vh] remove-scroll overflow-scroll">
+                            <!--header-->
+                            <header class="flex flex-row gap-2 items-center sticky top-[0px] bg-black border-b-[1px] border-gray px-[10px]">
+                                <button class="text-white hover:text-gold my-[auto]" v-on:click="activePopUp('closePopUp')"><i class="fa-solid fa-angle-left"></i></button>
+                                <span v-if="SelectedStudentID !== ''" class="w-[100%] text-[12px]">{{StudentFirstName}} {{StudentMiddleName}} {{StudentLastName}}</span>
+                                <div class="float-right flex flex-row">
+                                    <button @click="deleteStudent()" class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-red_hover active:text-red_active" title="Delete this user"><i class="fa-solid fa-user-slash"></i>DELETE</button>
+                                    <button @click="editStudent()" class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-blue_hover active:text-blue_active" title="Save changes"><i class="fa-solid fa-floppy-disk"></i>SAVE</button>
+                                </div>
+                            </header>
+                            <!--student information-->
+                            <section v-if="SelectedStudentID !== ''" class="flex flex-col gap-3 items-center justify-center py-[20px]">
+                                <input v-model="StudentFirstName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="First Name" />
+                                <input v-model="StudentMiddleName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Middle Name" />
+                                <input v-model="StudentLastName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Last Name" />
+                                <input v-model="StudentAddress" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Current Address" />
+                                <input v-model="StudentContactNum" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="tel" placeholder="Contact Number" />
+                                <input v-model="StudentEmail" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Email" />
+                                <input v-model="StudentSchoolID" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="School ID" />
+                                <select v-model="StudentDegreeIDPointer" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">
+                                    <option v-for="degree in Degrees" :key="degree.objectId" v-bind:value="degree.objectId">{{ degree.DegreeName }}</option>
+                                </select>
+                                <!--year level-->
+                                <select v-model="StudentYearLevel" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">
+                                    <option class="text-black" value=1>1</option>
+                                    <option class="text-black" value=2>2</option>
+                                    <option class="text-black" value=3>3</option>
+                                    <option class="text-black" value=4>4</option>
+                                </select>
+                                <!--courses taken by student-->
+                                <details class="w-[28vw] cursor-pointer flex flex-col">
+                                    <summary class="py-[5px] text-[12px]">COURSE LIST</summary>
+                                    <select v-model="StudentCoursesIDToDelete" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[28vw] px-[10px]">
+                                        <template v-for="course in Courses" :key="course.objectId">
+                                            <option v-if="StudentCoursesIDPointer.indexOf(course.objectId) !== -1" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                        </template>
+                                    </select>
+                                    <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
+                                        <input @click="deleteStudentCourses()" required class="bg-red hover:bg-red_hover active:to-red_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                                    </div>
+                                </details>
 
-    <h3>Add Degrees</h3>
-    <span>DegreeName: </span>
-    <input v-model="DegreeName" type="text"><br>
-    <p>Select Unit/Department</p>
-    <button @click="getUnits('Department')">Show Departments</button>
-    <ul>
-        <li v-for="department in Departments" :key="department.id">{{department.UnitName}} <button @click="selectDepartment(department.objectId)">Select</button> </li>
-    </ul>
-    <p>Selected Unit/DepartmentID: {{SelectedDepartment}}</p>
-    <button @click="addDegree()">Add Degree</button><br>
-    <hr>
+                                <!--add courses-->
+                                <details class="w-[28vw] cursor-pointer flex flex-col">
+                                    <summary class="py-[5px] text-[12px]">ADD COURSE</summary>
+                                    <select v-model="StudentCoursesIDToAdd" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[28vw] px-[10px]">
+                                        <template v-for="course in Courses" :key="course.objectId">
+                                            <option v-if="(course.CourseDegreesIDPointers.indexOf(StudentDegreeIDPointer) !== -1 || course.CourseDegreesIDPointers.length === 0 ) && StudentCoursesIDPointer.indexOf(course.objectId) === -1" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                        </template>
+                                    </select>
+                                    <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
+                                        <input @click="addStudentCourses()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                                    </div>
+                                </details>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!--giver list-->
+            <section class="grid col-span-10 h-[100vh]" v-bind:class="{'hidden': openTab !== 'giver', 'block': openTab === 'giver'}">
+                <div class="col-span-1 px-[30px] py-[30px]">
+                    <!--search bar-->
+                    <form class="mb-[10px] mx-[auto] w-[100%]">
+                        <input v-model="GiverSearch" class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[400px] px-[10px]" type="text" placeholder="Search giver..." />
+                        <span class="mb-[10px] mx-[10px] text-white text-[11px]">Search by:</span>
+                        <select v-model="GiverSearchType" class="border-[1px] border-gray bg-black/20 text-white text-[12px] h-[35px] w-[150px] px-[10px]">
+                            <option class="text-black" value="FirstName">First Name</option>
+                            <option class="text-black" value="LastName">Last Name</option>
+                        </select>
+                    </form>
+                    <!--giver list-->
+                    <table class="mx-[auto] border-gray w-[100%] border-[1px]">
+                        <thead class="bg-black/20 border-b-[1px] border-gray text-white flex flex-col">
+                            <tr class="py-[5px] px-[10px]">
+                                <th class="sticky w-[320px] text-[13px] text-center font-normal">Name</th>
+                                <th class="sticky w-[120px] text-[13px] text-center font-normal">Giver Type</th>
+                                <th class="sticky w-[170px] text-[13px] text-center font-normal">Job Title</th>
+                                <th class="sticky w-[120px] text-[13px] text-center font-normal">Contact Number</th>
+                                <th class="sticky w-[250px] text-[13px] text-center font-normal">Email</th>
+                                <th class="sticky w-[75px] text-[13px] text-center font-normal">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class=" bg-black/30 remove-scroll text-white overflow-y-scroll flex flex-col h-[78vh]">
+                            <tr v-for="giver in giverQuery" :key="giver.objectId" v-bind:value="giver.objectId" class="py-[5px] px-[10px]">
+                                <td class="w-[320px] text-[12px] text-left">{{giver.FirstName}} {{giver.MiddleName}} {{giver.LastName}}</td>
+                                <td class="w-[120px] text-[12px] text-center">{{giver.GiverType}}</td>
+                                <td class="w-[170px] text-[12px] text-center">{{giver.JobTitle}}</td>
+                                <td class="w-[120px] text-[12px] text-center">{{giver.ContactNumber}}</td>
+                                <td class="w-[250px] text-[12px] text-center">{{giver.Email}}</td>
+                                <td class="w-[75px] text-[12px] text-center">
+                                    <button @click="selectGiver(giver, 'edit')" class="mr-[5px] bg-blue hover:bg-blue_hover active:bg-blue_active w-[30px] h-[30px] text-white" title="Edit this user" v-on:click="activePopUp('editGiver')"><i class="fa-solid fa-user-pen"></i></button>
+                                    <button @click="selectGiver(giver, 'delete')" class="ml-[5px] bg-red hover:bg-red_hover active:bg-red_active w-[30px] h-[30px] text-white" title="Delete this user"><i class="fa-solid fa-user-slash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-    <h3>Add Courses</h3>
-    <span>CourseName: </span>
-    <input v-model="CourseName" type="text"><br>
-    <span>CourseCode: </span>
-    <input v-model="CourseCode" type="text"><br>
-    <span>CourseDegree: </span> 
-    <button @click="getDegrees()">Load Relevant Degrees</button>
-    <ul v-if="ShowRelevantDegrees">
-        <li>No Degree (Elective)<button @click="setCourseDegree(null)">Select</button></li>  
-        <li>All Degrees <button @click="setCourseToAllDegrees()">Select</button></li>
-        <li v-for="degree in Degrees" :key="degree.objectId">{{degree.DegreeName}} <button @click="setCourseDegree(degree.objectId)">Select Degree</button> </li>
-    </ul>
-    <br>
-    <p>{{CourseDegreesIDPointers}}</p>
-    <button @click="addCourse()">Add Course</button>
-    <hr>
-
-    <!--Testing for badges, add other necessarry attributes-->
-    <h3>Add Badges</h3>
-    <span>Badge Name: </span>
-    <input v-model="BadgeName" type="text"><br>
-    <span>Badge Description: </span>
-    <input v-model="BadgeDescription" type="text"><br>
-    <span>Badge Points: </span>
-    <input v-model="BadgePoints" type="number"><br>
-    <span>Badge Type: </span>
-    <input v-model="BadgeType" type="text"><br>
-    <span>Badge Image </span>
-    <input @change="onBadgeImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
-    <span>Badge Design Inspiration: </span>
-    <input v-model="BadgeDesignInspiration" type="text"><br>
-    <button @click="addBadge()">Add Badge</button><br>
-
-    <h3>Edit / Delete Badge</h3>
-    <span>Badge Name: </span>
-    <input v-model="NewBadgeName" type="text"><br>
-    <span>Badge Description: </span>
-    <input v-model="NewBadgeDescription" type="text"><br>
-    <span>Badge Points: </span>
-    <input v-model="NewBadgePoints" type="number"><br>
-    <span>Badge Type: </span>
-    <input v-model="NewBadgeType" type="text"><br>
-    <span>Badge Image: </span>
-    <input @change="onNewBadgeImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
-    <span>Badge Design Inspiration: </span>
-    <input v-model="NewBadgeDesignInspiration" type="text"><br>
-    <button @click="editBadge()">Edit Badge</button><br><br>
-    <button @click="getBadges()">Load Available Badges</button>
-    <ul v-if="ShowBadges">
-        <li v-for="badge in Badges" :key="badge.objectId">{{badge.BadgeName}} 
-            <button @click="getBadge(badge)">Edit</button>
-            <button @click="deleteBadge(badge)">Delete</button>
-        </li>
-    </ul>
-    <hr>
-    
-    <h3>Add Trophy</h3>
-    <span>Trophy Name: </span>
-    <input v-model="TrophyName" type="text"><br>
-    <span>Trophy Description: </span>
-    <input v-model="TrophyDescription" type="text"><br>
-    <span>Trophy Points: </span>
-    <input v-model="TrophyPoints" type="number"><br>
-    <span>Trophy Image: </span>
-    <input @change="onTrophyImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
-    <span>Trophy Design Inspiration: </span>
-    <input v-model="TrophyDesignInspiration" type="text"><br>
-    <span>Trophy Type: </span>
-    <input type="radio" id="Student" value="Student" v-model="TrophyType" />
-    <label for="Student">Student</label>
-    <input type="radio" id="House" value="House" v-model="TrophyType" />
-    <label for="House">House</label>
-    <input type="radio" id="Ultimate" value="Ultimate" v-model="TrophyType" />
-    <label for="Ultimate">Ultimate</label><br>
-    <span>Required Badges: </span>
-    <button @click="getBadgesForTrophy()">Load Badges</button>
-    <ul v-if="ShowBadgesForTrophy">
-        <li v-for="badge in AvailableBadgesForTrophy" :key="badge.objectId">{{badge.BadgeName}} 
-            <button @click="assignToTrophy(badge.objectId, 0)">Add To Trophy</button>
-            <button @click="unassignToTrophy(badge.objectId, 0)">Remove From Trophy</button>
-        </li>
-    </ul><br>
-    <p>{{AssignedBadgesForTrophy}}</p>
-    <button @click="addTrophy()">Add Trophy</button><br>
-
-    <h3>Edit / Delete Trophy</h3>
-    <span>Trophy Name: </span>
-    <input v-model="NewTrophyName" type="text"><br>
-    <span>Trophy Description: </span>
-    <input v-model="NewTrophyDescription" type="text"><br>
-    <span>Trophy Points: </span>
-    <input v-model="NewTrophyPoints" type="number"><br>
-    <span>Trophy Image: </span>
-    <input @change="onNewTrophyImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
-    <span>Trophy Design Inspiration: </span>
-    <input v-model="NewTrophyDesignInspiration" type="text"><br>
-    <span>Trophy Type: </span>
-    <input type="radio" id="Student" value="Student" v-model="NewTrophyType" />
-    <label for="Student">Student</label>
-    <input type="radio" id="House" value="House" v-model="NewTrophyType" />
-    <label for="House">House</label>
-    <input type="radio" id="Ultimate" value="Ultimate" v-model="NewTrophyType" />
-    <label for="Ultimate">Ultimate</label><br>
-    <span>Required Badges: </span>
-    <button @click="getBadgesForUpdatedTrophy()">Load Badges</button>
-    <ul v-if="NewShowBadgesForTrophy">
-        <li v-for="badge in AvailableBadgesForTrophy" :key="badge.objectId">{{badge.BadgeName}} 
-            <button @click="assignToTrophy(badge.objectId, 1)">Add To Trophy</button>
-            <button @click="unassignToTrophy(badge.objectId, 1)">Remove From Trophy</button>
-        </li>
-    </ul><br>
-    <p>{{AssignedBadgesforNewTrophy}}</p>
-    <button @click="getTrophies()">Load Trophies</button><br>
-    <ul v-if="ShowTrophies">
-        <li v-for="trophy in Trophies" :key="trophy.objectId">{{trophy.TrophyName}}
-        <button @click="getTrophy(trophy)">Edit</button>
-        <button @click="deleteTrophy(trophy.objectId)">Delete</button>
-        </li>
-    </ul>
-    <button @click="editTrophy()">Update Trophy</button>
-    <hr>
-
-    <h3>Add Ascension Titles</h3>
-    <span>Ascension Name: </span>
-    <input v-model="AscensionName" type="text"><br>
-    <span>Ascension Xp Starting Range: </span>
-    <input v-model="AscensionXpRangeStart" type="number"><br>
-    <span>Ascension Xp Cap: </span>
-    <input v-model="AscensionXpRangeCap" type="number"><br>
-    <button @click="addAscensionTitle()">Add Ascension Title</button>
-    
-    <h3>Modify Ascension Titles</h3>
-    <span>Ascension Name: </span>
-    <input v-model="NewAscensionName" type="text"><br>
-    <span>Ascension Xp Starting Range: </span>
-    <input v-model="NewAscensionXpRangeStart" type="number"><br>
-    <span>Ascension Xp Cap: </span>
-    <input v-model="NewAscensionXpRangeCap" type="number"><br>
-    <button @click="updateAscensionTitle()">Save Title</button><br><br>
-    <button @click="getAscensionTitles()">Load Available Titles</button>
-    <ul v-if="ShowAscensionTitles">
-        <li v-for="title in AscensionTitles" :key="title.objectId">{{title.AscensionName}} 
-            <button @click="getAscensionTitle(title)">Edit</button>
-            <button @click="deleteAscensionTitle(title.objectId)">Delete</button>
-        </li>
-    </ul>
-
-    <h3>Get Ascension Title</h3>
-    <span>Xp Value: </span>
-    <input v-model="XpInput" type="number"><button @click="searchAscensionTitleFromXp(XpInput)">Search</button>
-    <p>Ascension Title Result: {{AscensionTitleFromXpInput}}</p>
-    <hr>
-
-    <h3>Add House</h3>
-    <span>House Name: </span>
-    <input v-model="HouseName" type="text"><br>
-    <span>House Banner ID: {{SelectedHouseBannerID}}</span><br>
-    <button @click="loadHouseBanners()">Load House Banners</button><br>
-    <ul>
-        <li v-for="banner in HouseBanners" :key="banner">{{banner.CosmeticName}} <button @click="selectHouseBanner(banner.objectId)">Select</button></li>
-    </ul>
-
-    <button @click="addHouse()">Add House</button><br>
-    <hr>
-
-    <h3>Add Cosmetic</h3>
-    <span>Cosmetic Name: </span>
-    <input v-model="CosmeticName" type="text"><br>
-    <span>Cosmetic Type: </span>
-    <input type="radio" id="Avatar" value="Avatar" v-model="CosmeticType" />
-    <label for="Avatar">Avatar</label>
-    <input type="radio" id="Frame" value="Frame" v-model="CosmeticType" />
-    <label for="Frame">Frame</label>
-    <input type="radio" id="CoverPhoto" value="CoverPhoto" v-model="CosmeticType" />
-    <label for="CoverPhoto">Cover Photo</label>
-    <input type="radio" id="Banner" value="Banner" v-model="CosmeticType" />
-    <label for="Banner">Banner</label><br>
-    <span>Cosmetic Image </span>
-    <input @change="onCosmeticImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
-    <button @click="addCosmetic()">Add Cosmetic</button><br>
-
-    <h3>Edit / Delete Cosmetic</h3>
-    <span>Cosmetic Name: </span>
-    <input v-model="NewCosmeticName" type="text"><br>
-    <span>Cosmetic Type: </span>
-    <input v-model="NewCosmeticType" type="text">
-    <input type="radio" id="Avatar" value="Avatar" v-model="NewCosmeticType" />
-    <label for="Avatar">Avatar</label>
-    <input type="radio" id="Frame" value="Frame" v-model="NewCosmeticType" />
-    <label for="Frame">Frame</label>
-    <input type="radio" id="CoverPhoto" value="CoverPhoto" v-model="NewCosmeticType" />
-    <label for="CoverPhoto">Cover Photo</label>
-    <input type="radio" id="Banner" value="Banner" v-model="NewCosmeticType" />
-    <label for="Banner">Banner</label><br>
-    <span>Cosmetic Image </span>
-    <input @change="onNewCosmeticImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
-    <button @click="editCosmetic()">Edit Cosmetic</button><br>
-    <button @click="getAllCosmetics()">Load All Cosmetics</button>
-    <ul>
-        <li v-for="cosmetic in AllCosmetics" :key="cosmetic">{{cosmetic.CosmeticName}} 
-            <button @click="getCosmetic(cosmetic)">Edit</button>
-            <button @click="deleteCosmetic(cosmetic)">Delete</button>
-        </li>
-    </ul>
-    <hr>
-
-    <h3>Set a Default Cosmetic</h3>
-    <button @click="getCosmetics()">Get Cosmetics</button><br>
-    <h4>Avatars</h4>
-    <ul>
-        <li v-for="avatar in Avatars" :key="avatar">{{avatar.CosmeticName}} <button @click="selectCosmetic('Avatar', avatar.objectId)">Select</button></li>
-    </ul>
-    <p>Selected CosmeticID for Avatar: {{SelectedAvatar}}</p>
-    <button @click="setCosmetic('Avatar')">Set Default for Avatar</button>
-    
-    <h4>Frames</h4>
-    <ul>
-        <li v-for="frame in Frames" :key="frame">{{frame.CosmeticName}} <button @click="selectCosmetic('Frame', frame.objectId)">Select</button></li>
-    </ul>
-    <p>Selected CosmeticID for Frame: {{SelectedFrame}}</p>
-    <button @click="setCosmetic('Frame')">Set Default for Frame</button>
-
-    <h4>CoverPhoto</h4>
-    <ul>
-        <li v-for="coverphoto in CoverPhotos" :key="coverphoto">{{coverphoto.CosmeticName}} <button @click="selectCosmetic('CoverPhoto', coverphoto.objectId)">Select</button></li>
-    </ul>
-    <p>Selected CosmeticID for CoverPhoto: {{SelectedCoverPhoto}}</p>
-    <button @click="setCosmetic('CoverPhoto')">Set Default for CoverPhoto</button><br>
-
-    <h4>Banners (for house)</h4>
-    <ul>
-        <li v-for="banner in Banners" :key="banner">{{banner.CosmeticName}} <button @click="selectCosmetic('Banner', banner.objectId)">Select</button></li>
-    </ul>
-    <p>Selected CosmeticID for Banner: {{SelectedBanner}}</p>
-    <button @click="setCosmetic('Banner')">Set Default for Banner</button><br>
-
-    <h4> TESTING </h4>
-    <button @click="setStudentCosmetics()">Set All Students Cosmetic to Selected Cosmetics (Includes Equipped)</button>
-    <hr>
-
-    <!-- Test Delete Default Cosmetic -->
-    <h3>Delete a Default Cosmetic  </h3>
-    <button @click="test()">Delete Cosmetic</button><br>
-    <hr>
-
-    <!-- ====== ADD STATUS TITLE BEGINS HERE ====== -->
-    <h3>Add Status Title</h3>
-    <span>Status Title Name: </span>
-    <input v-model="StatusTitleName" type="text"><br>
-    <span>Status Title Year Level: </span>
-    <input v-model="StatusTitleLevel" type="number"><br>
-    <span>Status Title Image: </span>
-    <input @change="onStatusTitleImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
-    <button @click="addStatusTitle()">Add Status Title</button><br>
-
-    <h3>Edit / Delete Status Title</h3>
-    <span>Status Title Name: </span>
-    <input v-model="NewStatusTitleName" type="text"><br>
-    <span>Status Title Year Level: </span>
-    <input v-model="NewStatusTitleLevel" type="number"><br>
-    <span>Status Title Image: </span>
-    <input @change="onNewStatusTitleImageSelected" type="file" name="img" accept="image/x-png,image/gif,image/jpeg"/><br>
-    <button @click="editStatusTitle()">Edit Status Title</button><br>
-
-    <button @click="getStatusTitles()">Load Status Titles</button><br>
-    <ul v-if="ShowStatusTitles">
-        <li v-for="title in StatusTitles" :key="title.objectId">{{title.StatusTitleName}}
-        <button @click="getStatusTitle(title)">Edit</button>
-        <button @click="deleteStatusTitle(title.objectId)">Delete</button>
-        </li>
-    </ul>
-
-
-    <h3>Others</h3>
-    <button @click="homepage()">Go to hompeage</button><br>
-</template>
+                    <!--pop up menu (edit menu)-->  
+                    <div class="flex items-center justify-center absolute inset-[0px] m-[auto] bg-black/20 backdrop-blur-[20px] w-[100vw] h-[100vh]" v-bind:class="{'hidden': popUp === 'closePopUp', 'hidden': popUp !== 'editGiver', 'flex': popUp === 'editGiver'}">
+                        <div class="absolute inset-[0px] m-[auto] bg-black/50 text-white border-[1px] border-gray h-[70vh] w-[75vh] remove-scroll overflow-scroll">
+                            <!--header-->
+                            <header class="flex flex-row gap-2 items-center sticky top-[0px] bg-black border-b-[1px] border-gray px-[10px]">
+                                <button class="text-white hover:text-gold my-[auto]" v-on:click="activePopUp('closePopUp')"><i class="fa-solid fa-angle-left"></i></button>
+                                <span class="w-[100%] text-[12px]">{{GiverFirstName}} {{GiverMiddleName}} {{GiverLastName}}</span>
+                                <div class="float-right flex flex-row">
+                                    <button @click="deleteGiver()" class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-red_hover active:text-red_active" title="Delete this user"><i class="fa-solid fa-user-slash"></i>DELETE</button>
+                                    <button @click="editGiver()" class="flex flex-row gap-2 items-center justify-center text-white text-[10px] w-[auto] px-[5px] cursor-pointer hover:text-blue_hover active:text-blue_active" title="Save changes"><i class="fa-solid fa-floppy-disk"></i>SAVE</button>
+                                </div>
+                            </header>
+                            <!--student information-->
+                            <section class="flex flex-col gap-3 items-center justify-center py-[20px]">
+                                <input v-model="GiverFirstName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="First Name" />
+                                <input v-model="GiverMiddleName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Middle Name" />
+                                <input v-model="GiverLastName" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="text" placeholder="Last Name" />
+                                <input v-model="GiverContactNum" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="tel" placeholder="Contact Number" />
+                                <input v-model="GiverEmail" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Email" />
+                                <input v-model="GiverJobTitle" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]" type="email" placeholder="Job Title" />
+                                <select v-model="GiverUnitIDPointer" class="block border-[1px] border-gray bg-black/20 text-white text-[12px] h-[40px] w-[28vw] px-[10px]">  
+                                    <option hidden value="">Select Units</option>
+                                    <option v-for="unit in Units" :key="unit.objectId" v-bind:value="unit.objectId">{{ unit.UnitName }}</option>
+                                </select>
+                                <!--courses taken by giver-->
+                                <details v-if="GiverType === 'Teacher'" class="w-[28vw] cursor-pointer flex flex-col">
+                                    <summary class="py-[5px] text-[12px]">COURSE LIST</summary>
+                                    <select v-model="GiverCoursesIDToDelete" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[28vw] px-[10px]">
+                                        <template v-for="course in Courses" :key="course.objectId">
+                                            <option v-if="GiverCoursesIDPointer.indexOf(course.objectId) !== -1" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                        </template>
+                                    </select>
+                                    <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
+                                        <input @click="deleteGiverCourses()" required class="bg-red hover:bg-red_hover active:to-red_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="button" value="DELETE" />
+                                    </div>
+                                </details>
+                                <!--add courses-->
+                                <details v-if="GiverType === 'Teacher'" class="w-[28vw] cursor-pointer flex flex-col">
+                                    <summary class="py-[5px] text-[12px]">ADD COURSE</summary>
+                                    <select v-model="GiverCoursesIDToAdd" multiple required class="block mb-[10px] border-[1px] border-gray bg-black/20 text-white text-[12px] h-[60px] w-[28vw] px-[10px]">
+                                        <template v-for="course in Courses" :key="course.objectId">
+                                            <option v-if="GiverCoursesIDPointer.indexOf(course.objectId) === -1" v-bind:value="course.objectId">{{ course.CourseName }}</option>
+                                        </template>
+                                    </select>
+                                    <div class="pt-[10px] border-t-[1px] border-gray flex flex-row gap-3 items-center justify-end">
+                                        <input @click="addGiverCourses()" required class="bg-blue hover:bg-blue_hover active:to-blue_active text-white text-[10px] w-[30%] h-[30px] cursor-pointer" type="button" value="ADD" />
+                                    </div>
+                                </details>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </body>
+</template> 
 
 <script>
     import Parse from 'parse';
-    export default{
+    import '/src/assets/css/tailwind.css';
+
+    export default {
         data(){
             return{
+                //Frontend Variables
+                openTab: 'modify', //modify, student, giver
+                openModifyTab: 'units', //units, degrees, courses, trophies, badges, ranks, cosmetics, houses
+                popUp: '', //editStudent, closePopUp
+                openStudent: 0,
+                isHidden: true,
+                
+                //Backend Variables
+                //Containers
+                Departments: [],
+                Units: [],
+                Degrees: [],
+                Courses: [],
+                Badges: [],
+                HouseBadges: [],
+                StudentBadges: [],
+                Trophies: [],
+                AscensionTitles: [],
+                Cosmetics: [],
+                Banners: [],
+                Houses: [],
+                Students: [],
+                Givers: [],
+                Quests: [],
+                StatusTitles: [],
+                QuestRewards: [],
+
                 //Unit Variables
                 UnitName: '',
                 UnitContactNumber: '',
-                UnitType: '',
+                UnitType: '', 
+                SelectedUnitID: '',
 
                 //Degree Variables
                 DegreeName: '',
-                Departments: [],
-                SelectedDepartment: '',
+                DegreeUnitIDPointer: '',
+                SelectedDegreeID: '',
 
                 //Course Variables
                 CourseName: '',
                 CourseCode: '',
                 CourseDegreesIDPointers: [],
-
+                SelectedCourseID: '',
+                
                 //Badge Variables
                 BadgeName: '',
                 BadgeDescription: '',
@@ -331,258 +825,564 @@
                 BadgeImageName: '',
                 BadgeType: '',
                 BadgeDesignInspiration: '',
-                NewBadgeName: '',
-                NewBadgeDescription: '',
-                NewBadgePoints: '',
-                NewBadgeImage: '',
-                NewBadgeImageName: '',
-                NewBadgeType: '',
-                NewBadgeDesignInspiration: '',
-                BadgeIdPointer: '',
-                Badges: [],
-                
+                SelectedBadgeID: '',
+
                 //Trophy Variables
-                TrophyType: '',
                 TrophyName: '',
                 TrophyDescription: '',
                 TrophyPoints: 0,
                 TrophyImage: '',
                 TrophyImageName: '',
+                TrophyType: '',
                 TrophyDesignInspiration: '',
-                AvailableBadgesForTrophy: [],
-                AssignedBadgesForTrophy: [],
-                NewTrophyType: '',
-                NewTrophyName: '',
-                NewTrophyDescription: '',
-                NewTrophyPoints: 0,
-                NewTrophyImage: '',
-                NewTrophyImageName: '',
-                NewTrophyDesignInspiration: '',
-                NewTrophyID : '',
-                AssignedBadgesforNewTrophy: [],
-                Trophies: [],
+                BadgesIDNeeded: [],
+                SelectedTrophyID: '',
 
                 //Ascension Title Variables
                 AscensionName: '',
                 AscensionXpRangeStart: 0,
                 AscensionXpRangeCap: 0,
-                NewAscensionName: '',
-                NewAscensionXpRangeStart: 0,
-                NewAscensionXpRangeCap: 0,
-                AscensionTitleIdPointer: '',
-                AscensionTitles: [],
-                AscensionTitleFromXpInput: '',
-                XpInput: 0,
-
-                //House Variables,
-                HouseName: '',
-                SelectedHouseBannerID: '',
-                HouseBanners: '',
+                SelectedAscensionTitleID: '',
 
                 //Cosmetic Variables
                 CosmeticName: '',
                 CosmeticType: '',
                 CosmeticImage: '',
                 CosmeticImageName: '',
-                NewCosmeticID: '',
-                NewCosmeticName: '',
-                NewCosmeticType: '',
-                NewCosmeticImage: '',
-                NewCosmeticImageName: '',
-                CosmeticIdPointer: '',
-                Avatars: [],
-                Frames: [],
-                CoverPhotos: [],
-                Banners : [],
-                AllCosmetics : [],
-                SelectedAvatar : '',
-                SelectedFrame : '',
-                SelectedCoverPhoto : '',
-                SelectedBanner : '',
+                SelectedCosmeticID: '',
 
-                //Status Title Variables
-                StatusTitleName : '',
-                StatusTitleLevel : 0,
-                StatusTitleImage : '',
-                StatusTitleImageName : '',
-                NewStatusTitleName : '',
-                NewStatusTitleLevel : 0,
-                NewStatusTitleImage : '',
-                NewStatusTitleImageName : '',
-                StatusTitles : '',
-                
-                //Other Variables
-                Degrees: [],
-                ShowRelevantDegrees: false,
-                ShowAscensionTitles: false,
-                ShowBadges: false,
-                ShowBadgesForTrophy: false,
-                NewShowBadgesForTrophy: false,
-                ShowTrophies: false,
-                ShowStatusTitles: false,
-                ShowStatusTitlesForStudent: false,
+                //House Variables,
+                HouseName: '',
+                HouseLogo: '',
+                HouseLogoName: '',
+                HouseBannerIDPointer: '',
+                SelectedHouseID: '',
+
+                //StudentVariables
+                StudentFirstName: '',
+                StudentMiddleName: '',
+                StudentLastName: '',
+                StudentContactNum: '',
+                StudentEmail: '',
+                StudentDegreeIDPointer: '',
+                StudentUnitIDPointer: '',
+                StudentUserName: '',
+                StudentAddress: '',
+                StudentSchoolID: '',
+                StudentYearLevel: 1,
+                StudentCoursesIDPointer: [],
+                StudentCoursesIDToDelete: [],
+                StudentCoursesIDToAdd: [],
+                StudentEquippedCosmeticsData: [],
+                SelectedStudentID: '',
+                StudentSearch: '',
+                StudentChosenTrophies: [],
+                StudentAcquiredBadges: [],
+                StudentHouseData: '',
+                StudentSearchType: "FirstName",
+
+                //Giver Variables
+                GiverFirstName: '',
+                GiverMiddleName: '',
+                GiverLastName: '',
+                GiverEmail: '',
+                GiverContactNum: '',
+                GiverJobTitle: '',
+                GiverUnitIDPointer: '',
+                GiverCoursesIDPointer: [],
+                GiverCoursesIDToAdd: [],
+                GiverCoursesIDToDelete: [],
+                GiverType: '',
+                SelectedGiverID: '',
+                GiverSearch: '',
+                GiverSearchType: "FirstName",
+
+                //Quest Variables
+                QuestName: '',
+                QuestType: '',
+                QuestDescription: '',
+                QuestPoints: '',
+                SelectedQuestID: '',
+
+                //StatusTitle Variables
+                StatusTitleName: '',
+                StatusTitleLevel: '',
+                StatusTitleImage: '',
+                StatusTitleImageName: '',
+                SelectedStatusTitleID: '',
+
+                //QuestReward Variables
+                RewardCosmeticID: '',
+                RewardCosmeticType: '',
+                RequiredAscensionPoints: '',
+                SelectedQuestRewardID: '',
+
+                //Others
+                host: window.location.host,
             }
         },
-        components:{
-           
-        },
-        // Testing delete default cosmetics (Change to your default cosmeticid/update this)
-        methods:{
-            async test(){
-                var params = {
-                     "CosmeticID" : "",
-                }
-                try{
-                    await Parse.Cloud.run("DeleteCosmetic", params);
-                }
-                catch(error){
-                    console.log(error.message);
-                }
-                console.log("B");
-            },
 
-            //StatusTitle Functions
-            async addStatusTitle(){
-                var params = {
-                    "StatusTitleName": this.StatusTitleName,
-                    "StatusTitleLevel" : this.StatusTitleLevel,
-                    "StatusTitleImage": this.StatusTitleImage,
-                }
-                await Parse.Cloud.run("AddStatusTitle", params).then(alert("Added StatusTitle"));
+        methods: {
+            //==================Frontend Functions====================
+            activeTab: function (tabType) {
+                this.openTab = tabType
             },
-
-            async onStatusTitleImageSelected(e){
-                var file = e.target.files[0];
-                this.StatusTitleImageName = file.name;
-                this.getBase64(file).then(
-                    data => this.StatusTitleImage = data
-                );
+            activeModifyTab: function (modifyTabType) {
+                this.openModifyTab = modifyTabType
             },
-
-            async onNewStatusTitleImageSelected(e){
-                var file = e.target.files[0];
-                this.NewStatusTitleImageName = file.name;
-                this.getBase64(file).then(
-                    data => this.NewStatusTitleImage = data
-                );
+            activePopUp: function (popUpType) {
+                this.popUp = popUpType
             },
-
-            async editStatusTitle(){
-                this.ShowTrophies = false
-                var params = {
-                    "StatusTitleID" : this.NewStatusTitleID,
-                    "StatusTitleName": this.NewStatusTitleName,
-                    "StatusTitleLevel" : this.NewStatusTitleLevel,
-                    "StatusTitleImage": this.NewStatusTitleImage,
-                }
-                if(this.NewStatusTitleImageName != ""){
-                    params["StatusTitleImageName"] = this.NewStatusTitleImageName;
-                }
-                await Parse.Cloud.run("EditStatusTitle", params).then(alert("Edited StatusTitle"));
+            viewStudent: function (studentNumber) {
+                this.openStudent = studentNumber
+            },
+            activeSubTab: function (subTabsNumber) {
+                this.openSubTab = subTabsNumber
+            },
+            onTabChange(event){
+                window.location.hash = String(event.target.value);
             },
             
-            async deleteStatusTitle(id){
-                var params = {
-                    "StatusTitleID": id
-                }
-                try{
-                    await Parse.Cloud.run("DeleteStatusTitle", params).then(alert("Deleted StatusTitle"));
-                }
-                catch(e){
-                    alert(e.message);
+            //==================Backend Functions======================
+            //Container Functions
+            async getDepartments(){ //Combine this with units
+                var params = {"UnitType" : "Department"};
+                const res = JSON.parse(await Parse.Cloud.run("GetUnits", params));
+                this.Departments = res;
+            },
+
+            async getUnits(){
+                const res = JSON.parse(await Parse.Cloud.run("GetUnits"));
+                this.Units = res;
+            },
+
+            async getDegrees(){
+                const res = JSON.parse(await Parse.Cloud.run("GetDegrees"));
+                this.Degrees = res;
+            },
+
+            async getCourses(){
+                const res = JSON.parse(await Parse.Cloud.run("GetCourses"));
+                this.Courses = res;
+            },
+
+            async getBadges(){
+                const res = JSON.parse(await Parse.Cloud.run("GetBadges"));
+                this.Badges = res;
+
+                var params = {"BadgeType" : "Student"};
+                this.StudentBadges = JSON.parse(await Parse.Cloud.run("GetBadges", params));
+                params["BadgeType"] = "House";
+                this.HouseBadges = JSON.parse(await Parse.Cloud.run("GetBadges", params));
+            },
+
+            async getTrophies(){
+                const res = JSON.parse(await Parse.Cloud.run("GetTrophies"));
+                this.Trophies = res;
+            },
+
+            async getAscensionTitles(){
+                const res = JSON.parse(await Parse.Cloud.run("GetAscensionTitles"));
+                this.AscensionTitles = res;
+            },
+
+            async getCosmetics(){
+                const res = JSON.parse(await Parse.Cloud.run("GetCosmetics"));
+                this.Cosmetics = res;
+                
+                var params = {"CosmeticType" : "Banner"};
+                this.Banners = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
+
+                //Get Data for defaults
+                const Global = JSON.parse(await Parse.Cloud.run("GetGlobal"));
+                for(var cosmetic of this.Cosmetics){
+                    if(cosmetic.objectId === Global.DefaultAvatarID || cosmetic.objectId === Global.DefaultFrameID
+                    || cosmetic.objectId === Global.DefaultCoverPhotoID || cosmetic.objectId === Global.DefaultBannerID){
+                        cosmetic["CosmeticDefault"] = true;
+                    }
+                    else{
+                        cosmetic["CosmeticDefault"] = false;
+                    }
                 }
             },
 
-            async getStatusTitle(StatusTitle){
-                this.NewStatusTitleID = StatusTitle.objectId;
-                this.NewStatusTitleName = StatusTitle.StatusTitleName
-                this.NewStatusTitleLevel = StatusTitle.StatusTitleLevel,
-                this.NewStatusTitleImage = StatusTitle.StatusTitleImage
+            async getHouses(){
+                const res = JSON.parse(await Parse.Cloud.run("GetHouses"));
+                this.Houses = res;
+
+                //Add house banner
+                for(var house of this.Houses){
+                    var params = {"HouseID" : house.objectId};
+                    const data = JSON.parse(await Parse.Cloud.run("GetHouseData", params));
+                    house["HouseBanner"] = data.HouseBanner;
+                }
+            },
+
+            async getQuests(){
+                const res = JSON.parse(await Parse.Cloud.run("GetQuests"));
+                this.Quests = res;
             },
 
             async getStatusTitles(){
-                this.ShowStatusTitles = true
-                this.StatusTitles = JSON.parse(await Parse.Cloud.run("GetStatusTitles"))
+                const res = JSON.parse(await Parse.Cloud.run("GetStatusTitles"));
+                this.StatusTitles = res;
+            },
+
+            async getQuestRewards(){
+                this.QuestRewards = [];
+                var res = JSON.parse(await Parse.Cloud.run("GetQuestRewards"));
+
+                //Get Data of Cosmetic Reward
+                for(var questReward of res){
+                    var param = {"CosmeticID" : questReward.RewardCosmeticID};
+                    questReward["CosmeticData"] = JSON.parse(await Parse.Cloud.run("GetCosmeticData", param));
+                    this.QuestRewards.push(questReward);
+                }
+            },
+
+            async getStudents(){
+                this.Students = [];
+                var res = JSON.parse(await Parse.Cloud.run("GetStudents"));
+                for(var student of res){
+                    var param = {"DegreeID" : student.StudentDegreeIDPointer};
+                    student["StudentDegree"] = JSON.parse(await Parse.Cloud.run("GetDegreeData", param));
+                    param = {"HouseID" : student.StudentHouseIDPointer};
+                    student["StudentHouse"] = JSON.parse(await Parse.Cloud.run("GetHouseData", param));
+
+                    var EquippedCosmeticsData = [];
+                    for(const cosmeticID of student.EquippedCosmetics){
+                        param = {
+                            "CosmeticID" : cosmeticID,
+                        }
+                        EquippedCosmeticsData.push(JSON.parse(await Parse.Cloud.run("GetCosmeticData", param)));
+                    }
+                    student["EquippedCosmeticsData"] = EquippedCosmeticsData;
+                    this.Students.push(student);
+                    
+                    /*
+                        This is replaced since this is loading all data of the student, just do this upon selecting
+                        this.Students.push(JSON.parse(await Parse.Cloud.run("GetStudentData", param)));
+                    */
+                }
+            },
+
+            async getGivers(){
+                this.Givers = [];
+                var teachers = JSON.parse(await Parse.Cloud.run("GetTeachers"));
+                for(var teacher of teachers){
+                    teacher["GiverType"] = "Teacher";
+                }
+                var nt_distributors = JSON.parse(await Parse.Cloud.run("GetNT_Distributors"));
+                for(var nt_distributor of nt_distributors){
+                    nt_distributor["GiverType"] = "NT_Distributor";
+                }
+                this.Givers = this.Givers.concat(teachers, nt_distributors);
+            },
+            
+            //Other Functions
+            getBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            },
+
+            checkIncompleteData(type){
+                if(type === "Unit"){
+                    return (this.UnitName === "" || this.UnitContactNumber === "" || this.UnitType === "");
+                }
+                else if(type === "Degree"){
+                    return (this.DegreeName === "" || this.DegreeUnitIDPointer === "");
+                }
+                else if(type === "Course"){
+                    return (this.CourseName === "" || this.CourseCode === "");
+                }
+                else if(type === "Badge"){
+                    return (this.BadgeName === "" || this.BadgeDescription === "" || this.BadgePoints === "" 
+                    || this.BadgeType === "" || this.BadgeDesignInspiration === "");
+                }
+                else if(type === "Trophy"){
+                    return (this.TrophyName === "" || this.TrophyDescription === "" || this.TrophyPoints === "" 
+                    || this.TrophyType === "" || this.TrophyDesignInspiration === "");
+                }
+                else if(type === "AscensionTitle"){
+                    return (this.AscensionName === "");
+                }
+                else if(type === "Cosmetic"){
+                    return (this.CosmeticName === "" || this.CosmeticType === "");
+                }
+                else if(type === "House"){
+                    return (this.HouseName === "" || this.HouseBannerIDPointer === "");
+                }
+                else if(type === "Student"){
+                    return (this.SelectedStudentID === "" || this.StudentFirstName === "" || this.StudentMiddleName === ""
+                    || this.StudentLastName === "" || this.StudentEmail === "" || this.StudentContactNum === ""
+                    || this.StudentUserName === "" || this.StudentSchoolID === "");
+                }
+                else if(type === "Giver"){
+                    return (this.SelectedGiverID === "" || this.GiverFirstName === "" || this.GiverMiddleName === ""
+                    || this.GiverLastName === "" || this.GiverEmail === "" || this.GiverContactNum === ""
+                    || this.GiverJobTitle === "" || this.GiverUnitIDPointer === "" || this.GiverType === "");
+                }
+                else if(type === "Quest"){
+                    return (this.QuestName === "" ||  this.QuestType === "" || this.QuestDescription === "" || this.QuestPoints === "");
+                }
+                else if(type === "StatusTitle"){
+                    return (this.StatusTitleName === "" || this.StatusTitleLevel === "");
+                }
+                else if(type === "QuestReward"){
+                    return (this.RewardCosmeticID === "" || this.RewardCosmeticType === "" || this.RequiredAscensionPoints === "");
+                }
+                return false;
             },
 
             //Unit Functions
             async addUnit(){
+                if(this.checkIncompleteData("Unit")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
                     "UnitName": this.UnitName,
                     "UnitContactNumber": this.UnitContactNumber,
                     "UnitType" : this.UnitType,
                 };
                 await Parse.Cloud.run("AddUnit", params);
-                alert("Added Unit");
+                alert("Added Unit!");
+                this.resetSelectedUnit();
+
+                //Update Departments and Units
+                this.getUnits();
+                this.getDepartments();
             },
 
-            async getUnits(UnitType){
+            selectUnit(unit){
+                if(this.SelectedUnitID !== unit.objectId){
+                    this.SelectedUnitID = unit.objectId;
+                    this.UnitName = unit.UnitName;
+                    this.UnitContactNumber = unit.UnitContactNumber;
+                    this.UnitType = unit.UnitType;
+                }
+                else{
+                    this.resetSelectedUnit();
+                }
+            },
+
+            resetSelectedUnit(){
+                this.SelectedUnitID = "";
+                this.UnitName = "";
+                this.UnitContactNumber = "";
+                this.UnitType = "";
+            },
+
+            async editUnit(){
+                if(this.checkIncompleteData("Unit")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
-                    "UnitType" : UnitType
+                    "UnitID" : this.SelectedUnitID,
+                    "UnitName": this.UnitName,
+                    "UnitContactNumber": this.UnitContactNumber,
+                    "UnitType" : this.UnitType,
                 };
-                const res = JSON.parse(await Parse.Cloud.run("GetUnits", params));
-                this.Departments = res;
+                await Parse.Cloud.run("EditUnit", params);
+                alert("Edited Unit!");
+                this.resetSelectedUnit();
+
+                //Update Departments and Units
+                this.getUnits();
+                this.getDepartments();
             },
 
-            selectDepartment(DepartmentID){
-                this.SelectedDepartment = DepartmentID;
+            async deleteUnit(){
+                if(this.SelectedUnitID === ""){
+                    alert("Please select a Unit to Delete!");
+                    return;
+                }
+                var params = {
+                    "UnitID" : this.SelectedUnitID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteUnit", params);
+                    alert("Deleted Unit!");
+                    this.resetSelectedUnit();
+
+                    //Update Departments and Units
+                    this.getUnits();
+                    this.getDepartments();
+                }
+                catch(error){
+                    alert(error.message);
+                }
             },
 
             //Degree Functions
             async addDegree(){
+                if(this.checkIncompleteData("Degree")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
                     "DegreeName" : this.DegreeName,
-                    "DegreeUnitIDPointer" : this.SelectedDepartment,
+                    "DegreeUnitIDPointer" : this.DegreeUnitIDPointer,
                 }
                 await Parse.Cloud.run("AddDegree", params);
                 alert("Added Degree");
+                this.resetSelectedDegree();
+
+                //Update degrees
+                this.getDegrees();
+            },
+
+            selectDegree(degree){
+                if(this.SelectedDegreeID !== degree.objectId){
+                    this.SelectedDegreeID = degree.objectId;
+                    this.DegreeName = degree.DegreeName;
+                    this.DegreeUnitIDPointer = degree.DegreeUnitIDPointer;
+                }
+                else{
+                    this.resetSelectedDegree();
+                }
+            },
+
+            resetSelectedDegree(){
+                this.SelectedDegreeID = "";
+                this.DegreeName = "";
+                this.DegreeUnitIDPointer = "";
+            },
+
+            async editDegree(){
+                if(this.checkIncompleteData("Degree")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "DegreeID" : this.SelectedDegreeID,
+                    "DegreeName": this.DegreeName,
+                    "DegreeUnitIDPointer": this.DegreeUnitIDPointer,
+                };
+                await Parse.Cloud.run("EditDegree", params);
+                alert("Edited Degree!");
+                this.resetSelectedDegree();
+
+                //Update degrees
+                this.getDegrees();
+            },
+
+            async deleteDegree(){
+                if(this.SelectedDegreeID === ""){
+                    alert("Please select a Degree to Delete!");
+                    return;
+                }
+                var params = {
+                    "DegreeID" : this.SelectedDegreeID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteDegree", params);
+                    alert("Deleted Degree!");
+                    this.resetSelectedDegree();
+
+                    //Update degrees
+                    this.getDegrees();
+                }
+                catch(error){
+                    alert(error.message);
+                }
             },
 
             //Course Functions
             async addCourse(){
+                if(this.checkIncompleteData("Course")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
                     "CourseName" : this.CourseName,
                     "CourseCode" : this.CourseCode, 
                     "CourseDegreesIDPointers": this.CourseDegreesIDPointers
                 }
                 await Parse.Cloud.run("AddCourse", params);
-                this.ShowRelevantDegrees = false
-                this.CourseDegreesIDPointers.length = 0
                 alert("Added Course");
+                this.resetSelectedCourse();
+
+                //Update courses
+                this.getCourses();
             },
 
-            async getDegrees(){ 
-                this.ShowRelevantDegrees = true
-                const res = JSON.parse(await Parse.Cloud.run("GetDegrees"));
-                this.Degrees = res;
-            },
-
-            setCourseDegree(degId){
-                if(degId == null){
-                    this.CourseDegreesIDPointers.length = 0
-                }
-                else if(this.CourseDegreesIDPointers.indexOf(degId) == -1)
-                if(degId != null){
-                    this.CourseDegreesIDPointers.push(degId)
+            selectCourse(course){
+                if(this.SelectedCourseID !== course.objectId){
+                    this.SelectedCourseID = course.objectId;
+                    this.CourseName = course.CourseName;
+                    this.CourseCode = course.CourseCode;
+                    this.CourseDegreesIDPointers = course.CourseDegreesIDPointers;
                 }
                 else{
-                    this.CourseDegreesIDPointers.length = 0
+                    this.resetSelectedCourse();
                 }
             },
 
-            async setCourseToAllDegrees(){
-                this.CourseDegreesIDPointers .length = 0
-                const res = JSON.parse(await Parse.Cloud.run("GetDegrees"));
-                let CourseDegrees = []
-                for(const degree of res){
-                    CourseDegrees.push(degree.objectId);
+            resetSelectedCourse(){
+                this.SelectedCourseID = "";
+                this.CourseName = "";
+                this.CourseCode = "";
+                this.CourseDegreesIDPointers = [];
+            },
+
+            async editCourse(){
+                if(this.checkIncompleteData("Course")){
+                    alert("Please completely fill out the form!");
+                    return;
                 }
-                this.CourseDegreesIDPointers = CourseDegrees;
+                var params = {
+                    "CourseID" : this.SelectedCourseID,
+                    "CourseName" : this.CourseName,
+                    "CourseCode" : this.CourseCode, 
+                    "CourseDegreesIDPointers": this.CourseDegreesIDPointers
+                };
+                await Parse.Cloud.run("EditCourse", params);
+                alert("Edited Course!");
+                this.resetSelectedCourse();
+
+                //Update courses
+                this.getCourses();
+            },
+
+            async deleteCourse(){
+                if(this.SelectedCourseID === ""){
+                    alert("Please select a Course to Delete!");
+                    return;
+                }
+                var params = {
+                    "CourseID" : this.SelectedCourseID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteCourse", params);
+                    alert("Deleted Course!");
+                    this.resetSelectedCourse();
+
+                    //Update courses
+                    this.getCourses();
+                }
+                catch(error){
+                    alert(error.message);
+                }
             },
 
             //Badges Functions
             async addBadge(){
-                this.ShowBadges = false;
+                if(this.checkIncompleteData("Badge") || this.BadgeImageName === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
                     "BadgeName" : this.BadgeName,
                     "BadgeDescription" : this.BadgeDescription,
@@ -592,16 +1392,12 @@
                     "BadgeImageName" : this.BadgeImageName,
                     "BadgeDesignInspiration" : this.BadgeDesignInspiration,
                 }
-                await Parse.Cloud.run("AddBadge", params).then(alert("Added Badge!"));
-            },
+                await Parse.Cloud.run("AddBadge", params);
+                alert("Added Badge!");
+                this.resetSelectedBadge();
 
-            getBase64(file) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = error => reject(error);
-                });
+                //Update badges
+                this.getBadges();
             },
 
             async onBadgeImageSelected(e){
@@ -612,75 +1408,111 @@
                 );
             },
 
-            async onNewBadgeImageSelected(e){
-                var file = e.target.files[0];
-                this.NewBadgeImageName = file.name;
-                this.getBase64(file).then(
-                    data => this.NewBadgeImage = data
-                );
+            selectBadge(badge){
+                if(this.SelectedBadgeID !== badge.objectId){
+                    this.SelectedBadgeID = badge.objectId;
+                    this.BadgeName = badge.BadgeName;
+                    this.BadgeDescription = badge.BadgeDescription;
+                    this.BadgePoints = badge.BadgePoints;
+                    this.BadgeType = badge.BadgeType;
+                    this.BadgeImage = badge.BadgeImage;
+                    this.BadgeDesignInspiration = badge.BadgeDesignInspiration;
+                }
+                else{
+                    this.resetSelectedBadge();
+                }
+            },
+
+            resetSelectedBadge(){
+                this.SelectedBadgeID = "";
+                this.BadgeName = "";
+                this.BadgeDescription = "";
+                this.BadgePoints = "";
+                this.BadgeType = "";
+                this.BadgeImage = "";
+                this.BadgeImageName = "";
+                this.BadgeDesignInspiration = "";
+                this.$refs.BadgeFileUpload.value = null;
             },
 
             async editBadge(){
-                this.ShowBadges = false
+                if(this.checkIncompleteData("Badge")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
-                    "BadgeName" : this.NewBadgeName,
-                    "BadgeDescription" : this.NewBadgeDescription,
-                    "BadgePoints" : this.NewBadgePoints,
-                    "BadgeType" : this.NewBadgeType,
-                    "BadgeImage" : this.NewBadgeImage,
-                    "BadgeDesignInspiration" : this.NewBadgeDesignInspiration,
-                    "BadgeID" : this.BadgeIdPointer,
+                    "BadgeID" : this.SelectedBadgeID,
+                    "BadgeName" : this.BadgeName,
+                    "BadgeDescription" : this.BadgeDescription,
+                    "BadgePoints" : this.BadgePoints,
+                    "BadgeType" : this.BadgeType,
+                    "BadgeDesignInspiration" : this.BadgeDesignInspiration,
+                };
+                //If image is provided to change
+                if(this.BadgeImageName != ""){
+                    params["BadgeImage"] = this.BadgeImage;
+                    params["BadgeImageName"] = this.BadgeImageName;
                 }
-                if(this.NewBadgeImageName != ""){
-                    params["BadgeImageName"] = this.NewBadgeImageName;
-                }
-                await Parse.Cloud.run("EditBadge", params).then(alert("Badge edited!"));
+
+                await Parse.Cloud.run("EditBadge", params);
+                alert("Edited Badge!");
+                this.resetSelectedBadge();
+
+                //Update badges
+                this.getBadges();
             },
 
-            async getBadges(){
-                this.ShowBadges = true
-                this.Badges = JSON.parse(await Parse.Cloud.run("GetBadges"))
-            },
-
-            async getBadge(Badge){
-                this.NewBadgeName = Badge.BadgeName
-                this.NewBadgeDescription = Badge.BadgeDescription
-                this.NewBadgePoints = Badge.BadgePoints
-                this.NewBadgeType = Badge.BadgeType
-                this.NewBadgeImage = Badge.BadgeImage
-                this.NewBadgeDesignInspiration = Badge.BadgeDesignInspiration
-                this.BadgeIdPointer = Badge.objectId
-            },
-            
-            async deleteBadge(badge){
-                var param = {
-                    "BadgeID": badge.objectId
+            async deleteBadge(){
+                if(this.SelectedBadgeID === ""){
+                    alert("Please select a Badge to Delete!");
+                    return;
                 }
+                var params = {
+                    "BadgeID" : this.SelectedBadgeID,
+                }
+
+                //Setup try catch for deleting
                 try{
-                    await Parse.Cloud.run("DeleteBadge", param);
-                    alert("DELETED BADGE!");
+                    await Parse.Cloud.run("DeleteBadge", params);
+                    alert("Deleted Badge!");
+                    this.resetSelectedBadge();
+
+                    //Update badges
+                    this.getBadges();
                 }
-                catch(e){
-                    alert(e.message);
+                catch(error){
+                    alert(error.message);
                 }
             },
 
             //Trophy Functions
             async addTrophy(){
-                this.ShowBadgesForTrophy = false
-                this.NewShowBadgesForTrophy = false
+                if(this.checkIncompleteData("Trophy") || this.TrophyImageName === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
                     "TrophyName": this.TrophyName,
                     "TrophyDescription": this.TrophyDescription,
                     "TrophyPoints": this.TrophyPoints,
                     "TrophyImage": this.TrophyImage,
                     "TrophyType": this.TrophyType,
-                    "BadgesIDNeeded": this.AssignedBadgesForTrophy,
+                    "BadgesIDNeeded": this.BadgesIDNeeded,
                     "TrophyImageName" : this.TrophyImageName,
                     "TrophyDesignInspiration" : this.TrophyDesignInspiration,
                 }
-                this.AssignedBadgesForTrophy.length = 0
-                await Parse.Cloud.run("AddTrophy", params).then(alert("Added Trophy"));
+                try{
+                    await Parse.Cloud.run("AddTrophy", params);
+                    alert("Added Trophy!");
+                    this.resetSelectedTrophy();
+
+                    //Update trophies
+                    this.getTrophies();
+                }
+                catch(e){
+                    alert(e.message)
+                }
+                
             },
 
             async onTrophyImageSelected(e){
@@ -690,198 +1522,181 @@
                     data => this.TrophyImage = data
                 );
             },
+            
+            selectTrophy(trophy){
+                if(this.SelectedTrophyID !== trophy.objectId){
+                    this.SelectedTrophyID = trophy.objectId;
+                    this.TrophyName = trophy.TrophyName;
+                    this.TrophyDescription = trophy.TrophyDescription;
+                    this.TrophyPoints = trophy.TrophyPoints;
+                    this.TrophyType = trophy.TrophyType;
+                    this.TrophyImage = trophy.TrophyImage;
+                    this.BadgesIDNeeded = trophy.BadgesIDNeeded;
+                    this.TrophyDesignInspiration = trophy.TrophyDesignInspiration;
+                }
+                else{
+                    this.resetSelectedTrophy();
+                }
+            },
 
-            async onNewTrophyImageSelected(e){
-                var file = e.target.files[0];
-                this.NewTrophyImageName = file.name;
-                this.getBase64(file).then(
-                    data => this.NewTrophyImage = data
-                );
+            resetSelectedTrophy(){
+                this.SelectedTrophyID = "";
+                this.TrophyName = "";
+                this.TrophyDescription = "";
+                this.TrophyPoints = "";
+                this.TrophyType = "";
+                this.TrophyImage = "";
+                this.TrophyImageName = "";
+                this.TrophyDesignInspiration = "";
+                this.BadgesIDNeeded = [];
+                this.$refs.TrophyFileUpload.value = null;
             },
 
             async editTrophy(){
-                this.ShowTrophies = false
+                if(this.checkIncompleteData("Trophy")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
-                    "TrophyID" : this.NewTrophyID,
-                    "TrophyName": this.NewTrophyName,
-                    "TrophyDescription": this.NewTrophyDescription,
-                    "TrophyPoints": this.NewTrophyPoints,
-                    "TrophyImage": this.NewTrophyImage,
-                    "TrophyType": this.NewTrophyType,
-                    "BadgesIDNeeded": this.AssignedBadgesforNewTrophy,
-                    "TrophyDesignInspiration" : this.NewTrophyDesignInspiration,
+                    "TrophyID" : this.SelectedTrophyID,
+                    "TrophyName": this.TrophyName,
+                    "TrophyDescription": this.TrophyDescription,
+                    "TrophyPoints": this.TrophyPoints,
+                    "TrophyType": this.TrophyType,
+                    "BadgesIDNeeded": this.BadgesIDNeeded,
+                    "TrophyDesignInspiration" : this.TrophyDesignInspiration,
+                };
+                //If image is provided to change
+                if(this.TrophyImageName != ""){
+                    params["TrophyImage"] = this.TrophyImage;
+                    params["TrophyImageName"] = this.TrophyImageName;
                 }
-                if(this.NewTrophyImageName != ""){
-                    params["TrophyImageName"] = this.NewTrophyImageName;
-                }
-                await Parse.Cloud.run("EditTrophy", params).then(alert("Edited Trophy"));
+
+                await Parse.Cloud.run("EditTrophy", params);
+                alert("Edited Trophy!");
+                this.resetSelectedTrophy();
+
+                //Update trophies
+                this.getTrophies();
             },
-            
-            async deleteTrophy(id){
-                var params = {
-                    "TrophyID": id
+
+            async deleteTrophy(){
+                if(this.SelectedTrophyID === ""){
+                    alert("Please select a Trophy to Delete!");
+                    return;
                 }
+                var params = {
+                    "TrophyID" : this.SelectedTrophyID,
+                }
+
+                //Setup try catch for deleting
                 try{
-                    await Parse.Cloud.run("DeleteTrophy", params).then(alert("Deleted Trophy"));
-                }
-                catch(e){
-                    alert(e.message);
-                }
-            },
+                    await Parse.Cloud.run("DeleteTrophy", params);
+                    alert("Deleted Trophy!");
+                    this.resetSelectedTrophy();
 
-            async getTrophy(trophy){
-                this.NewTrophyID = trophy.objectId;
-                this.NewTrophyName = trophy.TrophyName
-                this.NewTrophyDescription = trophy.TrophyDescription
-                this.NewTrophyPoints = trophy.TrophyPoints
-                this.NewTrophyImage = trophy.TrophyImage
-                this.NewTrophyType = trophy.TrophyType
-                this.AssignedBadgesforNewTrophy = trophy.BadgesIDNeeded
-                this.NewTrophyDesignInspiration = trophy.TrophyDesignInspiration
-            },
-
-            async getTrophies(){
-                this.ShowTrophies = true
-                this.Trophies = JSON.parse(await Parse.Cloud.run("GetTrophies"))
-            },
-            
-            //num is used to know which array will be used
-            async assignToTrophy(badgeId, num){
-                if(num == 0 && !this.AssignedBadgesForTrophy.includes(badgeId)){
-                    this.AssignedBadgesForTrophy.push(badgeId)
+                    //Update trophies
+                    this.getTrophies();
                 }
-                else if(num == 1 && !this.AssignedBadgesforNewTrophy.includes(badgeId)){
-                    this.AssignedBadgesforNewTrophy.push(badgeId)
+                catch(error){
+                    alert(error.message);
                 }
-                
-            },
-
-            //num is used to know which array will be used
-            async unassignToTrophy(badgeId, num){
-                if(num == 0 && this.AssignedBadgesForTrophy.includes(badgeId)){
-                    const index = this.AssignedBadgesForTrophy.indexOf(badgeId)
-                    this.AssignedBadgesForTrophy.splice(index, 1)
-                }
-                else if(num == 1 && this.AssignedBadgesforNewTrophy.includes(badgeId)){
-                    const index = this.AssignedBadgesforNewTrophy.indexOf(badgeId)
-                    this.AssignedBadgesforNewTrophy.splice(index, 1)
-                }
-            },
-            
-            async getBadgesForTrophy(){
-                this.ShowBadgesForTrophy = true;
-                var params = {};
-                if(this.TrophyType != ""){
-                    params["BadgeType"] = this.TrophyType;
-                }
-                this.AvailableBadgesForTrophy = JSON.parse(await Parse.Cloud.run("GetBadges", params))
-            },
-
-            async getBadgesForUpdatedTrophy(){
-                this.NewShowBadgesForTrophy = true;
-                var params = {};
-                if(this.TrophyType != ""){
-                    params["BadgeType"] = this.TrophyType;
-                }
-                this.AvailableBadgesForTrophy = JSON.parse(await Parse.Cloud.run("GetBadges", params))
             },
 
             //Ascension Title Functions
             async addAscensionTitle(){
-                if(this.AscensionXpRangeCap > 0 && this.AscensionXpRangeStart > -1 && this.AscensionXpRangeStart < this.AscensionXpRangeCap){
-                    var params = {
-                        "AscensionName": this.AscensionName,
-                        "AscensionXpRangeStart": this.AscensionXpRangeStart,
-                        "AscensionXpRangeCap": this.AscensionXpRangeCap
-                        
-                    }
-                    await Parse.Cloud.run("AddAscensionTitle", params).then(alert("Added Ascension Title"))
+                if(!(this.AscensionXpRangeCap > 0 && this.AscensionXpRangeStart > -1 && this.AscensionXpRangeStart < this.AscensionXpRangeCap)){
+                    alert("Invalid Range Values!");
+                    return;
+                }
+                else if(this.checkIncompleteData("AscensionTitle")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "AscensionName": this.AscensionName,
+                    "AscensionXpRangeStart": this.AscensionXpRangeStart,
+                    "AscensionXpRangeCap": this.AscensionXpRangeCap,
+                }
+                await Parse.Cloud.run("AddAscensionTitle", params);
+                alert("Added Ascension Title");
+                this.resetSelectedAscensionTitle();
+                
+                //Update AscensionTitles
+                this.getAscensionTitles();
+            },
+
+            selectAscensionTitle(title){
+                if(this.SelectedAscensionTitleID !== title.objectId){
+                    this.SelectedAscensionTitleID = title.objectId;
+                    this.AscensionName = title.AscensionName;
+                    this.AscensionXpRangeStart = title.AscensionXpRangeStart;
+                    this.AscensionXpRangeCap = title.AscensionXpRangeCap;
                 }
                 else{
-                    alert("Invalid Values!")
+                    this.resetSelectedAscensionTitle();
                 }
-                
             },
 
-            async getAscensionTitles(){
-                this.ShowAscensionTitles = true
-                this.AscensionTitles = JSON.parse(await Parse.Cloud.run("GetAscensionTitles"))
+            resetSelectedAscensionTitle(){
+                this.SelectedAscensionTitleID = "";
+                this.AscensionName = "";
+                this.AscensionXpRangeStart = 0;
+                this.AscensionXpRangeCap = 0;
             },
 
-
-            async deleteAscensionTitle(AscensionTitleId){
+            async editAscensionTitle(){
+                if(!(this.AscensionXpRangeCap > 0 && this.AscensionXpRangeStart > -1 && this.AscensionXpRangeStart < this.AscensionXpRangeCap)){
+                    alert("Invalid Range Values!");
+                    return;
+                }
+                else if(this.checkIncompleteData("AscensionTitle")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
-                    "AscensionId": AscensionTitleId
+                    "AscensionId" : this.SelectedAscensionTitleID,
+                    "AscensionName": this.AscensionName,
+                    "AscensionXpRangeStart": this.AscensionXpRangeStart,
+                    "AscensionXpRangeCap": this.AscensionXpRangeCap,
+                };
+                await Parse.Cloud.run("EditAscensionTitle", params);
+                alert("Edited Ascension Title!");
+                this.resetSelectedAscensionTitle();
+
+                //Update AscensionTitles
+                this.getAscensionTitles();
+            },
+
+            async deleteAscensionTitle(){
+                if(this.SelectedAscensionTitleID === ""){
+                    alert("Please select an Ascension Title to Delete!");
+                    return;
                 }
-                await Parse.Cloud.run("DeleteAscensionTitle", params).then(alert("Ascension Title Deleted"))
-            },
-
-            async getAscensionTitle(AscensionTitle){
-                this.NewAscensionName = AscensionTitle.AscensionName
-                this.NewAscensionXpRangeCap = AscensionTitle.AscensionXpRangeCap
-                this.NewAscensionXpRangeStart = AscensionTitle.AscensionXpRangeStart
-                this.AscensionTitleIdPointer = AscensionTitle.objectId
-            },
-
-            async updateAscensionTitle(){
-                this.ShowAscensionTitles = false
-                
-                if(this.NewAscensionXpRangeCap > 0 && this.NewAscensionXpRangeStart > -1 && this.NewAscensionXpRangeStart < this.NewAscensionXpRangeCap){
-                    var params = {
-                        "AscensionId": this.AscensionTitleIdPointer,
-                        "NewAscensionName": this.NewAscensionName,
-                        "NewAscensionXpRangeCap": this.NewAscensionXpRangeCap,
-                        "NewAscensionXpRangeStart": this.NewAscensionXpRangeStart
-                    }
-                    await Parse.Cloud.run("UpdateAscensionTitle", params).then(alert("Ascension Title Modified"))
-                }
-                else{
-                    alert("Invalid Values")
-                }
-                
-            },
-
-            async searchAscensionTitleFromXp(XpInput){
-               if(XpInput >= 0){
-                    var params = {
-                        "XpInput": XpInput
-                    }
-                    const res = JSON.parse(await Parse.Cloud.run("SearchAscensionTitleFromXp", params))
-                    if(res != null){
-                        this.AscensionTitleFromXpInput = res.AscensionName
-                    }
-                    else{
-                        alert("Out of bounds!") //Will print if there's an XP gap within Titles 
-                    }                           //E.g. 1-10, 20-100. Code prints if XpInput is 11-19
-                    
-               }
-               else{
-                    alert("Out of bounds!")
-               }
-            },
-
-            //House Functions
-            async addHouse(){
                 var params = {
-                    "HouseName" : this.HouseName,
-                    "HouseBannerIDPointer" : this.SelectedHouseBannerID,
+                    "AscensionId" : this.SelectedAscensionTitleID,
                 }
-                await Parse.Cloud.run("AddHouse", params);
-                alert("Added House");
-            },
 
-            async loadHouseBanners(){
-                var params = {"CosmeticType" : "Banner"}
-                const res = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
-                this.HouseBanners = res;
-            },
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteAscensionTitle", params);
+                    alert("Deleted Ascension Title!");
+                     this.resetSelectedAscensionTitle();
 
-            async selectHouseBanner(id){
-                this.SelectedHouseBannerID = id;
+                    //Update AscensionTitles
+                    this.getAscensionTitles();
+                }
+                catch(error){
+                    alert(error.message);
+                }
             },
 
             //Cosmetic Functions
             async addCosmetic(){
+                if(this.checkIncompleteData("Cosmetic") || this.CosmeticImageName === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
                     "CosmeticName" : this.CosmeticName,
                     "CosmeticType" : this.CosmeticType,
@@ -890,19 +1705,31 @@
                 }
                 await Parse.Cloud.run("AddCosmetic", params);
                 alert("Added " + this.CosmeticType);
+                this.resetSelectedCosmetic();
+
+                //Update Cosmetics
+                this.getCosmetics();
             },
 
-            async editCosmetic(){
-                var params = {
-                    "CosmeticID" : this.NewCosmeticID,
-                    "CosmeticName": this.NewCosmeticName,
-                    "CosmeticType": this.NewCosmeticType,
-                    "CosmeticImage": this.NewCosmeticImage,
+            selectCosmetic(cosmetic){
+                if(this.SelectedCosmeticID !== cosmetic.objectId){
+                    this.SelectedCosmeticID = cosmetic.objectId;
+                    this.CosmeticName = cosmetic.CosmeticName;
+                    this.CosmeticType = cosmetic.CosmeticType;
+                    this.CosmeticImage = cosmetic.CosmeticImage;
                 }
-                if(this.NewCosmeticImage != ""){
-                    params["CosmeticImageName"] = this.NewCosmeticImageName;
+                else{
+                    this.resetSelectedCosmetic();
                 }
-                await Parse.Cloud.run("EditCosmetic", params).then(alert("Edited Cosmetic"));
+            },
+
+            resetSelectedCosmetic(){
+                this.SelectedCosmeticID = "";
+                this.CosmeticName = "";
+                this.CosmeticType = "";
+                this.CosmeticImage = "";
+                this.CosmeticImageName = "";
+                this.$refs.CosmeticFileUpload.value = null;
             },
 
             async onCosmeticImageSelected(e){
@@ -913,113 +1740,785 @@
                 );
             },
 
-            async onNewCosmeticImageSelected(e){
+            async editCosmetic(){
+                if(this.checkIncompleteData("Cosmetic")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "CosmeticID" : this.SelectedCosmeticID,
+                    "CosmeticName" : this.CosmeticName,
+                    "CosmeticType" : this.CosmeticType,
+                }
+                //If image is provided to change
+                if(this.CosmeticImageName != ""){
+                    params["CosmeticImage"] = this.CosmeticImage;
+                    params["CosmeticImageName"] = this.CosmeticImageName;
+                }
+                await Parse.Cloud.run("EditCosmetic", params);
+                alert("Edited Cosmetic");
+                this.resetSelectedCosmetic();
+
+                //Update Cosmetics
+                this.getCosmetics();
+            },
+
+            async deleteCosmetic(){
+                if(this.SelectedCosmeticID === ""){
+                    alert("Please select a Cosmetic to Delete!");
+                    return;
+                }
+                var params = {
+                    "CosmeticID" : this.SelectedCosmeticID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteCosmetic", params);
+                    alert("Deleted Cosmetic!");
+                    this.resetSelectedCosmetic();
+
+                    //Update cosmetics
+                    this.getCosmetics();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            async setDefaultCosmetic(){
+                var params = {
+                    "CosmeticID" : this.SelectedCosmeticID,
+                    "CosmeticType" : this.CosmeticType,
+                }
+                await Parse.Cloud.run("SetDefaultCosmetic", params);
+                alert("Changed " + this.CosmeticType + "Default Cosmetic");
+
+                //Update Cosmetics
+                this.getCosmetics();
+            },
+
+            //House Functions
+            async addHouse(){
+                if(this.checkIncompleteData("House") || this.HouseLogo === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "HouseName" : this.HouseName,
+                    "HouseLogo" : this.HouseLogo,
+                    "HouseLogoName" : this.HouseLogoName,
+                    "HouseBannerIDPointer" : this.HouseBannerIDPointer,
+                }
+                await Parse.Cloud.run("AddHouse", params);
+                alert("Added House");
+                this.resetSelectedHouse();
+
+                //Update houses
+                this.getHouses();
+            },
+
+            async onHouseLogoSelected(e){
                 var file = e.target.files[0];
-                this.NewCosmeticImageName = file.name;
+                this.HouseLogoName = file.name;
                 this.getBase64(file).then(
-                    data => this.NewCosmeticImage = data
+                    data => this.HouseLogo = data
                 );
             },
 
-            async getCosmetics(){
-                var params = {"CosmeticType" : "Avatar"}
-                const res = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
-                this.Avatars = res;
-
-                params["CosmeticType"] = "Frame";
-                const res1 = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
-                this.Frames = res1;
-
-                params["CosmeticType"] = "CoverPhoto";
-                const res2 = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
-                this.CoverPhotos = res2;
-
-                params["CosmeticType"] = "Banner";
-                const res3 = JSON.parse(await Parse.Cloud.run("GetCosmetics", params));
-                this.Banners = res3;
+            selectHouse(house){
+                if(this.SelectedHouseID !== house.objectId){
+                    this.SelectedHouseID = house.objectId;
+                    this.HouseName = house.HouseName;
+                    this.HouseLogo = house.HouseLogo;
+                    this.HouseBannerIDPointer = house.HouseBannerIDPointer;
+                }
+                else{
+                    this.resetSelectedHouse();
+                }
             },
 
-            async getAllCosmetics(){
-                this.AllCosmetics = JSON.parse(await Parse.Cloud.run("GetCosmetics"));
+            resetSelectedHouse(){
+                this.SelectedHouseID = "";
+                this.HouseName = "";
+                this.HouseLogo = "";
+                this.HouseLogoName = "";
+                this.HouseBannerIDPointer = "";
+                this.$refs.HouseFileUpload.value = null;
             },
 
-            async getCosmetic(cosmetic){
-                this.NewCosmeticID = cosmetic.objectId;
-                this.NewCosmeticName = cosmetic.CosmeticName;
-                this.NewCosmeticType = cosmetic.CosmeticType;
-            },
-
-            async deleteCosmetic(cosmetic){
+            async editHouse(){
+                if(this.checkIncompleteData("House")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
                 var params = {
-                    "CosmeticID": cosmetic.objectId,
+                    "HouseID" : this.SelectedHouseID,
+                    "HouseName" : this.HouseName,
+                    "HouseBannerIDPointer" : this.HouseBannerIDPointer,
+                }
+                //If image is provided to change
+                if(this.HouseLogoName != ""){
+                    params["HouseLogo"] = this.HouseLogo;
+                    params["HouseLogoName"] = this.HouseLogoName;
+                }
+                
+                await Parse.Cloud.run("EditHouse", params);
+                alert("Edited House");
+                this.resetSelectedHouse();
+
+                //Update houses
+                this.getHouses();
+            },
+
+            async deleteHouse(){
+                if(this.SelectedHouseID === ""){
+                    alert("Please select a House to Delete!");
+                    return;
+                }
+                var params = {
+                    "HouseID" : this.SelectedHouseID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteHouse", params);
+                    alert("Deleted House!");
+                    this.resetSelectedHouse();
+
+                    //Update houses
+                    this.getHouses();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Quest Functions
+            async addQuest(){
+                if(this.checkIncompleteData("Quest")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "QuestName" : this.QuestName,
+                    "QuestType" : this.QuestType,
+                    "QuestDescription" : this.QuestDescription,
+                    "QuestPoints" : this.QuestPoints,
+                }
+                await Parse.Cloud.run("AddQuest", params);
+                alert("Added Quest");
+                this.resetSelectedQuest();
+
+                //Update quests
+                this.getQuests();
+            },
+
+            selectQuest(quest){
+                if(this.SelectedQuestID !== quest.objectId){
+                    this.SelectedQuestID = quest.objectId;
+                    this.QuestName = quest.QuestName;
+                    this.QuestType = quest.QuestType;
+                    this.QuestDescription = quest.QuestDescription;
+                    this.QuestPoints = quest.QuestPoints;
+                }
+                else{
+                    this.resetSelectedQuest();
+                }
+            },
+
+            resetSelectedQuest(){
+                this.SelectedQuestID = "";
+                this.QuestName = "";
+                this.QuestType = "";
+                this.QuestDescription = "";
+                this.QuestPoints = "";
+            },
+
+            async editQuest(){
+                if(this.checkIncompleteData("Quest")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "QuestID" : this.SelectedQuestID,
+                    "QuestName" : this.QuestName,
+                    "QuestType" : this.QuestType,
+                    "QuestDescription" : this.QuestDescription,
+                    "QuestPoints" : this.QuestPoints,
+                }
+                await Parse.Cloud.run("EditQuest", params);
+                alert("Edited Quest");
+                this.resetSelectedQuest();
+
+                //Update quests
+                this.getQuests();
+            },
+
+            async deleteQuest(){
+                if(this.SelectedQuestID === ""){
+                    alert("Please select a Quest to Delete!");
+                    return;
+                }
+                var params = {
+                    "QuestID" : this.SelectedQuestID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteQuest", params);
+                    alert("Deleted Quest!");
+                    this.resetSelectedQuest();
+
+                    //Update Quests
+                    this.getQuests();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Student functions
+            async selectStudent(student, method){
+                if(this.SelectedStudentID !== student.objectId){
+                    this.SelectedStudentID = student.objectId;
+                    this.StudentFirstName = student.FirstName;
+                    this.StudentMiddleName = student.MiddleName;
+                    this.StudentLastName = student.LastName;
+                    this.StudentContactNum = student.ContactNumber;
+                    this.StudentEmail = student.Email;
+                    this.StudentDegreeIDPointer = student.StudentDegreeIDPointer;
+                    this.StudentUnitIDPointer = student.StudentUnitIDPointer;
+                    this.StudentUserName = student.UserName;
+                    this.StudentAddress = student.Address;
+                    this.StudentSchoolID = student.SchoolID;
+                    this.StudentYearLevel = student.YearLevel;
+                    this.StudentCoursesIDPointer = student.StudentCoursesIDPointer;
+                    this.StudentEquippedCosmeticsData = student.EquippedCosmeticsData;
+                    this.openStudent = 1;
+
+                    //GetSelected student other data (badges and trophies)
+                    var param = {"StudentID" : student.objectId};
+                    var studentData = JSON.parse(await Parse.Cloud.run("GetStudentData", param));
+                    this.StudentAcquiredBadges = studentData.BadgesEarned;
+                    this.StudentChosenTrophies = studentData.ChosenTrophiesData;
+                    this.StudentHouseData = student.StudentHouse;
+
+                    //Fix Chosen Trophies
+                    for(let i = 0; i < 3; ++i){
+                        if(!this.StudentChosenTrophies[i]){
+                            this.StudentChosenTrophies[i] = null;
+                        }
+                    }
+
+                    //Fix Acquired Badges
+                    this.StudentAcquiredBadges.slice(0, 5);
+                    for(let i = 0; i < 5; ++i){
+                        if(!this.StudentAcquiredBadges[i]){
+                            this.StudentAcquiredBadges[i] = null;
+                        }
+                    }
+                    //Sort data by date rewarded(not sure)
+                    this.StudentAcquiredBadges.sort(function(first, second) {
+                        if(first === null || second === null) return false;
+                        return first.DateRewarded > second.DateRewarded;
+                    });
+                }
+                else{
+                    if(method === "edit"){
+                        //Reselect student to clear changes
+                        this.SelectedStudentID = "";
+                        this.selectStudent(student);
+                        return;
+                    }
+                    this.openStudent = 0;
+                    this.resetSelectedStudent();
+                }
+                if(method === "delete"){
+                    this.openStudent = 0;
+                    this.deleteStudent();
+                }
+            },
+
+            resetSelectedStudent(){
+                this.SelectedStudentID = "";
+                this.StudentFirstName = "";
+                this.StudentMiddleName = "";
+                this.StudentLastName = "";
+                this.StudentContactNum = "";
+                this.StudentEmail = "";
+                this.StudentDegreeIDPointer = "";
+                this.StudentUnitIDPointer = "";
+                this.StudentUserName = "";
+                this.StudentAddress = "";
+                this.StudentSchoolID = "";
+                this.StudentYearLevel = 1;
+                this.StudentCoursesIDPointer = [];
+                this.StudentCoursesIDToAdd = [];
+                this.StudentCoursesIDToDelete = [];
+                this.StudentEquippedCosmeticsData = [];
+            },
+
+            addStudentCourses(){
+                this.StudentCoursesIDPointer = this.StudentCoursesIDPointer.concat(this.StudentCoursesIDToAdd);
+            },
+
+            deleteStudentCourses(){
+                for(const e of this.StudentCoursesIDToDelete){
+                    var index = this.StudentCoursesIDPointer.indexOf(e);
+                    if (index > -1){
+                        this.StudentCoursesIDPointer.splice(index, 1);
+                        break;
+                    }
+                }
+            },
+
+            async editStudent(){
+                if(this.checkIncompleteData("Student")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "StudentID" : this.SelectedStudentID,
+                    "FirstName" : this.StudentFirstName,
+                    "MiddleName" : this.StudentMiddleName,
+                    "LastName" : this.StudentLastName,
+                    "Email" : this.StudentEmail,
+                    "ContactNumber" : this.StudentContactNum,
+                    "UserName" : this.StudentUserName,
+                    "Address" : this.StudentAddress,
+                    "SchoolID" : this.StudentSchoolID,
+                    "YearLevel" : this.StudentYearLevel,
+                    "StudentUnitIDPointer" : this.StudentUnitIDPointer,
+                    "StudentDegreeIDPointer" : this.StudentDegreeIDPointer,
+                    "StudentCoursesIDPointer" : this.StudentCoursesIDPointer,
+                }
+                await Parse.Cloud.run("EditStudent", params);
+                alert("Edited Student");
+                
+                //Update students
+                this.getStudents();
+            },
+
+            async deleteStudent(){
+                if(this.SelectedStudentID === ""){
+                    alert("Please select a Student to Delete!");
+                    return;
+                }
+                var params = {
+                    "StudentID" : this.SelectedStudentID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteStudent", params);
+                    alert("Deleted Student!");
+                    this.resetSelectedStudent();
+
+                    //Update students
+                    this.getStudents();
+                    //Close student info
+                    this.openStudent = 0;
+                    //Close student popup
+                    this.activePopUp('closePopUp');
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Giver Functions
+            selectGiver(giver, method){
+                if(this.SelectedGiverID !== giver.objectId){
+                    this.SelectedGiverID = giver.objectId;
+                    this.GiverFirstName = giver.FirstName;
+                    this.GiverMiddleName = giver.MiddleName;
+                    this.GiverLastName = giver.LastName;
+                    this.GiverContactNum = giver.ContactNumber;
+                    this.GiverEmail = giver.Email;
+                    this.GiverJobTitle = giver.JobTitle;
+                    this.GiverType = giver.GiverType;
+                    if(this.GiverType === "Teacher"){
+                        this.GiverUnitIDPointer = giver.TeacherUnitIDPointer;
+                        this.GiverCoursesIDPointer = giver.TeacherCoursesIDPointer;
+                    }
+                    else{
+                        this.GiverUnitIDPointer = giver.NT_DistributorUnitIDPointer;
+                    }
+                }
+                if(method === "edit"){
+                    //Reselect giver to clear changes
+                    this.SelectedGiverID = "";
+                    this.selectGiver(giver);
+                    return;
+                }
+                if(method === "delete"){
+                    //Close popup
+                    this.activePopUp('closePopUp');
+                    this.deleteGiver();
+                }
+            },
+
+            resetSelectedGiver(){
+                this.SelectedGiverID = "";
+                this.GiverFirstName = "";
+                this.GiverMiddleName = "";
+                this.GiverLastName = "";
+                this.GiverContactNum = "";
+                this.GiverEmail = "";
+                this.GiverJobTitle = "";
+                this.GiverType = "";
+                
+                this.GiverUnitIDPointer =  "";
+                this.GiverCoursesIDPointer = [];
+                this.GiverCoursesIDToAdd = [];
+                this.GiverCoursesIDToDelete = [];
+            },
+
+            addGiverCourses(){
+                this.GiverCoursesIDPointer = this.GiverCoursesIDPointer.concat(this.GiverCoursesIDToAdd);
+            },
+
+            deleteGiverCourses(){
+                for(const e of this.GiverCoursesIDToDelete){
+                    var index = this.GiverCoursesIDPointer.indexOf(e);
+                    if (index > -1){
+                        this.GiverCoursesIDPointer.splice(index, 1);
+                        break;
+                    }
+                }
+            },
+
+            async editGiver(){
+                if(this.checkIncompleteData("Giver")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var functionName = "";
+                var params = {
+                    "FirstName" : this.GiverFirstName,
+                    "MiddleName" : this.GiverMiddleName,
+                    "LastName" : this.GiverLastName,
+                    "ContactNumber" : this.GiverContactNum,
+                    "Email" : this.GiverEmail,
+                    "JobTitle" : this.GiverJobTitle,
+                }
+                if(this.GiverType === "Teacher"){
+                    params["TeacherID"] = this.SelectedGiverID;
+                    params["TeacherUnitIDPointer"] = this.GiverUnitIDPointer;
+                    params["TeacherCoursesIDPointer"] = this.GiverCoursesIDPointer;
+                    functionName = "EditTeacher";
+                }
+                else{
+                    params["NT_DistributorID"] = this.SelectedGiverID;
+                    params["NT_DistributorUnitIDPointer"] = this.GiverUnitIDPointer;
+                    functionName = "EditNT_Distributor";
+                }
+                await Parse.Cloud.run(functionName, params);
+                alert("Edited Giver");
+                
+                //Update Givers
+                this.getGivers();
+            },
+
+            async deleteGiver(){
+                if(this.SelectedGiverID === ""){
+                    alert("Please select a Giver to Delete!");
+                    return;
+                }
+                var params;
+                var functionName;
+
+                if(this.GiverType === "Teacher"){
+                    params = {
+                        "TeacherID" : this.SelectedGiverID,
+                    };
+                    functionName = "EditTeacher";
+                }
+                else{
+                    params = {
+                        "NT_DistributorID" : this.SelectedGiverID,
+                    };
+                    functionName = "EditNT_Distributor";
+                }
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run(functionName, params);
+                    alert("Deleted Giver!");
+                    this.resetSelectedGiver();
+
+                    //Update givers
+                    this.getGivers();
+                    //Close popup
+                    this.activePopUp('closePopUp');
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //StatusTitle Functions
+            async addStatusTitle(){
+                if(this.checkIncompleteData("StatusTitle") || this.StatusTitleImage === ""){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "StatusTitleName" : this.StatusTitleName,
+                    "StatusTitleLevel" : this.StatusTitleLevel,
+                    "StatusTitleImage" : this.StatusTitleImage,
+                    "StatusTitleImageName" : this.StatusTitleImageName,
                 }
                 try{
-                    await Parse.Cloud.run("DeleteCosmetic", params).then(alert("Deleted Cosmetic"));
-                    this.getAllCosmetics();
-                }
-                catch(e){
-                    alert(e.message);
-                }
-            },
+                    await Parse.Cloud.run("AddStatusTitle", params);
+                    alert("Added Status Title!");
+                    this.resetSelectedStatusTitle();
 
-            selectCosmetic(type, id){
-                if(type === "Avatar"){
-                    this.SelectedAvatar = id;
+                    //Update status ranks
+                    this.getStatusTitles();
                 }
-                else if(type === "Frame"){
-                    this.SelectedFrame = id;
+                catch(error){
+                    alert(error.message);
                 }
-                else if(type === "CoverPhoto"){
-                    this.SelectedCoverPhoto = id;
-                }
-                else if(type === "Banner"){
-                    this.SelectedBanner = id;
-                }
-            },
-
-            async setCosmetic(type){
-                var params = {"CosmeticType" : type};
-                if(type === "Avatar"){
-                    params["CosmeticID"] = this.SelectedAvatar
-                }
-                else if(type === "Frame"){
-                    params["CosmeticID"] = this.SelectedFrame
-                }
-                else if(type === "CoverPhoto"){
-                    params["CosmeticID"] = this.SelectedCoverPhoto
-                }
-                else if(type === "Banner"){
-                    params["CosmeticID"] = this.SelectedBanner
-                }
-                await Parse.Cloud.run("SetDefaultCosmetic", params);
-                alert("Successfully Changed Default Cosmetic");
-            },
-
-            async setStudentCosmetics(){
-                var AvatarsIDUnlocked = [this.SelectedAvatar];
-                var FrameIDUnlocked = [this.SelectedFrame];
-                var CoverPhotoIDUnlocked = [this.SelectedCoverPhoto];
-                var EquippedCosmetics = [this.SelectedAvatar, this.SelectedFrame, this.SelectedCoverPhoto];
                 
-                const students = JSON.parse(await Parse.Cloud.run("GetStudents"));
-                for(const student of students){
-                    var params = {
-                        "StudentID" : student.objectId, 
-                        "AvatarsIDUnlocked" : AvatarsIDUnlocked,
-                        "FrameIDUnlocked" : FrameIDUnlocked,
-                        "CoverPhotoIDUnlocked" : CoverPhotoIDUnlocked,
-                        "EquippedCosmetics" : EquippedCosmetics,
-                    };
-                    await Parse.Cloud.run("EditStudent", params);
-                }
-                alert("Successfully Edited Student Cosmetics");
             },
 
-            //Others
-            homepage(){
-                let host = window.location.host;
-                window.location.href ='http://' + host;
+            async onStatusTitleImageSelected(e){
+                var file = e.target.files[0];
+                this.StatusTitleImageName = file.name;
+                this.getBase64(file).then(
+                    data => this.StatusTitleImage = data
+                );
             },
-        }
+
+            selectStatusTitle(statusTitle){
+                if(this.SelectedStatusTitleID !== statusTitle.objectId){
+                    this.SelectedStatusTitleID = statusTitle.objectId;
+                    this.StatusTitleName = statusTitle.StatusTitleName;
+                    this.StatusTitleLevel = statusTitle.StatusTitleLevel;
+                    this.StatusTitleImage = statusTitle.StatusTitleImage;
+                }
+                else{
+                    this.resetSelectedStatusTitle();
+                }
+            },
+
+            resetSelectedStatusTitle(){
+                this.SelectedStatusTitleID = "";
+                this.StatusTitleName = "";
+                this.StatusTitleLevel = "";
+                this.StatusTitleImage = "";
+                this.StatusTitleImageName = "";
+                this.$refs.StatusTitleFileUpload.value = null;
+            },
+
+            async editStatusTitle(){
+                if(this.checkIncompleteData("StatusTitle")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "StatusTitleID" : this.SelectedStatusTitleID,
+                    "StatusTitleName" : this.StatusTitleName,
+                    "StatusTitleLevel" : this.StatusTitleLevel,
+                    "StatusTitleImage" : this.StatusTitleImage,
+                    "StatusTitleImageName" : this.StatusTitleImageName,
+                }
+                //If image is provided to change
+                if(this.StatusTitleImageName != ""){
+                    params["StatusTitleImage"] = this.StatusTitleImage;
+                    params["StatusTitleImageName"] = this.StatusTitleImageName;
+                }
+
+                try{
+                    await Parse.Cloud.run("EditStatusTitle", params);
+                    alert("Edited Status Title!");
+                    this.resetSelectedStatusTitle();
+
+                    //Update statusTitles
+                    this.getStatusTitles();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            async deleteStatusTitle(){
+                if(this.SelectedStatusTitleID === ""){
+                    alert("Please select a StatusTitle to Delete!");
+                    return;
+                }
+                var params = {
+                    "StatusTitleID" : this.SelectedStatusTitleID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteStatusTitle", params);
+                    alert("Deleted StatusTitle!");
+                    this.resetSelectedStatusTitle();
+
+                    //Update status ranks
+                    this.getStatusTitles();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+
+            //Quest Reward Functions
+            async addQuestReward(){
+                if(this.checkIncompleteData("QuestReward")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "RewardCosmeticID": this.RewardCosmeticID,
+                    "RewardCosmeticType": this.RewardCosmeticType,
+                    "RequiredAscensionPoints": this.RequiredAscensionPoints,
+                }
+                await Parse.Cloud.run("AddQuestReward", params);
+                alert("Added Quest Reward");
+                this.resetSelectedQuestReward();
+                
+                //Update QuestRewards
+                this.getQuestRewards();
+            },
+
+            selectQuestReward(reward){
+                if(this.SelectedQuestRewardID !== reward.objectId){
+                    this.SelectedQuestRewardID = reward.objectId;
+                    this.RewardCosmeticID = reward.RewardCosmeticID;
+                    this.RewardCosmeticType = reward.RewardCosmeticType;
+                    this.RequiredAscensionPoints = reward.RequiredAscensionPoints;
+                }
+                else{
+                    this.resetSelectedQuestReward();
+                }
+            },
+
+            resetSelectedQuestReward(){
+                this.SelectedQuestRewardID = "";
+                this.RewardCosmeticID = "";
+                this.RewardCosmeticType = "";
+                this.RequiredAscensionPoints = "";
+            },
+
+            async editQuestReward(){
+                if(this.checkIncompleteData("QuestReward")){
+                    alert("Please completely fill out the form!");
+                    return;
+                }
+                var params = {
+                    "QuestRewardID": this.SelectedQuestRewardID,
+                    "RewardCosmeticID" : this.RewardCosmeticID,
+                    "RewardCosmeticType": this.RewardCosmeticType,
+                    "RequiredAscensionPoints": this.RequiredAscensionPoints,
+                };
+                await Parse.Cloud.run("EditQuestReward", params);
+                alert("Edited Quest Reward!");
+                this.resetSelectedQuestReward();
+
+                //Update QuestRewards
+                this.getQuestRewards();
+            },
+
+            async deleteQuestReward(){
+                if(this.SelectedQuestRewardID === ""){
+                    alert("Please select a Quest Reward to Delete!");
+                    return;
+                }
+                var params = {
+                    "QuestRewardID" : this.SelectedQuestRewardID,
+                }
+
+                //Setup try catch for deleting
+                try{
+                    await Parse.Cloud.run("DeleteQuestReward", params);
+                    alert("Deleted Quest Reward!");
+                     this.resetSelectedQuestReward();
+
+                    //Update QuestRewards
+                    this.getQuestRewards();
+                }
+                catch(error){
+                    alert(error.message);
+                }
+            },
+        },
+
+        beforeMount(){
+            this.getDepartments();
+            this.getUnits();
+            this.getDegrees();
+            this.getCourses();
+            this.getBadges();
+            this.getTrophies();
+            this.getAscensionTitles();
+            this.getCosmetics();
+            this.getHouses();
+            this.getStudents();
+            this.getGivers();
+            this.getQuests();
+            this.getStatusTitles();
+            this.getQuestRewards();
+        },
+
+        computed: {
+            isDisabled() {
+                return this.categoryName.length > 0;
+            },
+
+            studentQuery(){
+                if(this.StudentSearch !== ""){
+                    return this.Students.filter((student)=>{
+                        var value;
+                        switch(this.StudentSearchType) {
+                            case "FirstName":
+                                value = student.FirstName;
+                                break;
+                            case "LastName":
+                                value = student.LastName;
+                                break;
+                            case "UserName":
+                                value = student.UserName;
+                                break;
+                            case "SchoolID":
+                                value = student.SchoolID;
+                                break;
+                            default:
+                                // code block
+                        }
+                        return this.StudentSearch.toLowerCase().split(' ').every(v => value.toLowerCase().includes(v))
+                    });
+                }
+                else{
+                    return this.Students;
+                }
+            },
+
+            giverQuery(){
+                if(this.GiverSearch !== ""){
+                    return this.Givers.filter((giver)=>{
+                        var value;
+                        switch(this.GiverSearchType) {
+                            case "FirstName":
+                                value = giver.FirstName;
+                                break;
+                            case "LastName":
+                                value = giver.LastName;
+                                break;
+                            default:
+                                // code block
+                        }
+                        return this.GiverSearch.toLowerCase().split(' ').every(v => value.toLowerCase().includes(v))
+                    });
+                }
+                else{
+                    return this.Givers;
+                }
+            },
+
+        },
     }
 </script>
