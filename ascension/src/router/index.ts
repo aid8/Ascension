@@ -41,9 +41,9 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "about" */ '../layouts/StudentHomePage.vue')
   },
   {
-    path: '/AccountSettings',
-    name: 'AccountSettings',
-    component: () => import(/* webpackChunkName: "about" */ '../layouts/AccountSettings.vue')
+    path: '/AccountSettingsPage',
+    name: 'AccountSettingsPage',
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/AccountSettingsPage.vue')
   },
   {
     path: '/StudentProfilePage',
@@ -81,14 +81,9 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "about" */ '../layouts/SignUpPage.vue')
   },
   {
-    path: '/GiverNotifications',
-    name: 'GiverNotifications',
-    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverNotifications.vue')
-  },
-  {
     path: '/GiverStudentPage',
     name: 'GiverStudentPage',
-    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverNotifications.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../layouts/GiverStudentPage.vue')
   },
   {
     path: '/GiverHousePage',
