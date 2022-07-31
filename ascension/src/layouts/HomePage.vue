@@ -28,7 +28,7 @@
     <header class="mb-2 background-default">
         <nav class="fixed top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
             <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png"/></a>
-            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-gold text-[13px] hover:text-gold" href="/StudentProfile"></a></div>
+            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-gold text-[13px] hover:text-gold" href="#"></a></div>
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#"></a></div>
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#"></a></div>
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#"></a></div>
@@ -39,7 +39,7 @@
     <div>
         <div class="overflow-y-hidden">
                     <div><!-- Tab contents -->
-                        <div class="w-full absolute flex items-center justify-center text-4xl text-white my-[350px] z-[5]"> <!-- Carousel ngaya -->
+                        <div class="w-full absolute flex items-center justify-center text-4xl text-white my-[375px] z-[5]"> <!-- Carousel ngaya -->
                             <div class="w-1/2">
                                 <button class="ml-[40px]" v-bind:class="{'hidden' : tab === 1}" @click="prevPage()">&lt;</button>
                             </div>
@@ -47,11 +47,11 @@
                                 <button class="float-right mr-[40px]" v-bind:class="{'hidden' : tab === 4}" @click="nextPage()">&gt;</button>
                             </div>
                         </div>
-                        <div class="absolute flex items-center justify-center text-2xl mt-[320px] gap-3 text-white w-full h-screen"> <!-- Radio buttons -->
-                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 1}">&#11201;</button>
-                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 2}">&#11201;</button>
-                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 3}">&#11201;</button>
-                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 4}">&#11201;</button>
+                        <div class="absolute flex items-center justify-center text-2xl mt-[750px] gap-3 w-full text-white"> <!-- Radio buttons -->
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 1}" @click="currentTab(1)">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 2}" @click="currentTab(2)">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 3}" @click="currentTab(3)">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 4}" @click="currentTab(4)">&#11201;</button>
                         </div>
                         <div v-if="tab === 1" class="overflow-y-hidden">
                             <div class="bg-[url('/src/assets/img/background/bg-2.jpg')] static flex bg-cover items-center w-screen h-screen">
@@ -70,7 +70,7 @@
                             </div>
                             <div>
                                 <div class="absolute bg-white mt-5 text-black/70 w-full"> <!-- getAnnouncements() -->
-                                    <section class="hero container max-w-5xl py-5 flex mx-auto justify-center items-center">
+                                    <section class="hero container max-w-5xl my-5 flex mx-auto justify-center items-center">
                                         <img class="" src="../assets/img/posts/Orsem.jpg"/>
                                     </section>
                                         
@@ -136,7 +136,7 @@
                         <div v-if="tab === 2">
                             <div class="flex items-center justify-center w-full h-full">
                                 <div class="font-Lexend text-white">
-                                    <div class="absolute flex flex-col items-center justify-center my-64">
+                                    <div class="absolute flex flex-col items-center justify-center my-64 w-screen">
                                         <div class="text-2xl tracking-wider">
                                             The best things
                                         </div>
