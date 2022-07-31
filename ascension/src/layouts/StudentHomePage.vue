@@ -29,9 +29,9 @@
         <nav class="fixed top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
             <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a><!-- suggesstion logo to redirect to student home page -->
             <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentProfilePage">PROFILE</a></div>
-            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">QUEST</a></div>
-            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">LEADERBOARDS</a></div>
-            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="#">NOTIFICATION</a></div>
+            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentQuestPage">QUEST</a></div>
+            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentLeaderboardPage">LEADERBOARDS</a></div>
+            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentRequestPage">REQUEST</a></div>
             <details class="absolute top-[10px] right-[10px] w-[170px]">
                 <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
                     <span class="text-white text-[12px]">{{StudentData.UserName}}</span>
@@ -57,10 +57,10 @@
                             </div>
                         </div>
                         <div class="absolute flex items-center justify-center text-2xl mt-[320px] gap-3 text-white w-full h-screen"> <!-- Radio buttons -->
-                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 1}">&#11201;</button>
-                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 2}">&#11201;</button>
-                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 3}">&#11201;</button>
-                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 4}">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 1}" @click="currentTab(1)">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 2}" @click="currentTab(2)">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 3}" @click="currentTab(3)">&#11201;</button>
+                            <button class="hover:text-gold" v-bind:class="{'text-gold': tab === 4}" @click="currentTab(4)">&#11201;</button>
                         </div>
                         <!-- Overview -->
                         <div v-if="tab === 1" class="overflow-y-hidden">
