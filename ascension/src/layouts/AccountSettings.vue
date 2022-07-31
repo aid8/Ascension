@@ -24,7 +24,7 @@
             <!--main header navigation bar-->
             <nav v-if="currentUser.get('AccountType') === ''" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
                 <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
-                <a class="absolute left-[10px]" href="#"><img class="w-[130px] h-auto" src="" /></a> <!--../assets/img/logo/AscensionWhite.png-->
+                <a class="absolute left-[10px]" href="#"><img class="w-[130px] h-auto" src="../assets/img/logo/AscensionWhite.png" /></a>
                 <div class="absolute top-[15px] right-[10px] flex items-center justify-end cursor-pointer w-[170px] z-[9]">
                     <a class="text-white text-[13px] hover:text-gold active:text-gold_hover" href="#">SIGN IN</a>
                 </div>
