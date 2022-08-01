@@ -77,11 +77,11 @@
             <!--giver header navigation bar-->
             <nav v-if="currentUser.get('AccountType') === 'Teacher' || currentUser.get('AccountType') === 'NT_Distributor'" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
                 <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
-                <a class="absolute left-[10px]" href="#"><img class="w-[130px] h-auto" src="../assets/img/logo/AscensionWhite.png" /></a>
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gold z-[9]"><a class="text-gold text-[13px]d" href="GiverTeacherPage">STUDENT</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverHousePage">HOUSE</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverLeaderboardPage">LEADERBOARDS</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverRequestPage">REQUEST</a></div>
+                <a class="absolute left-[10px]" href="GiverHomePage"><img class="w-[130px] h-auto" src="../assets/img/logo/AscensionWhite.png" /></a>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold z-[9]"><a class="text-gold text-[13px]" href="GiverStudentPage">STUDENT</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverHousePage">HOUSE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverLeaderboardPage">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverRequestPage">REQUEST</a></div>
 
                 <details class="absolute top-[15px] right-[10px] w-[170px] z-[9]">
                     <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
@@ -89,8 +89,8 @@
                     </summary>
                     <div class="relative bg-black/20 border-[1px] mt-[22px] border-gray z-[9]">
                         <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[8]"></div>
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[13px] hover:text-gold z-[9]" href="">ACCOUNT SETTINGS</a></div>
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[13px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[13px] hover:text-gold z-[9]" href="AccountSettings">ACCOUNT SETTINGS</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[13px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
                     </div>
                 </details>
             </nav>
@@ -284,7 +284,6 @@
                 else if(this.currentUser.get("AccountType") === "Teacher"){
                     params = {"TeacherID" : this.currentUser.get("AccountID")};
                     this.UserData = JSON.parse(await Parse.Cloud.run("GetTeacherData", params));
-                    this.UserUnitIDPointer = this.UserData.TeacherUnitIDPointer;
                 }
                 else if(this.currentUser.get("AccountType") === "NT_Distributor"){
                     params = {"NT_DistributorID" : this.currentUser.get("AccountID")};
