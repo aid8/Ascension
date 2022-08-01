@@ -21,12 +21,12 @@
         <title>Profile Page</title>
     </head>
     <body>
-        <div class="absolute h-[100vh] w-[100vw]">
-            <div class="absolute shadow-profile h-[100vh] w-[100vw]">
+        <div class="absolute flex min-w-[1300px] min-h-[650px] h-full w-full">
+            <div class="absolute flex shadow-profile h-full w-full">
             </div>
-            <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="h-[100vh] w-[100vw]" v-bind:src="StudentData.EquippedCosmeticsData[2].CosmeticImage" />
+            <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="flex h-full w-full" v-bind:src="StudentData.EquippedCosmeticsData[2].CosmeticImage" />
         </div>
-        <main class="min-w-[1000px]">
+        <main class="min-w-[1300px]">
             <!--pop up tab-->
             <div class="absolute flex items-center justify-center w-[100vw] h-[100vh] min-w-[1000px] min-h-[500px] bg-black/20 backdrop-blur-[20px] z-50" v-bind:class="{'hidden': showPopUpMenu === false, 'flex': showPopUpMenu === true}">
                 <div class="relative flex flex-col justify-center items-center h-[500px] w-[1000px] bg-black/20 border-[1px] border-gray">
@@ -134,21 +134,24 @@
                     </div>
                 </div>
             </div>
-            <!--header navigation bar-->
-            <nav class="sticky top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
-                <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold"><a class="text-gold text-[13px] hover:text-gold" href="#">PROFILE</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentQuestPage">QUEST</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentLeaderboardPage">LEADERBOARDS</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentRequestPage">REQUEST</a></div>
+            <!--student header navigation bar-->
+            <nav v-if="currentUser.get('AccountType') === 'Student'" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
+                <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
+                <a class="absolute left-[10px]" href="/"><img class="w-[130px] h-auto" src="../assets/img/logo/AscensionWhite.png" /></a>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold z-[9]"><a class="text-gold text-[13px]" href="StudentProfilePage">PROFILE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentQuestPage">QUEST</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentLeaderboardPage">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentRequestPage">REQUEST</a></div>
+
                 <details class="absolute top-[10px] right-[10px] w-[170px]">
                     <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
                         <span class="text-white text-[12px]">{{StudentData.UserName}}</span>
-                        <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" alt="Avatar" />
+                        <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" />
                     </summary>
-                    <div class="bg-black/20 border-[1px] mt-[15px] border-gray">
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><button @click="logOut()" class="text-white text-[12px] hover:text-gold">SIGN OUT</button></div>
+                    <div class="relative bg-black/20 border-[1px] mt-[15px] border-gray">
+                        <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[7]"></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold z-[9]" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[12px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
                     </div>
                 </details>
             </nav>
@@ -158,16 +161,16 @@
                 <a @click="resetChanges()" class="text-white text-[12px] hover:text-gold" v-on:click="activeTab('collection')" v-bind:class="{'text-gold': openTab === 'collection'}" href="#">COLLECTION</a>
             </nav>
             <!--summary-->
-            <div class="absolute top-0 min-w-[1000px] w-[100%] h-[100%] z-0" v-bind:class="{'hidden': openTab !== 'summary', 'flex': openTab === 'summary'}">
-                <div class="relative flex flex-col items-start justify-start gap-3 mx-[auto] w-[1366px] pt-[50px] px-[50px]">
-                    <div class="flex flex-row min-w-[700px] min-h-[100px] w-full h-[90vh]">
+            <div class="absolute top-0 min-w-[1300px] min-h-[650px] w-full h-full z-0" v-bind:class="{'hidden': openTab !== 'summary', 'flex': openTab === 'summary'}">
+                <div class="relative flex flex-col items-center justify-start gap-3 mx-[auto] w-full h-full pt-[50px]">
+                    <div class="relative flex flex-row w-[1250px] h-full">
                         
-                        <div class="flex flex-row items-start gap-10 w-full pb-[25px] pt-[50px]">
+                        <div class="flex flex-row items-start gap-10 w-[80%] h-full pb-[25px] pt-[50px]">
                             <!--profile info-->
-                            <div class="flex flex-row items-end gap-5 h-full overflow-y-scroll remove-scroll">
-                                <div class="relative flex items-center justify-center">
-                                    <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-white w-[125px] h-[auto] rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" alt="Avatar" />
-                                    <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto border-white w-[125px] h-[auto] rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[1].CosmeticImage" />
+                            <div class="flex flex-row items-end gap-3 h-full overflow-y-scroll remove-scroll">
+                                <div class="relative flex items-center justify-center min-w-[150px] w-[150px] h-[150px]">
+                                    <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="w-[105px] h-[105px] rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" alt="Avatar" />
+                                    <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-full h-full rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[1].CosmeticImage" />
                                 </div>
                                 <div class="flex flex-col items-start justify-center">
                                     <span class="text-gold text-[20px]">{{StudentData.UserName}}</span>
@@ -209,20 +212,19 @@
                             </div>
                         </div>
                         <!--banner-->
-                        <div class="w-[27%] h-full overflow-hidden flex items-start justify-center">
-                            <img v-if="StudentData.StudentHouse !== undefined" class="w-auto h-auto" v-bind:src="StudentData.StudentHouse.HouseBanner" alt="House Banner" />
+                        <div class="flex items-start justify-center w-[20%] h-full">
+                            <img v-if="StudentData.StudentHouse !== undefined" class="max-h-[690px] w-auto h-full" v-bind:src="StudentData.StudentHouse.HouseBanner" alt="House Banner" />
                         </div>
-
-                        <div class="absolute flex flex-row items-center justify-start text-[12px] right-[23%] gap-5 py-[10px] px-[20px]">
+                        <div class="absolute flex flex-row items-center justify-start text-[12px] right-[20%] gap-5 py-[5px] px-[5px]">
                             <a class="text-white hover:text-gold" v-on:click="activePopUpMenu('true')" href="#"><i class="fa-solid fa-pen-to-square"></i> EDIT PROFILE</a>
                         </div>
                     </div>
                 </div>
             </div>
             <!--collection (DONE)-->
-            <div class="absolute top-0 min-w-[1000px] w-[100%] h-[100%] z-0" v-bind:class="{'hidden': openTab !== 'collection', 'flex': openTab === 'collection'}">
+            <div class="absolute top-0 min-w-[1000px] w-full h-full z-0" v-bind:class="{'hidden': openTab !== 'collection', 'flex': openTab === 'collection'}">
                 <div class="relative flex flex-col items-start justify-start gap-3 mx-[auto] w-[1366px]">
-                    <div class="flex flex-row pt-[120px] pb-[80px] w-full h-[100%]">
+                    <div class="flex flex-row pt-[120px] pb-[80px] w-full h-full">
                         <nav class="flex flex-col items-end justify-start w-[250px] border-r-[1px] border-gray">
                             <div class="py-[15px] px-[20px] text-[13px]" v-bind:class="{'border-r-[3px] border-gold text-gold': openCollectionTab === 'avatars', 'border-r-[3px] border-black/0 text-white': openCollectionTab !== 'avatars'}"><a href="#" v-on:click="activeCollectionTab('avatars')">AVATARS</a></div>
                             <div class="py-[15px] px-[20px] text-[13px]" v-bind:class="{'border-r-[3px] border-gold text-gold': openCollectionTab === 'frames', 'border-r-[3px] border-black/0 text-white': openCollectionTab !== 'frames'}"><a href="#" v-on:click="activeCollectionTab('frames')">FRAMES</a></div>

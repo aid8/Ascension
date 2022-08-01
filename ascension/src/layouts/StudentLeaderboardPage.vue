@@ -21,27 +21,30 @@
         <title>Quest Page</title>
     </head>
     <body>
-        <div class="absolute h-[100vh] w-[100vw]">
-            <div class="absolute shadow-profile h-[100vh] w-[100vw]">
+        <div class="absolute flex min-w-[1300px] min-h-[650px] h-full w-full">
+            <div class="absolute flex shadow-profile h-full w-full">
             </div>
-            <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="h-[100vh] w-[100vw]" v-bind:src="StudentData.EquippedCosmeticsData[2].CosmeticImage" />
+            <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="flex h-full w-full" v-bind:src="StudentData.EquippedCosmeticsData[2].CosmeticImage" />
         </div>
-        <main class="min-w-[1000px]">
-            <!--header navigation bar-->
-            <nav class="sticky top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
-                <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentProfilePage">PROFILE</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentQuestPage">QUEST</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold"><a class="text-gold text-[13px] hover:text-gold" href="#">LEADERBOARDS</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentRequestPage">REQUEST</a></div>
+        <main class="min-w-[1300px]">
+            <!--student header navigation bar-->
+            <nav v-if="currentUser.get('AccountType') === 'Student'" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
+                <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
+                <a class="absolute left-[10px]" href="/"><img class="w-[130px] h-auto" src="../assets/img/logo/AscensionWhite.png" /></a>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentProfilePage">PROFILE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentQuestPage">QUEST</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold z-[9]"><a class="text-gold text-[13px]" href="StudentLeaderboardPage">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentRequestPage">REQUEST</a></div>
+
                 <details class="absolute top-[10px] right-[10px] w-[170px]">
                     <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
                         <span class="text-white text-[12px]">{{StudentData.UserName}}</span>
                         <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" />
                     </summary>
-                    <div class="bg-black/20 border-[1px] mt-[15px] border-gray">
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[12px] hover:text-gold" href="">SIGN OUT</a></div>
+                    <div class="relative bg-black/20 border-[1px] mt-[15px] border-gray">
+                        <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[7]"></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold z-[9]" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[12px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
                     </div>
                 </details>
             </nav>
@@ -51,10 +54,10 @@
                 <a class="text-white text-[12px] hover:text-gold" v-on:click="activeTab('house')" v-bind:class="{'text-gold': openTab === 'house', 'text-white': openTab !== 'house'}" href="#">HOUSE</a>
             </nav>
             <!--leaderboard content-->
-            <div class="absolute inset-y-0 inset-x-0 mx-auto min-w-[1000px] w-[100%] h-[100%]">
-                <!--student-->
-                <div class="absolute inset-y-0 min-w-[00px] w-full h-full pt-[100px] pb-[50px]">
-                    <div class="flex flex-row items-start justify-center gap-5 h-full">
+            <div class="absolute inset-y-0 inset-x-0 mx-auto min-w-[1300px] w-[100%] h-[100%]">
+                <!--leaderboard container-->
+                <div class="absolute inset-y-0 min-w-[00px] w-full h-full">
+                    <div class="flex flex-row items-start justify-center gap-5 pt-[100px] pb-[50px] h-full remove-scroll overflow-y-scroll">
                         <!--student leaderboard section-->
                         <div class="flex flex-col items-center justify-start gap-3 w-[1200px] min-h-[150px] h-full" v-bind:class="{'hidden': openTab !== 'student', 'flex': openTab === 'student'}">
                             <div class="flex flex-col w-full h-full">
@@ -70,17 +73,17 @@
                                     </li>
                                 </ul>
                                 <!--student leaderboard list body-->
-                                <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-[85%] bg-black/20 overflow-y-scroll">
+                                <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-[82%] overflow-y-scroll">
                                     <!--student leaderboard list row-->
-                                    <li v-for="student in StudentsLeaderboard" :key="student" class="relative flex flex-row items-center justify-center px-[12px] gap-3 py-[3px] w-full border-b-[1px] border-gray">
+                                    <li v-for="student in StudentsLeaderboard" :key="student" class="relative flex flex-row items-center justify-center px-[12px] gap-3 py-[3px] w-full min-h-[70px] h-[70px] bg-black/50 border-b-[1px] border-gray">
                                         <div class="flex items-center justify-center w-[5%] h-full">
                                             <div class="block w-[30px] h-[30px] border-[3px] -rotate-45" v-bind:class="{'border-gold': student.Ranking <= 3}"><span class="flex items-center justify-center h-full w-full text-white font-bold text-[15px] rotate-45">{{student.Ranking}}</span></div>
                                         </div>
                                         <div class="flex items-center justify-start gap-3 w-[45%] h-full">
                                             <!--image-->
-                                            <div class="relative w-[40px] h-[40px] flex items-center justify-center">
+                                            <div class="relative w-[50px] h-[50px] flex items-center justify-center">
                                                 <img v-if="student.EquippedCosmeticsData !== undefined" class="w-[35px] rounded-full h-auto" v-bind:src="student.EquippedCosmeticsData[0].CosmeticImage" />
-                                                <img v-if="student.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[40px] h-auto" v-bind:src="student.EquippedCosmeticsData[1].CosmeticImage" />
+                                                <img v-if="student.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[50px] h-auto" v-bind:src="student.EquippedCosmeticsData[1].CosmeticImage" />
                                             </div>
                                             <!--text-->
                                             <div class="inline-flex flex-col">
@@ -94,7 +97,7 @@
                                     </li>
                                 </ul>
                                 <!--current user-->
-                                <ul class="flex flex-row border-x-[1px] border-gray w-full max-h-full min-h-[50px] h-[10%] bg-black/50">
+                                <ul class="flex flex-row border-x-[1px] border-gray w-full max-h-full min-h-[70px] h-[13%] bg-black/50">
                                     <!--student leaderboard list row-->
                                     <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 py-[3px] w-full border-b-[1px] border-gray">
                                         <div class="flex items-center justify-center w-[5%] h-full">
@@ -102,9 +105,9 @@
                                         </div>
                                         <div class="flex items-center justify-start gap-3 w-[45%] h-full">
                                             <!--image-->
-                                            <div class="relative w-[40px] h-[40px] flex items-center justify-center">
+                                            <div class="relative w-[50px] h-[50px] flex items-center justify-center">
                                                 <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="w-[35px] rounded-full h-auto" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" />
-                                                <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[40px] h-auto" v-bind:src="StudentData.EquippedCosmeticsData[1].CosmeticImage"/>
+                                                <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[50px] h-auto" v-bind:src="StudentData.EquippedCosmeticsData[1].CosmeticImage"/>
                                             </div>
                                             <!--text-->
                                             <div class="inline-flex flex-col">
@@ -152,7 +155,7 @@
                                     <!--house leaderboard list body-->
                                     <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-[95%] bg-black/20 overflow-y-scroll">
                                         <!--house leaderboard list row-->
-                                        <li v-for="house in HousesLeaderboard" :key="house" class="relative flex flex-row items-center justify-center px-[12px] gap-3 w-full cursor-pointer border-b-[1px] border-gray" v-on:click="selectHouse(house)">
+                                        <li v-for="house in HousesLeaderboard" :key="house" class="relative flex flex-row items-center justify-center px-[12px] gap-3 w-full cursor-pointer bg-black/50 border-b-[1px] border-gray" v-on:click="selectHouse(house)">
                                             <div class="flex items-center justify-center w-[15%] h-full">
                                                 <span class="flex items-center justify-center h-full w-full text-white font-bold text-[15px]">{{house.Ranking}}</span>
                                             </div>
@@ -186,15 +189,15 @@
                                     <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-[95%] bg-black/20 overflow-y-scroll">
                                         <!--student leaderboard list row-->
                                         <template v-if="SelectedHouse !== ''"> 
-                                            <li v-for="student in HouseStudentLeaderboard[SelectedHouse.objectId]" :key="student" class="relative flex flex-row items-center justify-center px-[12px] gap-3 py-[3px] w-full border-b-[1px] border-gray">
+                                            <li v-for="student in HouseStudentLeaderboard[SelectedHouse.objectId]" :key="student" class="relative flex flex-row items-center justify-center px-[12px] gap-3 py-[3px] w-full bg-black/50 border-b-[1px] border-gray">
                                                 <div class="flex items-center justify-center w-[5%] h-full">
                                                     <div class="block w-[30px] h-[30px] border-[3px]" v-bind:class="{'border-gold -rotate-45': student.Ranking <= 3}"><span class="flex items-center justify-center h-full w-full text-white font-bold text-[15px] rotate-45">{{student.Ranking}}</span></div>
                                                 </div>
                                                 <div class="flex items-center justify-start gap-3 w-[45%] h-full">
                                                     <!--image-->
-                                                    <div class="relative w-[40px] h-[40px] flex items-center justify-center">
+                                                    <div class="relative w-[50px] h-[50px] flex items-center justify-center">
                                                         <img v-if="student.EquippedCosmeticsData !== undefined" class="w-[35px] rounded-full h-auto" v-bind:src="student.EquippedCosmeticsData[0].CosmeticImage" />
-                                                        <img v-if="student.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[40px] h-auto" v-bind:src="student.EquippedCosmeticsData[1].CosmeticImage" />
+                                                        <img v-if="student.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[50px] h-auto" v-bind:src="student.EquippedCosmeticsData[1].CosmeticImage" />
                                                     </div>
                                                     <!--text-->
                                                     <div class="inline-flex flex-col">

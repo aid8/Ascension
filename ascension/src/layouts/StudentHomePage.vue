@@ -26,25 +26,29 @@
     </head>
     <!-- Other home page contents in progress-->
     <header class="mb-3">
-        <nav class="fixed top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
-            <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a><!-- suggesstion logo to redirect to student home page -->
-            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentProfilePage">PROFILE</a></div>
-            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentQuestPage">QUEST</a></div>
-            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentLeaderboardPage">LEADERBOARDS</a></div>
-            <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentRequestPage">REQUEST</a></div>
-            <details class="absolute top-[10px] right-[10px] w-[170px]">
-                <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
-                    <span class="text-white text-[12px]">{{StudentData.UserName}}</span>
-                    <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" alt="Avatar"/>
-                </summary>
-                <div class="bg-black/20 border-[1px] mt-[15px] border-gray">
-                    <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
-                    <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><button @click="logOut()" class="text-white text-[12px] hover:text-gold">SIGN OUT</button></div>
-                </div>
-            </details>
-        </nav>
+        <!--student header navigation bar-->
+            <nav v-if="currentUser.get('AccountType') === 'Student'" class="fixed top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
+                <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
+                <a class="absolute left-[10px]" href="/"><img class="w-[130px] h-auto" src="../assets/img/logo/AscensionWhite.png" /></a>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentProfilePage">PROFILE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentQuestPage">QUEST</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentLeaderboardPage">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentRequestPage">REQUEST</a></div>
+
+                <details class="absolute top-[10px] right-[10px] w-[170px]">
+                    <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
+                        <span class="text-white text-[12px]">{{StudentData.UserName}}</span>
+                        <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" />
+                    </summary>
+                    <div class="relative bg-black/20 border-[1px] mt-[15px] border-gray">
+                        <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[7]"></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold z-[9]" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[12px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
+                    </div>
+                </details>
+            </nav>
     </header>
-    <body class="flex items-center align-middle overflow-y-hidden overflow-x-hidden">    
+    <body class="flex items-center align-middle overflow-y-hidden overflow-x-hidden">
     <div>
         <div class="overflow-y-hidden">
                     <div><!-- Tab contents -->
