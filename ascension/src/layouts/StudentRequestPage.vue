@@ -26,21 +26,24 @@
             <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="h-[100vh] w-[100vw]" v-bind:src="StudentData.EquippedCosmeticsData[2].CosmeticImage" />
         </div>
         <main class="min-w-[1000px]">
-            <!--header navigation bar-->
-            <nav class="sticky top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
-                <a class="absolute left-[10px]" href="/StudentHomePage"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentProfilePage">PROFILE</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentQuestPage">QUEST</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentLeaderboardPage">LEADERBOARDS</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold"><a class="text-gold text-[13px] hover:text-gold" href="#">REQUEST</a></div>
+            <!--student header navigation bar-->
+            <nav v-if="currentUser.get('AccountType') === 'Student'" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
+                <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
+                <a class="absolute left-[10px]" href="/"><img class="w-[130px] h-auto" src="../assets/img/logo/AscensionWhite.png" /></a>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentProfilePage">PROFILE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentQuestPage">QUEST</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0  z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentLeaderboardPage">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold z-[9]"><a class="text-gold text-[13px]" href="StudentRequestPage">REQUEST</a></div>
+
                 <details class="absolute top-[10px] right-[10px] w-[170px]">
                     <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
                         <span class="text-white text-[12px]">{{StudentData.UserName}}</span>
                         <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" />
                     </summary>
-                    <div class="bg-black/20 border-[1px] mt-[15px] border-gray">
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><button @click="logOut()" class="text-white text-[12px] hover:text-gold">SIGN OUT</button></div>
+                    <div class="relative bg-black/20 border-[1px] mt-[15px] border-gray">
+                        <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[7]"></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold z-[9]" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[12px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
                     </div>
                 </details>
             </nav>
@@ -76,13 +79,13 @@
 
                             <!--checked requests-->
                             <ul class="flex flex-col bg-black/20 border-[1px] border-gray h-full w-full remove-scroll overflow-y-scroll" v-bind:class="{'flex': openTab === 'checked', 'hidden': openTab !== 'checked'}">
-                                <li v-if="StudentAccomplishedRequests.length <= 0" class="flex flex-row px-[10px] py-[3px] border-b-[1px] border-gray w-full">
+                                <li v-if="StudentAccomplishedRequests.length <= 0" class="flex flex-row px-[10px] py-[3px] h-[50px] w-full border-b-[1px] border-gray">
                                     <div class="flex flex-row items-center justify-start gap-2 w-[60%] h-full whitespace-nowrap remove-scroll overflow-x-scroll" title="Press shift + scroll to scroll horizontally">
                                         <span class="text-white text-[12px]">You don't have any approved/declined request.</span>
                                     </div>
                                 </li>
                                 <template v-if="StudentAccomplishedRequests.length > 0">
-                                    <li v-for="request in StudentAccomplishedRequests" :key="request" class="flex flex-row px-[10px] py-[3px] border-b-[1px] border-gray w-full">
+                                    <li v-for="request in StudentAccomplishedRequests" :key="request" class="flex flex-row px-[10px] py-[3px] h-[50px] w-full border-b-[1px] border-gray">
                                         <div class="flex flex-col items-start justify-center w-[30%] h-full whitespace-nowrap remove-scroll overflow-x-scroll" title="Press shift + scroll to scroll horizontally">
                                             <strong class="text-white text-[13px]">{{request.GrantorData.FirstName}} {{request.GrantorData.LastName}}</strong>
                                             <span class="text-white text-[12px]">{{request.GrantorData.UnitData.UnitName}}</span>
@@ -105,13 +108,13 @@
 
                             <!--submitted requests-->
                             <ul class="flex flex-col bg-black/20 border-[1px] border-gray h-full w-full remove-scroll overflow-y-scroll" v-bind:class="{'flex': openTab === 'submitted', 'hidden': openTab !== 'submitted'}">
-                                <li v-if="StudentPendingRequests.length <= 0" class="flex flex-row px-[10px] py-[3px] border-b-[1px] border-gray w-full">
+                                <li v-if="StudentPendingRequests.length <= 0" class="flex flex-row px-[10px] py-[3px] h-[50px] w-full border-b-[1px] border-gray">
                                     <div class="flex flex-row items-center justify-start gap-2 w-[60%] h-full whitespace-nowrap remove-scroll overflow-x-scroll" title="Press shift + scroll to scroll horizontally">
                                         <span class="text-white text-[12px]">You don't have any pending request.</span>
                                     </div>
                                 </li>
                                 <template v-if="StudentPendingRequests.length > 0">
-                                    <li v-for="request in StudentPendingRequests" :key="request" class="flex flex-row px-[10px] py-[10px] border-b-[1px] border-gray w-full">
+                                    <li v-for="request in StudentPendingRequests" :key="request" class="flex flex-row px-[10px] py-[10px] h-[50px] w-full border-b-[1px] border-gray">
                                         <div class="flex flex-row items-center justify-start gap-2 w-[75%] h-full whitespace-nowrap remove-scroll overflow-x-scroll" title="Press shift + scroll to scroll horizontally">
                                             <span class="text-white text-[12px]"><i class="fa-solid fa-paper-plane"></i> Request submitted to: <b>{{request.GrantorData.FirstName}} {{request.GrantorData.LastName}}</b></span>
                                         </div>
