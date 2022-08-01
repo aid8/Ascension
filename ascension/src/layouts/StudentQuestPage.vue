@@ -21,27 +21,30 @@
         <title>Quest Page</title>
     </head>
     <body>
-        <div class="absolute h-[100vh] w-[100vw]">
-            <div class="absolute shadow-profile h-[100vh] w-[100vw]">
+        <div class="absolute flex min-w-[1300px] min-h-[650px] h-full w-full">
+            <div class="absolute flex shadow-profile h-full w-full">
             </div>
-            <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="h-[100vh] w-[100vw]" v-bind:src="StudentData.EquippedCosmeticsData[2].CosmeticImage" />
+            <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="flex h-full w-full" v-bind:src="StudentData.EquippedCosmeticsData[2].CosmeticImage" />
         </div>
-        <main class="min-w-[1000px]">
-            <!--header navigation bar-->
-            <nav class="sticky top-0 w-full border-b-[1px] border-b-gray bg-black/20 flex flex-row items-center justify-center z-10">
-                <a class="absolute left-[10px]" href="#"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentProfilePage">PROFILE</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold"><a class="text-gold text-[13px] hover:text-gold" href="#">QUEST</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentLeaderboardPage">LEADERBOARDS</a></div>
-                <div class="flex items-center justify-center w-[150px] h-[50px]"><a class="text-white text-[13px] hover:text-gold" href="/StudentRequestPage">REQUEST</a></div>
+        <main class="min-w-[1300px]">
+            <!--student header navigation bar-->
+            <nav v-if="currentUser.get('AccountType') === 'Student'" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
+                <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
+                <a class="absolute left-[10px]" href="/"><img class="w-[130px] h-auto" src="../assets/img/logo/AscensionWhite.png" /></a>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentProfilePage">PROFILE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold z-[9]"><a class="text-gold text-[13px]" href="StudentQuestPage">QUEST</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentLeaderboardPage">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="StudentRequestPage">REQUEST</a></div>
+
                 <details class="absolute top-[10px] right-[10px] w-[170px]">
                     <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
                         <span class="text-white text-[12px]">{{StudentData.UserName}}</span>
                         <img v-if="StudentData.EquippedCosmeticsData !== undefined" class="border-[2px] border-white w-[30px] h-auto rounded-full" v-bind:src="StudentData.EquippedCosmeticsData[0].CosmeticImage" />
                     </summary>
-                    <div class="bg-black/20 border-[1px] mt-[15px] border-gray">
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
-                        <div @click="logOut()" class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold" href="">SIGN OUT</a></div>
+                    <div class="relative bg-black/20 border-[1px] mt-[15px] border-gray">
+                        <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[7]"></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold z-[9]" href="/AccountSettings">ACCOUNT SETTINGS</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[12px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
                     </div>
                 </details>
             </nav>
@@ -52,7 +55,7 @@
             </nav>
             
             <!--daily-->
-            <div class="absolute inset-y-0 min-w-[1000px] w-[100%] h-[100%] pt-[100px] pb-[50px]">
+            <div class="absolute inset-y-0 min-w-[1300px] w-[100%] h-[100%] pt-[100px] pb-[50px]">
                 <div class="flex flex-row items-start justify-center gap-[40px] h-full">
                     <!--next reward-->
                     <div class="flex flex-col items-center justify-start gap-3 min-h-[500px] w-[300px] h-full">
@@ -97,11 +100,11 @@
                                 <!--level container-->
                                 <div class="flex w-full mx-[50px] h-full">
                                     <div v-for="reward in QuestRewards" :key="reward" class="flex items-center h-full">
-                                        <progress class="bg-gray text-gold w-[70px] h-[5px]" v-bind:value="reward.ProgressPercentage" max="100"></progress>
-                                        <div class="inline-flex items-center justify-center bg-gold border-[5px] rotate-45 w-[50px] h-[50px] overflow-hidden" v-bind:class="{'border-gold': StudentData.AscensionPoints > reward.RequiredAscensionPoints}">
-                                            <img v-if="checkIfRewardIsNotAcquired(reward)" @click="claimQuestReward(reward)" class="flex -rotate-45 scale-[1.5] w-[150px] h-auto cursor-pointer" v-bind:src="reward.RewardCosmeticData.CosmeticImage" />
-                                            <div v-if="!checkIfRewardIsNotAcquired(reward)" class="relative flex items-center justify-center -rotate-45 scale-[1.5] w-[150px] h-auto">
-                                                <img class="w-[150px] h-auto brightness-50 z-10" v-bind:src="reward.RewardCosmeticData.CosmeticImage" />
+                                        <progress class="bg-gray text-gold w-[70px] h-[3px] mx-[7px]" v-bind:value="reward.ProgressPercentage" max="100"></progress>
+                                        <div class="inline-flex items-center justify-center border-[3px] border-gold rotate-45 w-[50px] h-[50px] overflow-hidden" v-bind:class="{'border-gold': StudentData.AscensionPoints > reward.RequiredAscensionPoints}">
+                                            <img v-if="checkIfRewardIsNotAcquired(reward)" @click="claimQuestReward(reward)" class="flex -rotate-45 scale-[1.5] w-[25px] h-auto cursor-pointer" v-bind:src="reward.RewardCosmeticData.CosmeticImage" />
+                                            <div v-if="!checkIfRewardIsNotAcquired(reward)" class="relative flex items-center justify-center -rotate-45 scale-[1.5] w-[25px] h-auto">
+                                                <img class="w-[25px] h-auto brightness-50 z-10" v-bind:src="reward.RewardCosmeticData.CosmeticImage" />
                                                 <div class="absolute text-gold text-[15px] z-20"><i class="fa-solid fa-check"></i></div>
                                             </div>
                                         </div>
@@ -123,7 +126,7 @@
                                     </div>
                                     <!--quest information-->
                                     <div class="flex flex-col items-start justify-center text-white remove-scroll overflow-x-auto whitespace-nowrap h-full w-full" title="Press shift + scroll to scroll horizontally">
-                                        <strong class="text-[15px]">{{quest.QuestName}}</strong>
+                                        <span class="text-gold text-[15px]">{{quest.QuestName}}</span>
                                         <span class="text-[12px]">{{quest.QuestDescription}}</span>
                                     </div>
                                     <!--claim button-->
@@ -147,7 +150,7 @@
                                     </div>
                                     <!--quest information-->
                                     <div class="flex flex-col items-start justify-center text-white remove-scroll overflow-x-auto whitespace-nowrap h-full w-full" title="Press shift + scroll to scroll horizontally">
-                                        <strong class="text-[15px]">{{quest.QuestName}}</strong>
+                                        <span class="text-gold text-[15px]">{{quest.QuestName}}</span>
                                         <span class="text-[12px]">{{quest.QuestDescription}}</span>
                                     </div>
                                     <!--claim button-->
