@@ -23,27 +23,22 @@
     </head>
 
     <header>
-        <!--header navigation bar-->
-        <nav class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center z-[7]">
-            <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[8]"></div>
-            <a class="absolute left-[10px] z-[9]" href="/"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
-
-            <!--student page-->
-            <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverStudentPage">STUDENT</a></div>
-            <!--house page-->
-            <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverHousePage">HOUSE</a></div>
-            <!--leaderboard page-->
-            <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gold z-[9]"><a class="text-gold text-[13px]" href="GiverLeaderboardPage">LEADERBOARDS</a></div>
-            <!--request page-->
-            <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverRequestPage">REQUEST</a></div>
+        <nav v-if="currentUser.get('AccountType') === 'Teacher' || currentUser.get('AccountType') === 'NT_Distributor'" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
+            <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
+            <a class="absolute left-[10px]" href="#"><img class="w-[130px] h-auto" src="../assets/img/logo/AscensionWhite.png" /></a>
+            <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverStudentPage">STUDENT</a></div>
+            <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverHousePage">HOUSE</a></div>
+            <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold z-[9]"><a class="text-gold text-[13px]" href="GiverLeaderboardPage">LEADERBOARDS</a></div>
+            <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverRequestPage">REQUEST</a></div>
 
             <details class="absolute top-[15px] right-[10px] w-[170px] z-[9]">
                 <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
-                    <span class="text-white text-[12px]">Giver's First Name</span>
+                    <span class="text-white text-[13px]">{{UserData.FirstName}}</span>
                 </summary>
                 <div class="relative bg-black/20 border-[1px] mt-[22px] border-gray z-[9]">
                     <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[8]"></div>
-                    <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold z-[9]" @click="logOut()">SIGN OUT</a></div>
+                    <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[13px] hover:text-gold z-[9]" href="AccountSettings">ACCOUNT SETTINGS</a></div>
+                    <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[13px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
                 </div>
             </details>
         </nav>
@@ -80,9 +75,9 @@
                             </div>
                             <div class="flex items-center justify-start w-[40%] h-full pl-2"> <!--name-->
                                 <!--image-->
-                                <div class="relative w-[40px] h-[40px] flex items-center justify-center">
+                                <div class="relative w-[50px] h-[50px] flex items-center justify-center">
                                     <img v-if="student.EquippedCosmeticsData !== undefined" class="w-[35px] rounded-full h-auto" v-bind:src="student.EquippedCosmeticsData[0].CosmeticImage" />
-                                    <img v-if="student.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[40px] h-auto" v-bind:src="student.EquippedCosmeticsData[1].CosmeticImage" />
+                                    <img v-if="student.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[50px] h-auto" v-bind:src="student.EquippedCosmeticsData[1].CosmeticImage" />
                                 </div>
                                 <!--text-->
                                 <div class="inline-flex flex-col pl-2">
@@ -109,14 +104,14 @@
                     <div class="flex h-5/6 my-5 gap-2">
                         <!--house ranking-->
                         <div class="w-2/5 h-5/6 border-[1px] border-gray text-[12px]">
-                            <ul class="flex w-full bg-black/50 py-1 border-b-[1px] border-gray">
+                            <ul class="flex w-full bg-black/50 py-1 border-b-[1px]">
                                 <li class="flex justify-center items-center w-[15%]">RANK</li>
                                 <li class="flex justify-center items-center w-[55%]">NAME</li>
                                 <li class="flex justify-center items-center w-[10%]">POINTS</li>
                                 <li class="flex justify-center items-center w-[20%]">MEMBERS</li>
                             </ul>
                             <!--house leaderboard list body-->
-                            <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-[95%] bg-black/20 overflow-y-scroll">
+                            <ul class="flex flex-col w-full max-h-full h-[95%] bg-black/20 overflow-y-scroll">
                                 <!--house leaderboard list row-->
                                 <li v-for="house in HousesLeaderboard" :key="house" class="relative flex flex-row items-center justify-center px-[12px] gap-3 w-full cursor-pointer border-b-[1px] border-gray" v-on:click="selectHouse(house)">
                                     <div class="flex items-center justify-center w-[15%] h-full">
@@ -158,9 +153,9 @@
                                         </div>
                                         <div class="flex items-center justify-start gap-3 w-[45%] h-full">
                                             <!--image-->
-                                            <div class="relative w-[40px] h-[40px] flex items-center justify-center">
+                                            <div class="relative w-[50px] h-[50px] flex items-center justify-center">
                                                 <img v-if="student.EquippedCosmeticsData !== undefined" class="w-[35px] rounded-full h-auto" v-bind:src="student.EquippedCosmeticsData[0].CosmeticImage" />
-                                                <img v-if="student.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[40px] h-auto" v-bind:src="student.EquippedCosmeticsData[1].CosmeticImage" />
+                                                <img v-if="student.EquippedCosmeticsData !== undefined" class="absolute inset-0 m-auto w-[50px] h-auto" v-bind:src="student.EquippedCosmeticsData[1].CosmeticImage" />
                                             </div>
                                             <!--text-->
                                             <div class="inline-flex flex-col">
@@ -191,12 +186,13 @@
         data() {
             return {
                 //FRONTEND VARIABLES
-                openTab: 2, //student, house
+                openTab: 1, //student, house
 
                 //BACKEND VARIABLES
                 currentUser: Parse.User.current(),
-                host: window.location.host,
+                host:  window.location.host,
 
+                UserData: [],
                 StudentData: [],
                 StudentsLeaderboard: [],
                 StudentRank: 0,
@@ -225,8 +221,33 @@
             },
 
             async getAccountData(){
-                var param = {"TeacherID" : this.currentUser.get("AccountID")};
-                this.TeacherData = JSON.parse(await Parse.Cloud.run("GetTeacherData", param));
+                var params = {}
+                if(this.currentUser.get("AccountType") === "Student"){
+                    params = {"StudentID" : this.currentUser.get("AccountID")};
+                    this.UserData = JSON.parse(await Parse.Cloud.run("GetStudentData", params));
+                    this.UserCoursesIDPointer = this.UserData.StudentCoursesIDPointer;
+                    this.UserDegreeIDPointer = this.UserData.StudentDegreeIDPointer;
+                    await this.getDegrees();
+                    this.UserDegreeIndex = this.Degrees.map(function(e) { return e.objectId; }).indexOf(this.UserDegreeIDPointer);
+                    this.UserLastDegreeIndex = this.UserDegreeIndex;
+                    this.getCourses();
+                }
+                else if(this.currentUser.get("AccountType") === "Teacher"){
+                    params = {"TeacherID" : this.currentUser.get("AccountID")};
+                    this.UserData = JSON.parse(await Parse.Cloud.run("GetTeacherData", params));
+                    this.getUnits("Department");
+                    this.getCourses();
+                    this.UserUnitIDPointer = this.UserData.TeacherUnitIDPointer;
+                    this.UserCoursesIDPointer = this.UserData.TeacherCoursesIDPointer;
+                    this.UserDegreeIDPointer = this.UserData.TeacherDegreeIDPointer;
+                    
+                }
+                else if(this.currentUser.get("AccountType") === "NT_Distributor"){
+                    params = {"NT_DistributorID" : this.currentUser.get("AccountID")};
+                    this.UserData = JSON.parse(await Parse.Cloud.run("GetNT_DistributorData", params));
+                    this.getUnits("Office");
+                    this.UserUnitIDPointer = this.UserData.NT_DistributorUnitIDPointer;
+                }
             },
 
             async getStudentsLeaderboard(){

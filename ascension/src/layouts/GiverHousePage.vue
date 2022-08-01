@@ -28,7 +28,7 @@
                         <!--go back button-->
                         <nav class="absolute top-0 flex flex-row items-center gap-3 w-full h-auto px-[10px] py-[5px]">
                             <a class="text-[15px] text-white hover:text-gold_hover active:text-gold_active" v-on:click="viewPopUpTab(false)" href="#"><i class="fa-solid fa-angle-left"></i></a>
-                            <span class="text-[15px] text-white">House Name</span>
+                            <span class="text-[15px] text-white">Select Badge</span>
                         </nav>
                         <!--item inventory/list-->
                         <div class="inline-flex flex-col items-center justify-center gap-2 w-[70%] h-[370px]">
@@ -45,56 +45,52 @@
                             <div class="inline-flex items-start justify-start border-gray border-[1px] bg-black/20 p-[5px] w-full h-[95%] remove-scroll overflow-y-scroll">
                                 <div> <!--container-->
                                     <!--item (badge)-->
-                                    <div class="inline-flex items-center justify-center border-[1px] border-gray bg-black/20 m-[5px] p-[5px] w-[64.5px] h-[64.5px] cursor-pointer" v-on:click="viewItem(true)" v-bind:class="{'outline outline-gold outline-[3px] border-gold': selectedItem === true, 'border-gray': selectedItem === false}">
-                                        <img class="w-auto h-auto" src="../assets/img/badges/badge_3.png" />
+                                    <div v-for="badge in UnacquiredHouseBadgesGive" :key="badge.objectId" v-bind:value="badge.objectId" 
+                                        class="inline-flex items-center justify-center border-[1px] border-gray bg-black/20 m-[5px] p-[5px] w-[64.5px] h-[64.5px] cursor-pointer" 
+                                        v-on:click="selectBadge(badge)" 
+                                        v-bind:class="{'outline outline-gold outline-4 border-[1px] border-gold/0': badge.objectId === SelectedBadgeID}">
+                                        <img class="w-auto h-auto" alt="Badge" v-bind:src="badge.BadgeImage" />
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!--selected badge-->
                         <div class="inline-flex items-center justify-center w-[30%] h-[370px]">
-                            <div class="inline-flex flex-col items-center justify-center gap-3 w-full h-full" v-bind:class="{'hidden': selectedItem === false, 'flex': selectedItem === true}">
+                            <div v-if="SelectedBadgeID !== ''" class="inline-flex flex-col items-center justify-center gap-3 w-full h-full">
                                 <!--image-->
                                 <div class="inline-flex items-center justify-center border-[1px] border-gray w-full h-[55%]">
-                                    <img class="w-[170px] h-[170px]" src="../assets/img/badges/badge_3.png" />
+                                    <img class="w-[170px] h-[170px]" v-bind:src="BadgeImage" />
                                 </div>
                                 <!--item information-->
                                 <div class="flex flex-col w-full h-[35%] remove-scroll overflow-y-scroll ">
-                                    <span class="text-[15px] text-white w-full">Badge Name</span>
-                                    <span class="text-[12px] text-gold w-full">Badge Type</span>
-                                    <p class="text-[12px] text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure 
-                                        dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non 
-                                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                    <span class="text-[15px] text-white w-full">{{BadgeName}}</span>
+                                    <span class="text-[12px] text-gold w-full">{{BadgeType}}</span>
+                                    <p class="text-[12px] text-white">{{BadgeDescription}}</p>
                                 </div>
                                 <!--give button-->
-                                <button class="bg-blue text-white text-[12px] w-full h-[10%] hover:bg-blue_hover active:bg-blue_active">GIVE</button>
+                                <button @click="giveHouseBadge()" class="bg-blue text-white text-[12px] w-full h-[10%] hover:bg-blue_hover active:bg-blue_active">GIVE</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <!--header navigation bar-->
-            <nav class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center z-[7]">
-                <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[8]"></div>
-                <a class="absolute left-[10px] z-[9]" href="/"><img class="w-[150px] h-auto" src="../assets/img/logo/text-logo-default.png" /></a>
-
-                <!--student page-->
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverStudentPage">STUDENT</a></div>
-                <!--house page-->
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gold z-[9]"><a class="text-gold text-[13px]" href="GiverHousePage">HOUSE</a></div>
-                <!--leaderboard page-->
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverLeaderboardPage">LEADERBOARDS</a></div>
-                <!--request page-->
-                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[3px] border-gray/0 z-[9]"><a class="text-white text-[13px]" href="GiverRequestPage">REQUEST</a></div>
+            <!--giver navigation bar-->
+            <nav v-if="currentUser.get('AccountType') === 'Teacher' || currentUser.get('AccountType') === 'NT_Distributor'" class="sticky top-0 w-full border-b-[1px] border-b-gray flex flex-row items-center justify-center h-[50px] z-[7]">
+                <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full"></div>
+                <a class="absolute left-[10px]" href="#"><img class="w-[130px] h-auto" src="../assets/img/logo/AscensionWhite.png" /></a>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverStudentPage">STUDENT</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gold z-[9]"><a class="text-gold text-[13px]" href="GiverHousePage">HOUSE</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverLeaderboardPage">LEADERBOARDS</a></div>
+                <div class="flex items-center justify-center w-[150px] h-[50px] border-b-[1px] border-gray/0 z-[9]"><a class="text-white text-[13px] hover:text-gold" href="GiverRequestPage">REQUEST</a></div>
 
                 <details class="absolute top-[15px] right-[10px] w-[170px] z-[9]">
                     <summary class="flex items-center gap-[10px] justify-end cursor-pointer">
-                        <span class="text-white text-[12px]">Giver's First Name</span>
+                        <span class="text-white text-[13px]">{{UserData.FirstName}}</span>
                     </summary>
                     <div class="relative bg-black/20 border-[1px] mt-[22px] border-gray z-[9]">
                         <div class="absolute bg-black/20 backdrop-blur-[20px] h-full w-full z-[8]"></div>
-                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[12px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a class="text-white text-[13px] hover:text-gold z-[9]" href="AccountSettings">ACCOUNT SETTINGS</a></div>
+                        <div class="flex items-center justify-end w-full py-[5px] px-[10px]"><a @click="logOut()" class="text-white text-[13px] hover:text-gold z-[9]" href="">SIGN OUT</a></div>
                     </div>
                 </details>
             </nav>
@@ -131,24 +127,24 @@
                             </ul>
                             <!--house list body-->
                             <ul class="flex flex-col border-[1px] border-gray w-full max-h-full h-[93%] bg-black/20 overflow-y-scroll">
-                                <!--house leaderboard list row-->
-                                <li class="relative flex flex-row items-center justify-center px-[12px] gap-3 w-full border-b-[1px] border-gray">
+                                <!--house list row-->
+                                <li v-for="house in Houses" :key="house" class="relative flex flex-row items-center justify-center px-[12px] gap-3 w-full border-b-[1px] border-gray">
                                     <!--house name and banner-->
                                     <div class="flex items-center justify-start gap-3 w-[35%] h-full">
                                         <!--image-->
                                         <div class="relative w-[40px] h-full flex items-center justify-center">
-                                            <img class="w-[35px] h-auto" src="../assets/img/banner/liberalitas-banner.png" />
+                                            <img class="w-[35px] h-auto" v-bind:src="house.HouseBanner" />
                                         </div>
                                         <!--text-->
-                                        <strong class="text-white text-[15px]">Liberalitas</strong>
+                                        <span class="text-white text-[15px]">{{house.HouseName}}</span>
                                     </div>
                                     <!--house points-->
-                                    <div class="flex items-center justify-center w-[35%] h-full"><span class="text-white text-[13px]">999999</span></div>
+                                    <div class="flex items-center justify-center w-[35%] h-full"><span class="text-white text-[13px]">{{house.HouseXP}}</span></div>
                                     <!--house members-->
-                                    <div class="flex items-center justify-center w-[19%] h-full"><span class="text-white text-[13px]">999</span></div>
+                                    <div class="flex items-center justify-center w-[19%] h-full"><span class="text-white text-[13px]">{{house.HousePopulation}}</span></div>
                                     <!--give badge to house button-->
                                     <div class="flex items-center justify-center w-[11%] h-full">
-                                        <button class="bg-blue text-white text-[12px] hover:bg-blue_hover w-[100px] py-[8px] active:bg-blue_active" v-on:click="viewPopUpTab(true)">GIVE BADGE</button>
+                                        <button @click="selectHouse(house.objectId)" class="bg-blue text-white text-[12px] hover:bg-blue_hover w-[100px] py-[8px] active:bg-blue_active" v-on:click="viewPopUpTab(true)">GIVE BADGE</button>
                                     </div>
                                 </li>
                             </ul>
@@ -169,6 +165,34 @@
             return{
                 activePopUpTab: false,
                 selectedItem: false,
+
+                //BACKEND VARIABLES
+                currentUser: Parse.User.current(),
+                host: window.location.host,
+
+                UserData: [],
+
+                //Containers
+                Houses: [],
+
+                HousesGive : [],
+                UnacquiredHouseBadgesGive : [],
+                SelectedHouseGive : '',
+                SelectedHouseBadgeGive : '',
+
+                //Badge Variables
+                BadgeName: '',
+                BadgeDescription: '',
+                BadgePoints: '',
+                BadgeImage: '',
+                BadgeImageName: '',
+                BadgeType: '',
+                BadgeDesignInspiration: '',
+                SelectedBadgeID: '',
+                SelectedBadgeData: {},
+                SelectedBadgeInfo : '',
+                SelectedHouseBadge : '',
+                SelectedHouseBadgeInfo : '',
             }
         },
         methods: {
@@ -178,6 +202,105 @@
             viewPopUpTab: function (bool) {
                 this.activePopUpTab = bool
             },
-        }
+            async logOut(){
+                await Parse.User.logOut();
+                window.location.href ='http://' + this.host;
+                //this.$router.go(0); refresh the page
+            },
+            async getAccountData(){
+                var params = {}
+                if(this.currentUser.get("AccountType") === "Student"){
+                    this.UserData = JSON.parse(await Parse.Cloud.run("GetStudentData", params));
+                }
+                else if(this.currentUser.get("AccountType") === "Teacher"){
+                    params = {"TeacherID" : this.currentUser.get("AccountID")};
+                    this.UserData = JSON.parse(await Parse.Cloud.run("GetTeacherData", params));
+                    this.UserUnitIDPointer = this.UserData.TeacherUnitIDPointer;
+                }
+                else if(this.currentUser.get("AccountType") === "NT_Distributor"){
+                    params = {"NT_DistributorID" : this.currentUser.get("AccountID")};
+                    this.UserData = JSON.parse(await Parse.Cloud.run("GetNT_DistributorData", params));
+                }
+            },
+            async getHouses(){
+                const res = JSON.parse(await Parse.Cloud.run("GetHouses"));
+                this.Houses = res;
+
+                //Add house banner
+                for(var house of this.Houses){
+                    var params = {"HouseID" : house.objectId};
+                    const data = JSON.parse(await Parse.Cloud.run("GetHouseData", params));
+                    house["HouseBanner"] = data.HouseBanner;
+                }
+            },
+            //Badge functions
+            async getUnacquiredHouseBadges(){
+                var params = {"HouseID" : this.SelectedHouseGive};
+                const res = JSON.parse(await Parse.Cloud.run("GetUnacquiredHouseBadges", params));
+                this.UnacquiredHouseBadgesGive = res;
+            },
+            async selectHouse(id){
+                this.SelectedHouseGive = id;
+                this.getUnacquiredHouseBadges();
+            },
+            async getHousesGive(){
+                const res = JSON.parse(await Parse.Cloud.run("GetHouses"));
+                this.HousesGive = res;
+            },
+            selectHouseBadgeToGive(id){
+                this.SelectedHouseBadge = id;
+            },
+            async giveHouseBadge(){
+                var params = {"BadgeID" : this.SelectedBadgeID, "HouseID" : this.SelectedHouseGive};
+                await Parse.Cloud.run("RewardHouseBadge", params);
+                alert("Successfully Given House Badge!");
+                this.getUnacquiredHouseBadges();
+                this.SelectedHouseBadgeGive = "";
+            },
+            selectBadge(badge){
+                console.log(badge);
+                if(this.SelectedBadgeID !== badge.objectId){
+                    this.SelectedBadgeID = badge.objectId;
+                    this.BadgeName = badge.BadgeName;
+                    this.BadgeDescription = badge.BadgeDescription;
+                    this.BadgePoints = badge.BadgePoints;
+                    this.BadgeType = badge.BadgeType;
+                    this.BadgeImage = badge.BadgeImage;
+                    this.BadgeDesignInspiration = badge.BadgeDesignInspiration;
+                }
+                else{
+                    this.resetSelectedBadge();
+                }
+            },
+            resetSelectedBadge(){
+                this.SelectedBadgeID = "";
+                this.BadgeName = "";
+                this.BadgeDescription = "";
+                this.BadgePoints = "";
+                this.BadgeType = "";
+                this.BadgeImage = "";
+                this.BadgeImageName = "";
+                this.BadgeDesignInspiration = "";
+            },
+            //Give Badge
+            async giveBadge(){
+                var params = {"BadgeID" : this.SelectedBadgeID, "HouseID" : this.SelectedHouseID};
+                console.log(params);
+                await Parse.Cloud.run("RewardBadge", params);
+                alert("Successfully Given Badge!");
+                this.SelectedBadgeID = "";
+                this.getUnacquiredBadges();
+            },
+        },
+        beforeMount(){
+            if (this.currentUser) {
+                this.getAccountData();
+                this.getHouses();
+            }
+            else {
+                window.location.href ='http://' + this.host;
+            }
+                
+        },
     }
 </script>
