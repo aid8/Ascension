@@ -1,4 +1,6 @@
 # Ascension
+## DESIGN TEAM RESOURCES
+[Google Drive Link](https://drive.google.com/drive/folders/1diblkjkzGlRytrv7wCKDweLn4RsdbhUN?usp=sharing)
 ## CLOUD FUNCTIONS    
     STUDENT ENTITY
         Function: AddStudent()
